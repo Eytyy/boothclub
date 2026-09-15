@@ -1,0 +1,42 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# env files
+.env
+.env.*
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# VS Code
+.vscode
+
+# Cursor (keep rules; omit local plans)
+/.cursor/plans/
+
+# migration
+/scripts/
+contentful-export-*.json
+
+# local backups and sample dataset archives (keep out of git)
+/backups/
+studio/sample-data.tar.gz

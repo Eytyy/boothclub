@@ -1,0 +1,47 @@
+---
+description: Strip Sanity stega encoding before using string values as object keys, switch discriminators, or equality comparisons.
+globs: ["frontend/**/*.ts", "frontend/**/*.tsx"]
+alwaysApply: false
+---
+
+# Sanity Stega: Clean Before Comparing
+
+String fields read from Sanity carry invisible stega-encoded metadata in draft/preview mode (used by Visual Editing). They render fine, but break any code that uses them as a lookup key or identity check.
+
+## Rule
+
+- Run Sanity string values through `stegaClean` from `@sanity/client/stega` before:
+  - using them as **object keys** (e.g. `MAP[value]`)
+  - using them in `switch` / `if` **discriminators**
+  - comparing with `===` against literal values
+  - passing them to enum-like utilities
+- Leave values alone when they are only **rendered as text** — the stega payload is invisible and powers Visual Editing.
+- Nullish-coalescing fallbacks (`?? 'default'`) do **not** rescue stega values; the string is non-empty, just polluted.
+
+## Symptom
+
+`Cannot read properties of undefined (reading 'something')` where the missing key includes a long trail of invisible Unicode characters, e.g. `reading 'md​​​​‌﻿‍﻿…'`.
+
+## Examples
+
+**Incorrect:**
+
+```tsx
+const width = WIDTH_BY_SHAPE[client.shape ?? 'wide']  // undefined in preview mode
+
+if (block.type === 'mux') { /* never matches in preview mode */ }
+```
+
+**Correct:**
+
+```tsx
+import {stegaClean} from '@sanity/client/stega'
+
+const shape = (stegaClean(client.shape) as Shape | undefined) ?? 'wide'
+const width = WIDTH_BY_SHAPE[shape]
+
+const videoType = stegaClean(block.type)
+if (videoType === 'mux') { /* matches */ }
+```
+
+See `frontend/app/components/page-builder/blocks/VideoBlock.client.tsx` and `FeaturedClients.client.tsx` for working patterns.

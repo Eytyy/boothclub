@@ -1,0 +1,20 @@
+---
+description: Preserve existing UI treatment during architecture refactors unless a visual redesign is explicitly requested.
+globs: ["frontend/app/components/**/*.tsx", "frontend/app/**/page.tsx"]
+alwaysApply: false
+---
+
+# Visual Parity During Refactors
+
+Architecture refactors should not change visual treatment by default.
+
+## Rule
+
+- Keep existing card/component visual treatment (layout, spacing, typography, interaction) unless the user asks for redesign.
+- Separate structural refactors from visual updates when possible.
+- If visual change is required, call it out explicitly and keep scope narrow.
+
+## Verification
+
+- Compare before/after for representative routes and breakpoints.
+- Confirm empty states and reduced-motion behavior still match prior intent.

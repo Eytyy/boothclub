@@ -1,0 +1,21 @@
+---
+description: Use components-by-domain by default and promote to features only when behavior complexity justifies it.
+alwaysApply: true
+---
+
+# Features Promotion Threshold
+
+Default to `components/<domain>` and escalate to `features/<domain>` only when needed.
+
+## Rule
+
+- Start with `frontend/app/components/<domain>/` for shared presentational modules.
+- Promote to `frontend/app/features/<domain>/` only with explicit behavioral complexity:
+  - state orchestration across multiple surfaces
+  - server actions or domain workflows
+  - cross-cutting hooks/services used by multiple routes
+- Document the reason for promotion in the PR/plan notes.
+
+## Anti-Pattern
+
+- Creating a `features/` module for purely presentational reuse with no workflow/state complexity.

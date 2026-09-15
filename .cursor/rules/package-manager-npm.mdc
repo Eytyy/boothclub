@@ -1,0 +1,32 @@
+---
+description: Use npm as the only package manager (not pnpm, yarn, or bun)
+alwaysApply: true
+---
+
+# Package manager: npm only
+
+This project standardizes on **npm**. Do not use pnpm, Yarn, Bun, or other package managers for installs, scripts, or lockfile workflows unless the user explicitly overrides.
+
+## Rule
+
+- Use `npm install`, `npm ci`, `npm run <script>`, `npx`, and `package-lock.json` as the source of truth for dependency trees.
+- Do not introduce or suggest alternative lockfiles (e.g. `pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`).
+
+## Examples
+
+**Correct:**
+
+- `npm install`
+- `npm ci`
+- `npm run dev`
+- `npx <package> ...`
+
+**Incorrect:**
+
+- `pnpm install` / `pnpm dlx`
+- `yarn` / `yarn dlx`
+- `bun install` / `bunx`
+
+## Rationale
+
+A single package manager keeps CI, local dev, and documentation aligned and avoids split lockfiles or subtle resolution differences across environments.

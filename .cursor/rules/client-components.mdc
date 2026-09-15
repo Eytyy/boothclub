@@ -1,0 +1,30 @@
+---
+description: Enforce *.client.tsx naming convention for React client components
+globs: ["**/*.tsx", "**/*.ts"]
+alwaysApply: true
+---
+
+# Client Component Naming Convention
+
+React components that include `"use client"` at the top must use the `*.client.tsx` file naming convention.
+
+## Rule
+
+- Any `.tsx` file that starts with `"use client"` must be named `ComponentName.client.tsx`
+- Server components and shared utilities retain their default naming (e.g. `Header.tsx`, `Footer.tsx`)
+- This keeps server/client boundaries explicit and visible at the file-system level
+
+## Examples
+
+**Correct:**
+- `Header.client.tsx` — contains `"use client"`, interactive header with scroll animations
+- `MenuOverlay.client.tsx` — contains `"use client"`, animated overlay component
+- `DarkModeToggle.tsx` — UI primitive that happens to be a client component (exception for small isolated UI primitives in `components/ui/`)
+
+**Incorrect:**
+- `HeaderClient.tsx` — suffix style is wrong; use `Header.client.tsx` instead
+- `Header.tsx` — if this file contains `"use client"`, it must be renamed to `Header.client.tsx`
+
+## Rationale
+
+The `*.client.tsx` suffix mirrors Next.js conventions and makes the server/client split immediately visible when browsing the file tree, without needing to open each file.

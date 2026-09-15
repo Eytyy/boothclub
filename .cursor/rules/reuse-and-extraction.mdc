@@ -1,0 +1,21 @@
+---
+description: Decide when to extract shared modules and prefer thin wrappers over duplicate implementations.
+alwaysApply: true
+---
+
+# Reuse And Extraction
+
+Favor extraction only when reuse is real and boundaries stay clear.
+
+## Rule
+
+- Extract shared logic/UI when used in 2 or more surfaces (routes, blocks, or layouts).
+- Keep one-off logic in local route scope until reuse is proven.
+- Prefer thin wrappers at route/block boundaries that delegate to shared modules.
+- Do not duplicate nearly identical implementations across routes.
+
+## Preferred Pattern
+
+1. Keep route-level data/query handling in the route.
+2. Normalize data shape in a mapper utility.
+3. Render via a shared presentational module.

@@ -1,0 +1,22 @@
+---
+description: Keep route, component, and adapter responsibilities clearly separated in Next.js App Router.
+alwaysApply: true
+---
+
+# Architecture Boundaries
+
+Use clear ownership boundaries for all frontend architecture work.
+
+## Rule
+
+- Route segments in `frontend/app/**` own data fetching, orchestration, and route-level composition.
+- Shared presentational UI belongs in `frontend/app/components/**`.
+- Data normalization and adapters belong in `frontend/app/lib/**` or `frontend/sanity/lib/**`.
+- Avoid passing raw CMS query shapes directly into reusable presentational components.
+- Keep client/server boundaries explicit (`*.client.tsx` for client components).
+
+## Quick Checks
+
+- If a component calls `sanityFetch` or route-only logic, keep it in route scope.
+- If UI is reused across routes and has no fetch/orchestration concerns, extract to a shared component.
+- If a shape conversion is needed, place it in a mapper/adapter utility, not in shared UI.
