@@ -15,6 +15,35 @@
 export declare const internalGroqTypeReferenceTo: unique symbol
 
 // Source: ../sanity.schema.json
+export type BlockGallery = {
+  _type: 'block.gallery'
+  items?: Array<
+    | ({
+        _key: string
+      } & BlockImage)
+    | ({
+        _key: string
+      } & BlockVideo)
+  >
+}
+
+export type BlockCopy = {
+  _type: 'block.copy'
+  showHeadline?: boolean
+  showText?: boolean
+  headline?: InternationalizedArrayText
+  text?: InternationalizedArrayText
+}
+
+export type ProductSpecs = {
+  _type: 'product.specs'
+  items?: Array<{
+    text: InternationalizedArrayString
+    _type: 'spec'
+    _key: string
+  }>
+}
+
 export type BlockSplitMedia = {
   _type: 'block.splitMedia'
   left: BlockMedia
@@ -499,17 +528,8 @@ export type Product = {
   category: ProductCategoryReference
   excerpt?: InternationalizedArrayText
   description: InternationalizedArrayBlockContentTextOnly
-  pageBuilder?: Array<
-    | ({
-        _key: string
-      } & BlockContentSection)
-    | ({
-        _key: string
-      } & BlockMedia)
-    | ({
-        _key: string
-      } & BlockSplitMedia)
-  >
+  specs?: ProductSpecs
+  copy?: BlockCopy
   featuredProjects?: Array<
     {
       _key: string
@@ -1145,6 +1165,9 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
+  | BlockGallery
+  | BlockCopy
+  | ProductSpecs
   | BlockSplitMedia
   | BlockContentSection
   | BlockVideo
@@ -3217,7 +3240,7 @@ export type GetProductCategoryQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: getProductQuery
-// Query: *[_type == "product" && slug.current == $product && category._ref in *[_type == "productCategory" && slug.current == $slug]._id][0]{    _id,    _type,    "title": title[language == $lang][0].value,    "excerpt": excerpt[language == $lang][0].value,    "slug": slug.current,    "category": category->{      _id,      "slug": slug.current,      "title": title[language == $lang][0].value    },    "description": description[language == $lang][0].value[]{  ...,  markDefs[]{    ...,      _type == "link" => {    "page": page->{ _type, "slug": slug.current },    "post": post->slug.current,    "product": product->{      "slug": slug.current,      "categorySlug": category->slug.current    },    "productCategory": productCategory->slug.current  }  }},    mainImage {   ...,  "lqip": asset->metadata.lqip,  "alt": alt[language == $lang][0].value,  "credits": credits[language == $lang][0].value },    heroVideo {        ...asset-> {    playbackId,    assetId,    filename,  }    },      "pageBuilder": pageBuilder[]{    _key,    _type,    _type == "block.contentSection" => {      "headline": headline[language == $lang][0].value,      "text": text[language == $lang][0].value    },    _type == "block.media" => {        type,  image {   ...,  "lqip": asset->metadata.lqip,  "alt": alt[language == $lang][0].value,  "credits": credits[language == $lang][0].value },  video {      ...,  "muxVideo": muxVideo.asset-> {    playbackId,    assetId,    filename,  }  }    },    _type == "block.splitMedia" => {      "left": left {          type,  image {   ...,  "lqip": asset->metadata.lqip,  "alt": alt[language == $lang][0].value,  "credits": credits[language == $lang][0].value },  video {      ...,  "muxVideo": muxVideo.asset-> {    playbackId,    assetId,    filename,  }  }      },      "right": right {          type,  image {   ...,  "lqip": asset->metadata.lqip,  "alt": alt[language == $lang][0].value,  "credits": credits[language == $lang][0].value },  video {      ...,  "muxVideo": muxVideo.asset-> {    playbackId,    assetId,    filename,  }  }      }    }  },    seo {        "metaTitle": metaTitle[language == $lang][0].value,  "metaDescription": metaDescription[language == $lang][0].value,  metaImage    },    "featuredProjects": featuredProjects[]->{        _id,  "title": title[language == $lang][0].value,  "slug": slug.current,  mainImage {   ...,  "lqip": asset->metadata.lqip,  "alt": alt[language == $lang][0].value,  "credits": credits[language == $lang][0].value }    }  }
+// Query: *[_type == "product" && slug.current == $product && category._ref in *[_type == "productCategory" && slug.current == $slug]._id][0]{    _id,    _type,    "title": title[language == $lang][0].value,    "excerpt": excerpt[language == $lang][0].value,    "slug": slug.current,    "category": category->{      _id,      "slug": slug.current,      "title": title[language == $lang][0].value    },    "description": description[language == $lang][0].value[]{  ...,  markDefs[]{    ...,      _type == "link" => {    "page": page->{ _type, "slug": slug.current },    "post": post->slug.current,    "product": product->{      "slug": slug.current,      "categorySlug": category->slug.current    },    "productCategory": productCategory->slug.current  }  }},    mainImage {   ...,  "lqip": asset->metadata.lqip,  "alt": alt[language == $lang][0].value,  "credits": credits[language == $lang][0].value },    heroVideo {        ...asset-> {    playbackId,    assetId,    filename,  }    },    specs {      items[]{        _key,        "text": text[language == $lang][0].value      }    },    copy {      showHeadline,      showText,      "headline": headline[language == $lang][0].value,      "text": text[language == $lang][0].value    },    seo {        "metaTitle": metaTitle[language == $lang][0].value,  "metaDescription": metaDescription[language == $lang][0].value,  metaImage    },    "featuredProjects": featuredProjects[]->{        _id,  "title": title[language == $lang][0].value,  "slug": slug.current,  mainImage {   ...,  "lqip": asset->metadata.lqip,  "alt": alt[language == $lang][0].value,  "credits": credits[language == $lang][0].value }    }  }
 export type GetProductQueryResult = {
   _id: string
   _type: 'product'
@@ -3304,83 +3327,18 @@ export type GetProductQueryResult = {
         filename: string | null
       }
     | null
-  pageBuilder: Array<
-    | {
-        _key: string
-        _type: 'block.contentSection'
-        headline: string | null
-        text: string | null
-      }
-    | {
-        _key: string
-        _type: 'block.media'
-        type: 'image' | 'video'
-        image: {
-          _type: 'block.image'
-          asset?: SanityImageAssetReference
-          media?: unknown
-          hotspot?: SanityImageHotspot
-          crop?: SanityImageCrop
-          alt: string | null
-          credits: string | null
-          lqip: string | null
-        } | null
-        video: {
-          _type: 'block.video'
-          muxVideo: {
-            playbackId: string | null
-            assetId: string | null
-            filename: string | null
-          } | null
-        } | null
-      }
-    | {
-        _key: string
-        _type: 'block.splitMedia'
-        left: {
-          type: 'image' | 'video'
-          image: {
-            _type: 'block.image'
-            asset?: SanityImageAssetReference
-            media?: unknown
-            hotspot?: SanityImageHotspot
-            crop?: SanityImageCrop
-            alt: string | null
-            credits: string | null
-            lqip: string | null
-          } | null
-          video: {
-            _type: 'block.video'
-            muxVideo: {
-              playbackId: string | null
-              assetId: string | null
-              filename: string | null
-            } | null
-          } | null
-        }
-        right: {
-          type: 'image' | 'video'
-          image: {
-            _type: 'block.image'
-            asset?: SanityImageAssetReference
-            media?: unknown
-            hotspot?: SanityImageHotspot
-            crop?: SanityImageCrop
-            alt: string | null
-            credits: string | null
-            lqip: string | null
-          } | null
-          video: {
-            _type: 'block.video'
-            muxVideo: {
-              playbackId: string | null
-              assetId: string | null
-              filename: string | null
-            } | null
-          } | null
-        }
-      }
-  > | null
+  specs: {
+    items: Array<{
+      _key: string
+      text: string | null
+    }> | null
+  } | null
+  copy: {
+    showHeadline: boolean | null
+    showText: boolean | null
+    headline: string | null
+    text: string | null
+  } | null
   seo: {
     metaTitle: string | null
     metaDescription: string | null
@@ -3418,6 +3376,26 @@ export type OtherProductsQueryResult = Array<{
   excerpt: string | null
   slug: string
   categorySlug: string
+  mainImage: {
+    _type: 'block.image'
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt: string | null
+    credits: string | null
+    lqip: string | null
+  }
+}>
+
+// Source: sanity/lib/queries.ts
+// Variable: otherProductsCategoryQuery
+// Query: *[_type == "productCategory" && _id != $currentId && defined(slug.current)] | order(title[language == $lang][0].value asc) {    _id,    "title": title[language == $lang][0].value,    "tagline": tagline[language == $lang][0].value,    "slug": slug.current,    mainImage {   ...,  "lqip": asset->metadata.lqip,  "alt": alt[language == $lang][0].value,  "credits": credits[language == $lang][0].value },  }
+export type OtherProductsCategoryQueryResult = Array<{
+  _id: string
+  title: string | null
+  tagline: string | null
+  slug: string
   mainImage: {
     _type: 'block.image'
     asset?: SanityImageAssetReference
@@ -3512,8 +3490,9 @@ declare module '@sanity/client' {
     '\n  *[_type == "contact"][0]{\n    _id,\n    _type,\n    "title": title[language == $lang][0].value,\n    "headline": headline[language == $lang][0].value,\n    "form": form->{\n      \n  _id,\n  key,\n  recipients,\n  "description": description[language == $lang][0].value,\n  "successMessage": successMessage[language == $lang][0].value,\n  "errorText": errorText[language == $lang][0].value,\n  "consentText": consentText[language == $lang][0].value,\n  "notificationsLabel": notificationsLabel[language == $lang][0].value,\n  "personalDataNote": personalDataNote[language == $lang][0].value,\n  "privacyPageSlug": privacyPage->slug.current\n\n    },\n    "addressTitle": addressTitle[language == $lang][0].value,\n    googleMapsUrl,\n    mapImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[language == $lang][0].value,\n  "credits": credits[language == $lang][0].value\n },\n    seo {\n      \n  "metaTitle": metaTitle[language == $lang][0].value,\n  "metaDescription": metaDescription[language == $lang][0].value,\n  metaImage\n\n    }\n  }\n': ContactPageQueryResult
     '\n  *[_type == "careers"][0]{\n    _id,\n    _type,\n    "title": title[language == $lang][0].value,\n    "intro": intro[language == $lang][0].value,\n    applyEmail,\n    mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[language == $lang][0].value,\n  "credits": credits[language == $lang][0].value\n },\n    benefits[]{\n      "headline": headline[language == $lang][0].value,\n      "description": description[language == $lang][0].value\n    },\n    "jobOpenings": jobOpenings[]->{\n      _id,\n      "title": title[language == $lang][0].value,\n      "location": location[language == $lang][0].value,\n      employmentType,\n      "description": description[language == $lang][0].value[]{\n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->slug.current\n  }\n\n  }\n}\n    },\n    seo {\n      \n  "metaTitle": metaTitle[language == $lang][0].value,\n  "metaDescription": metaDescription[language == $lang][0].value,\n  metaImage\n\n    }\n  }\n': CareersPageQueryResult
     '\n  *[_type == "productCategory" && slug.current == $slug][0]{\n    _id,\n    _type,\n    "title": title[language == $lang][0].value,\n    "tagline": tagline[language == $lang][0].value,\n    "description": description[language == $lang][0].value[]{\n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->slug.current\n  }\n\n  }\n},\n    "slug": slug.current,\n    mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[language == $lang][0].value,\n  "credits": credits[language == $lang][0].value\n },\n    heroVideo {\n      \n  ...asset-> {\n    playbackId,\n    assetId,\n    filename,\n  }\n\n    },\n    seo {\n      \n  "metaTitle": metaTitle[language == $lang][0].value,\n  "metaDescription": metaDescription[language == $lang][0].value,\n  metaImage\n\n    },\n    "featuredProjects": featuredProjects[]->{\n      \n  _id,\n  "title": title[language == $lang][0].value,\n  "slug": slug.current,\n  mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[language == $lang][0].value,\n  "credits": credits[language == $lang][0].value\n }\n\n    },\n    "products": *[_type == "product" && category._ref == ^._id && defined(slug.current)] | order(title[language == $lang][0].value asc) {\n      \n  _id,\n  "title": title[language == $lang][0].value,\n  "excerpt": excerpt[language == $lang][0].value,\n  "slug": slug.current,\n  "categorySlug": category->slug.current,\n  mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[language == $lang][0].value,\n  "credits": credits[language == $lang][0].value\n }\n\n    }\n  }\n': GetProductCategoryQueryResult
-    '\n  *[_type == "product" && slug.current == $product && category._ref in *[_type == "productCategory" && slug.current == $slug]._id][0]{\n    _id,\n    _type,\n    "title": title[language == $lang][0].value,\n    "excerpt": excerpt[language == $lang][0].value,\n    "slug": slug.current,\n    "category": category->{\n      _id,\n      "slug": slug.current,\n      "title": title[language == $lang][0].value\n    },\n    "description": description[language == $lang][0].value[]{\n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->slug.current\n  }\n\n  }\n},\n    mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[language == $lang][0].value,\n  "credits": credits[language == $lang][0].value\n },\n    heroVideo {\n      \n  ...asset-> {\n    playbackId,\n    assetId,\n    filename,\n  }\n\n    },\n    \n  "pageBuilder": pageBuilder[]{\n    _key,\n    _type,\n    _type == "block.contentSection" => {\n      "headline": headline[language == $lang][0].value,\n      "text": text[language == $lang][0].value\n    },\n    _type == "block.media" => {\n      \n  type,\n  image { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[language == $lang][0].value,\n  "credits": credits[language == $lang][0].value\n },\n  video {\n    \n  ...,\n  "muxVideo": muxVideo.asset-> {\n    playbackId,\n    assetId,\n    filename,\n  }\n\n  }\n\n    },\n    _type == "block.splitMedia" => {\n      "left": left {\n        \n  type,\n  image { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[language == $lang][0].value,\n  "credits": credits[language == $lang][0].value\n },\n  video {\n    \n  ...,\n  "muxVideo": muxVideo.asset-> {\n    playbackId,\n    assetId,\n    filename,\n  }\n\n  }\n\n      },\n      "right": right {\n        \n  type,\n  image { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[language == $lang][0].value,\n  "credits": credits[language == $lang][0].value\n },\n  video {\n    \n  ...,\n  "muxVideo": muxVideo.asset-> {\n    playbackId,\n    assetId,\n    filename,\n  }\n\n  }\n\n      }\n    }\n  }\n,\n    seo {\n      \n  "metaTitle": metaTitle[language == $lang][0].value,\n  "metaDescription": metaDescription[language == $lang][0].value,\n  metaImage\n\n    },\n    "featuredProjects": featuredProjects[]->{\n      \n  _id,\n  "title": title[language == $lang][0].value,\n  "slug": slug.current,\n  mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[language == $lang][0].value,\n  "credits": credits[language == $lang][0].value\n }\n\n    }\n  }\n': GetProductQueryResult
+    '\n  *[_type == "product" && slug.current == $product && category._ref in *[_type == "productCategory" && slug.current == $slug]._id][0]{\n    _id,\n    _type,\n    "title": title[language == $lang][0].value,\n    "excerpt": excerpt[language == $lang][0].value,\n    "slug": slug.current,\n    "category": category->{\n      _id,\n      "slug": slug.current,\n      "title": title[language == $lang][0].value\n    },\n    "description": description[language == $lang][0].value[]{\n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->slug.current\n  }\n\n  }\n},\n    mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[language == $lang][0].value,\n  "credits": credits[language == $lang][0].value\n },\n    heroVideo {\n      \n  ...asset-> {\n    playbackId,\n    assetId,\n    filename,\n  }\n\n    },\n    specs {\n      items[]{\n        _key,\n        "text": text[language == $lang][0].value\n      }\n    },\n    copy {\n      showHeadline,\n      showText,\n      "headline": headline[language == $lang][0].value,\n      "text": text[language == $lang][0].value\n    },\n    seo {\n      \n  "metaTitle": metaTitle[language == $lang][0].value,\n  "metaDescription": metaDescription[language == $lang][0].value,\n  metaImage\n\n    },\n    "featuredProjects": featuredProjects[]->{\n      \n  _id,\n  "title": title[language == $lang][0].value,\n  "slug": slug.current,\n  mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[language == $lang][0].value,\n  "credits": credits[language == $lang][0].value\n }\n\n    }\n  }\n': GetProductQueryResult
     '\n  *[_type == "product" && _id != $currentId && category._ref == $categoryId && defined(slug.current)] | order(title[language == $lang][0].value asc) {\n    \n  _id,\n  "title": title[language == $lang][0].value,\n  "excerpt": excerpt[language == $lang][0].value,\n  "slug": slug.current,\n  "categorySlug": category->slug.current,\n  mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[language == $lang][0].value,\n  "credits": credits[language == $lang][0].value\n }\n\n  }\n': OtherProductsQueryResult
+    '\n  *[_type == "productCategory" && _id != $currentId && defined(slug.current)] | order(title[language == $lang][0].value asc) {\n    _id,\n    "title": title[language == $lang][0].value,\n    "tagline": tagline[language == $lang][0].value,\n    "slug": slug.current,\n    mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[language == $lang][0].value,\n  "credits": credits[language == $lang][0].value\n },\n  }\n': OtherProductsCategoryQueryResult
     '\n  *[_type == "project" && _id != $currentId && defined(slug.current) && count(product[@._ref in $productRefs]) > 0] | order(_createdAt desc) [0...5] {\n    _id,\n    "title": title[language == $lang][0].value,\n    "slug": slug.current,\n    mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[language == $lang][0].value,\n  "credits": credits[language == $lang][0].value\n },\n    "products": product[]->{\n      \n  _id,\n  "title": title[language == $lang][0].value,\n  "slug": slug.current,\n  "category": category->{\n    _id,\n    "title": title[language == $lang][0].value,\n    "slug": slug.current\n  }\n\n    },\n  }\n': OtherProjectsQueryResult
     '\n  *[_type == "productCategory" && defined(slug.current)] | order(title[language == $lang][0].value asc) {\n    _id,\n    "title": title[language == $lang][0].value,\n    "slug": slug.current,\n    "products": *[_type == "product" && category._ref == ^._id && defined(slug.current)] | order(title[language == $lang][0].value asc) {\n      _id,\n      "title": title[language == $lang][0].value,\n      "slug": slug.current\n    }\n  }\n': ProjectFiltersQueryResult
     '\n  *[_type == "formConfig" && key == $key][0]{\n    \n  _id,\n  key,\n  recipients,\n  "description": description[language == $lang][0].value,\n  "successMessage": successMessage[language == $lang][0].value,\n  "errorText": errorText[language == $lang][0].value,\n  "consentText": consentText[language == $lang][0].value,\n  "notificationsLabel": notificationsLabel[language == $lang][0].value,\n  "personalDataNote": personalDataNote[language == $lang][0].value,\n  "privacyPageSlug": privacyPage->slug.current\n\n  }\n': FormConfigByKeyQueryResult

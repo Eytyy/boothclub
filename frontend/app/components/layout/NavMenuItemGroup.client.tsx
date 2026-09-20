@@ -37,7 +37,7 @@ export default function NavMenuItemGroup({
         onClick={() => onToggle(group._key)}
         className={cn(
           'group/menu-group flex items-center gap-3 md:gap-4 text-left',
-          'text-2xl md:text-3xl lg:text-5xl font-semibold leading-[1.1]',
+          'text-2xl font-semibold leading-[1.1]',
           'transition-colors',
           isActive && 'md:underline md:underline-offset-4',
         )}

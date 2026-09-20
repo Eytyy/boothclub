@@ -198,7 +198,7 @@ const projectMediaProjection = /* groq */ `
   }
 `
 
-/** Project/product document `pageBuilder` — content section, full media, split media. */
+/** Project document `pageBuilder` — content section, full media, split media. */
 const contentBlocksProjection = /* groq */ `
   "pageBuilder": pageBuilder[]{
     _key,
@@ -628,7 +628,18 @@ export const getProductQuery = defineQuery(`
     heroVideo {
       ${muxVideoProjection}
     },
-    ${contentBlocksProjection},
+    specs {
+      items[]{
+        _key,
+        "text": text${localizedValue}
+      }
+    },
+    copy {
+      showHeadline,
+      showText,
+      "headline": headline${localizedValue},
+      "text": text${localizedValue}
+    },
     seo {
       ${seoFields}
     },
@@ -641,6 +652,16 @@ export const getProductQuery = defineQuery(`
 export const otherProductsQuery = defineQuery(`
   *[_type == "product" && _id != $currentId && category._ref == $categoryId && defined(slug.current)] | order(title${localizedValue} asc) {
     ${productListItemFields}
+  }
+`)
+
+export const otherProductsCategoryQuery = defineQuery(`
+  *[_type == "productCategory" && _id != $currentId && defined(slug.current)] | order(title${localizedValue} asc) {
+    _id,
+    "title": title${localizedValue},
+    "tagline": tagline${localizedValue},
+    "slug": slug.current,
+    mainImage { ${imageProjection} },
   }
 `)
 

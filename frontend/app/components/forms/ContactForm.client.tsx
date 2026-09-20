@@ -92,11 +92,11 @@ export default function ContactForm({
     }
   }
 
-  const consentLabelNode = consentText
-    ? (formatPrivacyNote({privacyNote: consentText, privacySlug: privacyHref, lang}) ?? consentText)
-    : L.consent
+  // const consentLabelNode = consentText
+  //   ? (formatPrivacyNote({privacyNote: consentText, privacySlug: privacyHref, lang}) ?? consentText)
+  //   : L.consent
 
-  const notificationsLabelText = notificationsLabel ?? L.notifications
+  // const notificationsLabelText = notificationsLabel ?? L.notifications
 
   const errorsMap = errors as Record<string, {message?: string} | undefined>
 
@@ -118,7 +118,7 @@ export default function ContactForm({
       ))}
       <Honeypot register={register} />
 
-      <div className="space-y-4 rounded-lg border border-black/20 p-5 dark:border-white/20">
+      {/* <div className="space-y-4 rounded-lg border border-black/20 p-5 dark:border-white/20">
         <div className="space-y-3">
           <div className="space-y-1">
             <div className="flex items-start gap-3">
@@ -156,7 +156,8 @@ export default function ContactForm({
         </div>
 
         {personalDataNote ? <p className="text-sm opacity-80">{personalDataNote}</p> : null}
-      </div>
+      </div> */}
+      <RecaptchaNotice />
 
       <SubmitButton
         disabled={isSubmitting}
@@ -164,7 +165,6 @@ export default function ContactForm({
         label={L.submit}
         submittingLabel={t['form.label.submitting']}
       />
-      <RecaptchaNotice />
     </form>
   )
 }

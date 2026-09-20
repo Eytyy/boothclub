@@ -12,7 +12,7 @@ export default function SectionTitle({children, as = 'h2', className}: Props) {
   return (
     <Tag
       className={cn(
-        'text-2xl md:text-4xl leading-[1.2] tracking-tight 2xl:text-6xl font-bold text-center 2xl:max-w-[36ch] mx-auto uppercase mb-5 lg:mb-10',
+        'text-2xl lg:text-4xl leading-[1.2] tracking-tight 2xl:text-5xl font-bold mb-5 lg:mb-10',
         className,
       )}
     >

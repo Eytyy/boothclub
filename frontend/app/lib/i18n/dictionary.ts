@@ -24,7 +24,7 @@ const en = {
   'form.label.email': 'Email',
   'form.label.company': 'Company',
   'form.label.phone': 'Phone',
-  'form.label.message': 'Tell us about your project',
+  'form.label.message': 'Got a specific booth in mind for your event? Let us know!',
   'form.label.notifications': 'I agree to receive notifications.',
   'form.label.consent': 'I consent to the processing of my personal data.',
   'form.label.submit': 'Submit',

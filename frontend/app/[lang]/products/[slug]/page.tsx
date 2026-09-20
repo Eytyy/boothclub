@@ -5,23 +5,25 @@ import type {SanityImageSource} from '@sanity/image-url/lib/types/types'
 import {locales, localizedPath, type Locale} from '@/app/lib/i18n/config'
 import {productCategoryPath, productPath} from '@/app/lib/product/paths'
 import {localeAlternates} from '@/app/lib/seo/alternates'
-import {mapProductFeaturedProjectItemToProjectCardData} from '@/app/lib/project/mappers'
 import {sanityFetch} from '@/sanity/lib/live'
-import {getProductCategoryQuery, productCategorySlugs} from '@/sanity/lib/queries'
+import {
+  getProductCategoryQuery,
+  otherProductsCategoryQuery,
+  productCategorySlugs,
+} from '@/sanity/lib/queries'
 import {
   resolveMetaTitle,
   resolveOpenGraphImage,
   toMetaDescription,
   toPortableTextBlocks,
 } from '@/sanity/lib/utils'
-import FeaturedProjects from './FeaturedProjects.client'
-import LocalizedLink from '@/app/components/ui/LocalizedLink'
 import ContactFormSection from '@/app/components/forms/ContactFormSection'
-import Image from '@/app/components/ui/SanityImage.client'
 import {fetchFormConfigByKey} from '@/sanity/lib/data'
-import ProductHeroMedia from '@/app/components/product/ProductHeroMedia'
-import ProductHeroText from '@/app/components/product/ProductHeroText'
 import SectionTitle from '@/app/components/ui/SectionTitle'
+import {ProductMainMedia} from './ProductMainMedia'
+import ProductCard from './ProductCard'
+import ProductHeroText from './ProductMainText'
+import GridContainer from '@/app/components/ui/GridContainer'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string}>
@@ -50,14 +52,10 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
   })
 
   const seo = category?.seo
-  const featuredProjectFallbackImage = category?.featuredProjects?.find(
-    (item) => item?.mainImage?.asset?._ref,
-  )?.mainImage as SanityImageSource | undefined
 
   const ogImage =
     resolveOpenGraphImage(seo?.metaImage) ??
-    resolveOpenGraphImage(category?.mainImage as SanityImageSource | undefined) ??
-    resolveOpenGraphImage(featuredProjectFallbackImage)
+    resolveOpenGraphImage(category?.mainImage as SanityImageSource)
   const parentMetadata = await parent
   const parentOgImages = parentMetadata.openGraph?.images ?? []
 
@@ -78,18 +76,16 @@ export default async function ProductCategoryPage(props: Props) {
     params: {lang, slug},
   })
 
+  const {data: otherCategories} = await sanityFetch({
+    query: otherProductsCategoryQuery,
+    params: {lang, currentId: category?._id},
+  })
+
   if (!category?._id || !category.slug) {
     return notFound()
   }
 
   const formConfig = await fetchFormConfigByKey('contact-us', lang)
-
-  const featuredProjectItems =
-    category.featuredProjects
-      ?.filter((item): item is NonNullable<typeof item> & {slug: string} =>
-        Boolean(item?._id && item.slug),
-      )
-      .map((item) => mapProductFeaturedProjectItemToProjectCardData(item)) ?? []
 
   const products = (category.products ?? []).filter(
     (item): item is (typeof category.products)[number] & {title: string; slug: string} =>
@@ -101,80 +97,70 @@ export default async function ProductCategoryPage(props: Props) {
   const categoryHref = localizedPath(lang, productCategoryPath(category.slug))
 
   return (
-    <div className="mb-20 container mt-14">
-      <div className="space-y-10 ">
-        <ProductHeroText
-          title={categoryTitle}
-          tagline={category.tagline}
-          description={description ? toPortableTextBlocks(description) : null}
-        />
-      </div>
-      {products.length > 0 && (
-        <section className="relative lg:px-10 lg:mb-28 mt-20 space-y-10 flex flex-col">
-          <div className="grid grid-cols-3 gap-10">
-            {products.map((product) => (
-              <ProductCard key={product._id} category={category} product={product} />
-            ))}
+    <div className="container">
+      <GridContainer className="">
+        <div className="col-span-6 grid grid-rows-[auto_14svh] self-start sticky top-0 h-svh">
+          <div className="p-10 relative">
+            <ProductMainMedia
+              className="absolute inset-10"
+              mainImage={category.mainImage}
+              title={categoryTitle}
+            />
           </div>
-        </section>
-      )}
-
-      {featuredProjectItems.length > 0 ? (
-        <FeaturedProjects tagline={category.tagline ?? ''} items={featuredProjectItems} />
-      ) : null}
-
-      <ContactFormSection
-        className="mt-20 lg:px-10"
-        form={formConfig}
-        context={{title: categoryTitle || undefined, url: categoryHref}}
-        heading={<SectionTitle as="h2">Get in Touch</SectionTitle>}
-      />
+          <div className="flex-1 flex items-center justify-center p-10 border-t-4 border-black dark:border-white ">
+            <div className="flex flex-col items-center justify-center">
+              <div className="w-6 h-6 border-4 border-t-0 border-r-0 border-black dark:border-white -rotate-45"></div>
+              <div className="w-6 h-6 border-4 border-t-0 border-r-0 border-black dark:border-white -rotate-45"></div>
+            </div>
+          </div>
+        </div>
+        <div className="col-span-6 sticky">
+          <div className="p-10  border-b-4 border-black dark:border-white">
+            <ProductHeroText
+              title={categoryTitle}
+              tagline={category.tagline}
+              description={description ? toPortableTextBlocks(description) : null}
+            />
+          </div>
+          {products.length > 0 && (
+            <>
+              {products.map((product) => (
+                <ProductCard
+                  key={product._id}
+                  href={productPath(category.slug, product.slug)}
+                  title={product.title}
+                  excerpt={product.excerpt}
+                  image={product.mainImage}
+                />
+              ))}
+            </>
+          )}
+        </div>
+      </GridContainer>
+      <GridContainer variant="compact">
+        <div className="col-span-6">
+          {(otherCategories ?? [])
+            .filter((item): item is typeof item & {title: string; slug: string} =>
+              Boolean(item?._id && item.title && item.slug),
+            )
+            .map((otherCategory) => (
+              <ProductCard
+                className="last:border-b-0 first:pt-0"
+                key={otherCategory._id}
+                href={productCategoryPath(otherCategory.slug)}
+                title={otherCategory.title}
+                excerpt={otherCategory.tagline}
+                image={otherCategory.mainImage}
+              />
+            ))}
+        </div>
+        <ContactFormSection
+          className="p-10 col-span-6 self-start sticky top-0"
+          form={formConfig}
+          context={{title: categoryTitle || undefined, url: categoryHref}}
+          heading={<SectionTitle as="h2">Get An Instant Quote</SectionTitle>}
+        />
+      </GridContainer>
     </div>
-  )
-}
-
-const ProductCard = ({
-  product,
-  category,
-}: {
-  category: {slug: string}
-  product: {
-    title: string
-    slug: string
-    mainImage?: {
-      asset?: {_ref?: string | null} | null
-      alt?: string | null
-      hotspot?: {x?: number; y?: number} | null
-      crop?: {top?: number; bottom?: number; left?: number; right?: number} | null
-      lqip?: string | null
-    } | null
-  }
-}) => {
-  const image = product.mainImage
-
-  return (
-    <LocalizedLink
-      href={productPath(category.slug, product.slug)}
-      className="hover:underline flex flex-col gap-4"
-    >
-      <div className="aspect-square overflow-hidden rounded-sm">
-        {image?.asset?._ref ? (
-          <Image
-            className="h-full w-full object-cover"
-            id={image.asset._ref}
-            alt={image.alt || product.title || ''}
-            width={800}
-            height={800}
-            mode="cover"
-            hotspot={image.hotspot}
-            crop={image.crop}
-            preview={image.lqip ?? undefined}
-          />
-        ) : (
-          <div className="h-full w-full border-2 border-black dark:border-white" />
-        )}
-      </div>
-      <h2 className="text-2xl">{product.title}</h2>
-    </LocalizedLink>
   )
 }

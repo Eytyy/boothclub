@@ -3,24 +3,25 @@ import {notFound} from 'next/navigation'
 import type {SanityImageSource} from '@sanity/image-url/lib/types/types'
 
 import {locales, localizedPath, type Locale} from '@/app/lib/i18n/config'
-import {productCategoryPath, productPath} from '@/app/lib/product/paths'
+import {productPath} from '@/app/lib/product/paths'
 import {localeAlternates} from '@/app/lib/seo/alternates'
 import {mapProductFeaturedProjectItemToProjectCardData} from '@/app/lib/project/mappers'
 import {sanityFetch} from '@/sanity/lib/live'
 import {getProductQuery, otherProductsQuery, productSlugs} from '@/sanity/lib/queries'
 import {resolveMetaTitle, resolveOpenGraphImage, toPortableTextBlocks} from '@/sanity/lib/utils'
-import ContentBlocks from '@/app/components/page-builder/ContentBlocks'
-import LocalizedLink from '@/app/components/ui/LocalizedLink'
 import ContactFormSection from '@/app/components/forms/ContactFormSection'
 import {fetchFormConfigByKey} from '@/sanity/lib/data'
 import SectionTitle from '@/app/components/ui/SectionTitle'
-import {ProjectCardData} from '@/app/components/project/types'
-import {cn} from '@/app/lib/utils'
-import Image from '@/app/components/ui/SanityImage.client'
-import PageTitle from '@/app/components/ui/PageTitle'
 
-import PortableText from '@/app/components/ui/PortableText'
-import {HeroShuffle} from './MockPinnedProjects.client'
+import {HeroShuffle} from './Bits.client'
+import FeaturedProjects from './FeaturedProjects.client'
+import {ProductMainMedia} from '../ProductMainMedia'
+import GridContainer from '@/app/components/ui/GridContainer'
+import ProductHeroText from '../ProductMainText'
+import ProductCard from '../ProductCard'
+import SpecsBlock from '@/app/components/product/SpecsBlock'
+import CopyBlock from '@/app/components/product/CopyBlock'
+
 type Props = {
   params: Promise<{lang: Locale; slug: string; product: string}>
 }
@@ -107,8 +108,7 @@ export default async function ProductPage(props: Props) {
   )
 
   const productHref = localizedPath(lang, productPath(product.category.slug, product.slug))
-  const productTitle = product.title ?? ''
-  const {mainImage, heroVideo} = product
+  const {mainImage, heroVideo, description, title} = product
   const heroPlaybackId =
     heroVideo != null &&
     typeof heroVideo === 'object' &&
@@ -119,155 +119,79 @@ export default async function ProductPage(props: Props) {
       : null
 
   return (
-    <div className="mb-20 space-y-10">
-      <div className="space-y-10 ">
-        <ProductHero
-          mainImage={mainImage}
-          productTitle={productTitle}
-          product={product}
-          featuredProjects={featuredProjectItems}
-        />
-      </div>
-      <div className="">
-        <ContentBlocks blocks={product.pageBuilder ?? []} />
-      </div>
-      {featuredProjectItems.length > 0 ? <FeaturedProjects items={featuredProjectItems} /> : null}
-
-      <ContactFormSection
-        className="mt-20 lg:px-10"
-        form={formConfig}
-        context={{title: productTitle || undefined, url: productHref}}
-        heading={<SectionTitle as="h2">Get in Touch</SectionTitle>}
-      />
-
-      {otherProducts.length > 0 && (
-        <section className="relative lg:px-10 lg:mb-28 mt-20 space-y-10 flex flex-col">
-          <SectionTitle>Other Products</SectionTitle>
-          <div className=" grid grid-cols-3 gap-10">
-            {otherProducts.map((otherProduct) => (
-              <LocalizedLink
-                key={otherProduct._id}
-                href={productPath(product.category.slug, otherProduct.slug)}
-                className="hover:underline flex flex-col gap-4"
-              >
-                <div className="border aspect-square border-black"></div>
-                <h2 className="text-xl font-semibold leading-[1.1] lg:text-2xl 2xl:text-3xl">
-                  {otherProduct.title}
-                </h2>
-              </LocalizedLink>
-            ))}
+    <div className="container">
+      <GridContainer>
+        <div className="col-span-6 grid grid-rows-[auto_14svh] self-start sticky top-0 h-svh">
+          <div className="p-10 relative">
+            <ProductMainMedia
+              className="absolute inset-10"
+              mainImage={mainImage}
+              title={title ?? ''}
+              heroPlaybackId={heroPlaybackId}
+            />
           </div>
-        </section>
-      )}
-    </div>
-  )
-}
-
-function ProductHero({
-  mainImage,
-  productTitle,
-  product,
-  featuredProjects,
-}: {
-  mainImage: SanityImageSource
-  productTitle: string
-  product: Product
-  featuredProjects: ProjectCardData[]
-}) {
-  return (
-    <div className="grid grid-cols-[140px_repeat(8,1fr)_140px] gap-10 px-10 min-h-svh py-10">
-      <div className="aspect-square  col-start-2 col-span-4">
-        {mainImage?.asset?._ref ? (
-          <Image
-            className="h-full w-full  object-cover"
-            id={mainImage.asset._ref}
-            alt=""
-            aria-hidden="true"
-            width={1200}
-            height={1200}
-            mode="cover"
-            hotspot={mainImage.hotspot}
-            crop={mainImage.crop}
-            preview={mainImage.lqip ?? undefined}
-          />
-        ) : (
-          <div className="h-full w-full bg-black/5 dark:bg-white/5" />
-        )}
-      </div>
-      <div className="col-span-4 flex flex-col justify-between">
-        <HeroShuffle items={featuredProjects} />
-        <div className="space-y-4 self-end">
-          <div>
-            <LocalizedLink href={productCategoryPath(product.category.slug)}>
-              {product.category.title}
-            </LocalizedLink>
-            <header>
-              <PageTitle variant={'large'} className="text-left">
-                {productTitle}
-              </PageTitle>
-            </header>
-          </div>
-          <PortableText
-            className="mx-auto 2xl:max-w-[75ch]  text-base md:text-xl leading-relaxed"
-            value={toPortableTextBlocks(product.description)}
-          />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function FeaturedProjects({items}: {items: ProjectCardData[]}) {
-  return (
-    <section className={cn('flex flex-col gap-6 md:gap-10')}>
-      <div className="overflow-x-clip">
-        <div className="flex gap-10 px-5 lg:px-10">
-          {items.map((item, index) => (
-            <div key={item._id}>
-              <ProjectCard item={item} />
+          <div className="flex-1 flex items-center justify-center p-10 border-t-4 border-black dark:border-white ">
+            <div className="flex flex-col items-center justify-center">
+              <div className="w-6 h-6 border-4 border-t-0 border-r-0 border-black dark:border-white -rotate-45"></div>
+              <div className="w-6 h-6 border-4 border-t-0 border-r-0 border-black dark:border-white -rotate-45"></div>
             </div>
-          ))}
+          </div>
         </div>
-      </div>
-      <div className="px-10 border mx-auto py-2 font-bold uppercase text-lg">All Projects</div>
-    </section>
-  )
-}
-
-function ProjectCard({item}: {item: ProjectCardData}) {
-  const imageRef = item.mainImage?.asset?._ref
-  const mainProduct = item.products?.[0]
-  return (
-    <LocalizedLink href={`/projects/${item.slug}`} className="group block">
-      <div className="overflow-hidden rounded-sm">
-        {imageRef ? (
-          <Image
-            id={imageRef}
-            alt={item.mainImage?.alt || item.title || ''}
-            className="aspect-square w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-            width={600}
-            height={600}
-            mode="cover"
-            hotspot={item.mainImage?.hotspot ?? undefined}
-            crop={item.mainImage?.crop ?? undefined}
-            preview={item.mainImage?.lqip ?? undefined}
+        <div className="col-span-6 sticky">
+          <div className="p-10 border-b-4 border-black dark:border-white">
+            <HeroShuffle items={featuredProjectItems} />
+          </div>
+          <div className="p-10 border-b-4 border-black dark:border-white">
+            <ProductHeroText
+              title={title ?? ''}
+              description={description ? toPortableTextBlocks(description) : null}
+            />
+          </div>
+          {product.specs?.items?.length ? (
+            <SpecsBlock
+              items={product.specs.items.filter((item): item is {_key: string; text: string} =>
+                Boolean(item?._key && item.text),
+              )}
+            />
+          ) : null}
+        </div>
+      </GridContainer>
+      <GridContainer variant="compact" className="max-lg:grid-cols-1 max-lg:after:hidden">
+        <div className="col-span-6 min-w-0 max-lg:contents">
+          {product.copy ? (
+            <CopyBlock
+              showHeadline={product.copy.showHeadline ?? undefined}
+              showText={product.copy.showText ?? undefined}
+              headline={product.copy.headline ?? undefined}
+              text={product.copy.text ?? undefined}
+            />
+          ) : null}
+          {featuredProjectItems.length > 0 ? (
+            <FeaturedProjects className="max-lg:order-3" items={featuredProjectItems} />
+          ) : null}
+          {otherProducts.length > 0 && (
+            <>
+              {otherProducts.map((otherProduct) => (
+                <ProductCard
+                  className="last:border-b-0 first:pt-0"
+                  key={otherProduct._id}
+                  href={productPath(product.category.slug, otherProduct.slug)}
+                  title={otherProduct.title}
+                  image={otherProduct.mainImage}
+                />
+              ))}
+            </>
+          )}
+        </div>
+        <div className="col-span-6 max-lg:contents">
+          <ContactFormSection
+            className="p-10 lg:sticky lg:top-0 max-lg:order-4"
+            form={formConfig}
+            context={{title: title || undefined, url: productHref}}
+            heading={<SectionTitle as="h2">Get in Touch</SectionTitle>}
           />
-        ) : (
-          <div className="aspect-square w-full bg-black/5 dark:bg-white/5" />
-        )}
-      </div>
-      <div className="flex flex-col items-start gap-2 py-4">
-        {mainProduct?.title ? (
-          <span className="border text-white dark:text-black bg-black dark:bg-white px-2 py-1 text-xs dark:border-white">
-            {mainProduct.title}
-          </span>
-        ) : null}
-        {item.title ? (
-          <h3 className="text-xl font-semibold leading-[1.1] lg:text-2xl 2xl:text-3xl">
-            {item.title}
-          </h3>
-        ) : null}
-      </div>
-    </LocalizedLink>
+        </div>
+      </GridContainer>
+    </div>
   )
 }

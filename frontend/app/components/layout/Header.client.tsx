@@ -49,8 +49,16 @@ export default function HeaderClient({items, ctaLabel}: HeaderClientProps) {
         <MenuToggle isOpen={menuOpen} onClick={() => setMenuOpen((prev) => !prev)} />
         <div className="flex flex-col items-center gap-5">
           <LanguageToggle />
-          <DarkModeToggle />
         </div>
+      </div>
+      <div
+        className={cn(
+          'fixed z-50 bottom-0 py-5 lg:py-10 px-5 lg:px-10 left-0 flex items-center gap-2',
+          'flex flex-col items-center gap-6 transition-colors justify-between',
+          onBrandFooter && 'text-black',
+        )}
+      >
+        <DarkModeToggle />
       </div>
       <AnimatePresence>
         {menuOpen && <MenuOverlay ctaLabel={ctaLabel} items={items} onNavigate={closeMenu} />}
