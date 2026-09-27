@@ -1,49 +1,49 @@
-import Image from '@/app/components/ui/SanityImage.client'
-import LocalizedLink from '@/app/components/ui/LocalizedLink'
+import {GridBlock} from '../ui/GridSystem'
+import LocalizedLink from '../ui/LocalizedLink'
+import Image from '../ui/SanityImage.client'
+import {ProjectCardData} from './types'
 
-import type {ProjectCardData} from './types'
-import {cn} from '@/app/lib/utils'
-
-type ProjectCardProps = {
+export const ProjectCard = ({
+  item,
+  showBottomBorder = true,
+  className,
+}: {
   item: ProjectCardData
-  index?: number
+  showBottomBorder?: boolean
   className?: string
-}
-
-export default function ProjectCard({item, className}: ProjectCardProps) {
-  const imageRef = item.mainImage?.asset?._ref
-  const mainProduct = item.products?.[0]
+}) => {
   return (
-    <LocalizedLink href={`/projects/${item.slug}`} className={cn('group block', className)}>
-      <div className="overflow-hidden rounded-sm">
-        {imageRef ? (
-          <Image
-            id={imageRef}
-            alt={item.mainImage?.alt || item.title || ''}
-            className="aspect-square w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-            width={600}
-            height={600}
-            mode="cover"
-            hotspot={item.mainImage?.hotspot ?? undefined}
-            crop={item.mainImage?.crop ?? undefined}
-            preview={item.mainImage?.lqip ?? undefined}
-          />
-        ) : (
-          <div className="aspect-square w-full bg-black/5 dark:bg-white/5" />
-        )}
-      </div>
-      <div className="flex flex-col items-start gap-2 py-4">
-        {mainProduct?.title ? (
-          <span className="border text-white dark:text-black bg-black dark:bg-white px-2 py-1 text-xs dark:border-white">
-            {mainProduct.title}
+    <GridBlock
+      className="pt-8"
+      as={LocalizedLink}
+      href={`/projects/${item.slug}`}
+      borders={showBottomBorder ? 'bottom' : 'none'}
+    >
+      <div className="mb-5">
+        <h3 className="text-3xl font-semibold leading-tight">{item.title}</h3>
+        {item.product?.title ? (
+          <span className="shrink-0 text-base text-black/60 dark:text-white/60">
+            {item.product.title}
           </span>
         ) : null}
-        {item.title ? (
-          <h3 className="text-xl font-semibold leading-[1.1] lg:text-2xl 2xl:text-3xl">
-            {item.title}
-          </h3>
-        ) : null}
       </div>
-    </LocalizedLink>
+      <div className="aspect-square w-2/3 mx-auto overflow-hidden">
+        {item.mainImage?.asset?._ref ? (
+          <Image
+            className="h-full w-full  object-cover"
+            id={item.mainImage.asset._ref}
+            alt={item.mainImage.alt || item.title}
+            width={800}
+            height={800}
+            mode="cover"
+            hotspot={item.mainImage.hotspot}
+            crop={item.mainImage.crop}
+            preview={item.mainImage.lqip ?? undefined}
+          />
+        ) : (
+          <div className="h-full w-full border-2 border-black dark:border-white" />
+        )}
+      </div>
+    </GridBlock>
   )
 }

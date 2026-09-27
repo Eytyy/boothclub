@@ -1,33 +1,35 @@
-import ProjectHeroVideo from '@/app/components/project/ProjectHeroVideo.client'
+import HeroVideo from '@/app/components/page/HeroVideo.client'
 import Image from '@/app/components/ui/SanityImage.client'
 import {cn} from '@/app/lib/utils'
-import {PortableTextBlock} from 'next-sanity'
+import type {PageImage} from './types'
 
-type ProductMainMediaProps = {
+type PageMainMediaProps = {
   title: string
-  mainImage?: any
+  mainImage?: PageImage
   heroPlaybackId?: string | null
   className?: string
+  aspect?: 'default' | 'landscape'
 }
 
-export function ProductMainMedia({
+export function PageMainMedia({
   title,
   mainImage,
   heroPlaybackId,
   className,
-}: ProductMainMediaProps) {
+  aspect = 'default',
+}: PageMainMediaProps) {
   return (
     <div className={cn(className)}>
       {heroPlaybackId ? (
-        <ProjectHeroVideo playbackId={heroPlaybackId} title={title} />
+        <HeroVideo playbackId={heroPlaybackId} title={title} />
       ) : mainImage?.asset?._ref ? (
         <Image
           className="h-full w-full  object-cover"
           id={mainImage.asset._ref}
           alt=""
           aria-hidden="true"
-          width={1200}
-          height={1600}
+          width={1400}
+          height={aspect === 'landscape' ? 800 : 1560}
           mode="cover"
           hotspot={mainImage.hotspot}
           crop={mainImage.crop}

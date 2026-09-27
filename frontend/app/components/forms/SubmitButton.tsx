@@ -24,7 +24,7 @@ export default function SubmitButton({
       variant={variant}
       className={className}
     >
-      {isSubmitting ? submittingLabel : label}
+      {isSubmitting ? submittingLabel : <span className="">{label} &rarr;</span>}
     </Button>
   )
 }

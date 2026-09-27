@@ -190,6 +190,55 @@
     }
   },
   {
+    "name": "block.media",
+    "type": "type",
+    "value": {
+      "type": "object",
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "block.media"
+          }
+        },
+        "type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "image"
+              },
+              {
+                "type": "string",
+                "value": "video"
+              }
+            ]
+          },
+          "optional": false
+        },
+        "image": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "block.image"
+          },
+          "optional": true
+        },
+        "video": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "block.video"
+          },
+          "optional": true
+        }
+      }
+    }
+  },
+  {
     "name": "block.contentSection",
     "type": "type",
     "value": {
@@ -239,55 +288,6 @@
           "value": {
             "type": "inline",
             "name": "mux.video"
-          },
-          "optional": true
-        }
-      }
-    }
-  },
-  {
-    "name": "block.media",
-    "type": "type",
-    "value": {
-      "type": "object",
-      "attributes": {
-        "_type": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string",
-            "value": "block.media"
-          }
-        },
-        "type": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "union",
-            "of": [
-              {
-                "type": "string",
-                "value": "image"
-              },
-              {
-                "type": "string",
-                "value": "video"
-              }
-            ]
-          },
-          "optional": false
-        },
-        "image": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "inline",
-            "name": "block.image"
-          },
-          "optional": true
-        },
-        "video": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "inline",
-            "name": "block.video"
           },
           "optional": true
         }
@@ -2582,23 +2582,7 @@
         },
         "optional": false
       },
-      "mainImage": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "inline",
-          "name": "block.image"
-        },
-        "optional": true
-      },
-      "heroVideo": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "inline",
-          "name": "mux.video"
-        },
-        "optional": true
-      },
-      "pageBuilder": {
+      "blocks": {
         "type": "objectAttribute",
         "value": {
           "type": "array",
@@ -2617,7 +2601,7 @@
                 },
                 "rest": {
                   "type": "inline",
-                  "name": "block.contentSection"
+                  "name": "block.copy"
                 }
               },
               {
@@ -2634,28 +2618,13 @@
                   "type": "inline",
                   "name": "block.media"
                 }
-              },
-              {
-                "type": "object",
-                "attributes": {
-                  "_key": {
-                    "type": "objectAttribute",
-                    "value": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "rest": {
-                  "type": "inline",
-                  "name": "block.splitMedia"
-                }
               }
             ]
           }
         },
         "optional": true
       },
-      "product": {
+      "output": {
         "type": "objectAttribute",
         "value": {
           "type": "array",
@@ -2671,9 +2640,55 @@
             },
             "rest": {
               "type": "inline",
-              "name": "product.reference"
+              "name": "block.image"
             }
           }
+        },
+        "optional": true
+      },
+      "mainImage": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "block.image"
+        },
+        "optional": true
+      },
+      "heroVideo": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "mux.video"
+        },
+        "optional": true
+      },
+      "gallery": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "block.image"
+            }
+          }
+        },
+        "optional": true
+      },
+      "product": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "product.reference"
         },
         "optional": true
       },

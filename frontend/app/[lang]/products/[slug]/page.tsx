@@ -20,11 +20,12 @@ import {
 import ContactFormSection from '@/app/components/forms/ContactFormSection'
 import {fetchFormConfigByKey} from '@/sanity/lib/data'
 import SectionTitle from '@/app/components/ui/SectionTitle'
-import {ProductMainMedia} from './ProductMainMedia'
-import ProductCard from './ProductCard'
-import ProductHeroText from './ProductMainText'
-import GridContainer from '@/app/components/ui/GridContainer'
-
+import {PageMainMedia} from '@/app/components/page/PageMainMedia'
+import PageHeroText from '@/app/components/page/PageHeroText'
+import ScrollCue from '@/app/components/page/ScrollCue.client'
+import {GridContainer, GridBlock, GridColumn} from '@/app/components/ui/GridSystem'
+import ProductCard from '@/app/components/product/ProductCard'
+import OtherProducts from '@/app/components/product/OtherProducts.client'
 type Props = {
   params: Promise<{lang: Locale; slug: string}>
 }
@@ -95,72 +96,79 @@ export default async function ProductCategoryPage(props: Props) {
   const {title, description} = category
   const categoryTitle = title ?? ''
   const categoryHref = localizedPath(lang, productCategoryPath(category.slug))
+  const otherCategoryItems = (otherCategories ?? [])
+    .filter((item): item is typeof item & {title: string; slug: string} =>
+      Boolean(item?._id && item.title && item.slug),
+    )
+    .map((otherCategory) => ({
+      _id: otherCategory._id,
+      title: otherCategory.title,
+      href: productCategoryPath(otherCategory.slug),
+      subtitle: otherCategory.tagline,
+      image: otherCategory.mainImage,
+    }))
 
   return (
-    <div className="container">
-      <GridContainer className="">
-        <div className="col-span-6 grid grid-rows-[auto_14svh] self-start sticky top-0 h-svh">
-          <div className="p-10 relative">
-            <ProductMainMedia
-              className="absolute inset-10"
-              mainImage={category.mainImage}
-              title={categoryTitle}
-            />
-          </div>
-          <div className="flex-1 flex items-center justify-center p-10 border-t-4 border-black dark:border-white ">
-            <div className="flex flex-col items-center justify-center">
-              <div className="w-6 h-6 border-4 border-t-0 border-r-0 border-black dark:border-white -rotate-45"></div>
-              <div className="w-6 h-6 border-4 border-t-0 border-r-0 border-black dark:border-white -rotate-45"></div>
-            </div>
-          </div>
-        </div>
-        <div className="col-span-6 sticky">
-          <div className="p-10  border-b-4 border-black dark:border-white">
-            <ProductHeroText
-              title={categoryTitle}
-              tagline={category.tagline}
-              description={description ? toPortableTextBlocks(description) : null}
-            />
-          </div>
-          {products.length > 0 && (
-            <>
-              {products.map((product) => (
-                <ProductCard
-                  key={product._id}
-                  href={productPath(category.slug, product.slug)}
-                  title={product.title}
-                  excerpt={product.excerpt}
-                  image={product.mainImage}
-                />
-              ))}
-            </>
-          )}
-        </div>
-      </GridContainer>
-      <GridContainer variant="compact">
-        <div className="col-span-6">
-          {(otherCategories ?? [])
-            .filter((item): item is typeof item & {title: string; slug: string} =>
-              Boolean(item?._id && item.title && item.slug),
-            )
-            .map((otherCategory) => (
-              <ProductCard
-                className="last:border-b-0 first:pt-0"
-                key={otherCategory._id}
-                href={productCategoryPath(otherCategory.slug)}
-                title={otherCategory.title}
-                excerpt={otherCategory.tagline}
-                image={otherCategory.mainImage}
+    <div className="container grid">
+      <ScrollCue />
+      <div className="col-start-1 row-start-1">
+        <GridContainer className="">
+          <GridColumn className="grid grid-rows-[auto_14svh] self-start sticky top-0 h-svh">
+            <GridBlock className="relative">
+              <PageMainMedia
+                className="absolute inset-10"
+                mainImage={category.mainImage}
+                title={categoryTitle}
               />
-            ))}
-        </div>
-        <ContactFormSection
-          className="p-10 col-span-6 self-start sticky top-0"
-          form={formConfig}
-          context={{title: categoryTitle || undefined, url: categoryHref}}
-          heading={<SectionTitle as="h2">Get An Instant Quote</SectionTitle>}
-        />
-      </GridContainer>
+            </GridBlock>
+            <GridBlock className="flex-1" borders="top">
+              {null}
+            </GridBlock>
+          </GridColumn>
+          <GridColumn className="sticky">
+            <GridBlock borders="bottom">
+              <PageHeroText
+                title={categoryTitle}
+                tagline={category.tagline}
+                description={description ? toPortableTextBlocks(description) : null}
+              />
+            </GridBlock>
+            <div>
+              <div className="tracking-normal block w-fit items-center gap-2 uppercase text-sm font-semibold sm:text-base md:text-lg lg:text-xl xl:text-2xl border-r-site border-b-site px-10 py-5">
+                Products
+              </div>
+              {products.length > 0 && (
+                <>
+                  {products.map((product) => (
+                    <ProductCard
+                      key={product._id}
+                      href={productPath(category.slug, product.slug)}
+                      title={product.title}
+                      excerpt={product.excerpt}
+                      image={product.mainImage}
+                    />
+                  ))}
+                </>
+              )}
+            </div>
+          </GridColumn>
+        </GridContainer>
+        <GridContainer variant="compact" className="max-lg:grid-cols-1 max-lg:after:hidden ">
+          <GridColumn span={6} className="min-w-0 max-lg:contents -mt-[14svh]">
+            <ContactFormSection
+              className=" max-lg:order-4 h-full flex-col flex pb-[14svh]"
+              form={formConfig}
+              context={{title: title || undefined, url: categoryHref}}
+              title="Get an Instant Quote"
+            />
+          </GridColumn>
+          <GridColumn span={6} className="max-lg:contents">
+            {otherCategoryItems.length > 0 ? (
+              <OtherProducts heading="Other Categories" items={otherCategoryItems} />
+            ) : null}
+          </GridColumn>
+        </GridContainer>
+      </div>
     </div>
   )
 }

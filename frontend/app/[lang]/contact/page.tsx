@@ -48,6 +48,7 @@ export default async function ContactPage({params}: Props) {
       {form && form.key === 'contact-us' ? (
         <section className="py-12 lg:py-16">
           <ContactFormSection
+            title="Get an Instant Quote"
             form={form}
             context={{
               title: page?.title ?? undefined,

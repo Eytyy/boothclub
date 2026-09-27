@@ -68,7 +68,7 @@ export const productCategory = defineType({
 
               return {
                 filter:
-                  '(!defined($categoryId) || $categoryId in product[]->category._ref) && !(_id in $selectedRefs)',
+                  '(!defined($categoryId) || product->category._ref == $categoryId) && !(_id in $selectedRefs)',
                 params: {categoryId, selectedRefs},
               }
             },

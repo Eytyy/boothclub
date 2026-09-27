@@ -1,0 +1,33 @@
+---
+description: Do not run automatic browser checks after code changes; the user verifies the browser.
+alwaysApply: true
+---
+
+# No Automatic Browser Checks
+
+The user verifies what is on screen. Do not open or drive the browser to check UI after applying code changes.
+
+## Rule
+
+- Do not launch browser tools, screenshots, or click-through flows to verify a change.
+- Do not start the dev server solely to inspect a page in the browser.
+- Finish the code change, then stop. Tell the user what changed and which routes or states are worth checking.
+- Run browser verification only when the user explicitly asks for it in the current request.
+
+## Still allowed
+
+- Typecheck, lint, unit tests, and other non-browser checks that do not open a page.
+- Reading code, logs, and terminal output.
+
+## Examples
+
+**Correct:**
+
+- Apply the layout change, then say: "Check the projects page on desktop and mobile."
+- Run `npm run typecheck` when that is part of the task.
+
+**Incorrect:**
+
+- Opening the app and clicking through the changed flow before finishing.
+- Taking a screenshot to confirm spacing, copy, or interaction.
+- Starting a browser session "to be sure" when the user did not ask.

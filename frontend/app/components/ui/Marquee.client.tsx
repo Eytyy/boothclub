@@ -12,6 +12,7 @@ export const Marquee = ({
   accessibleText, // single semantic copy for AT/SEO (e.g., your H1 text)
   pauseOnHover = true,
   className,
+  runClassName,
 }: {
   children: React.ReactNode
   index?: number
@@ -20,6 +21,7 @@ export const Marquee = ({
   accessibleText?: string
   pauseOnHover?: boolean
   className?: string
+  runClassName?: string
 }) => {
   const [ready, setReady] = React.useState(false)
   const [wrapperWidth, setWrapperWidth] = React.useState(0)
@@ -108,7 +110,7 @@ export const Marquee = ({
         inert // prevents focus on any interactive descendants
       >
         {Array.from({length: cloneCount}).map((_, i) => (
-          <div key={`run-${i}`} className="marquee-run mx-5 inline-block shrink-0 ">
+          <div key={`run-${i}`} className={cn('marquee-run mx-5 inline-block shrink-0', runClassName)}>
             {children}
           </div>
         ))}

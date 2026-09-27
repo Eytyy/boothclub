@@ -7,12 +7,16 @@ type Props = {
   className?: string
 }
 
+export const sectionTitleClassName =
+  'tracking-normal uppercase text-sm font-semibold sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+
 export default function SectionTitle({children, as = 'h2', className}: Props) {
   const Tag = as || 'h2'
   return (
     <Tag
       className={cn(
-        'text-2xl lg:text-4xl leading-[1.2] tracking-tight 2xl:text-5xl font-bold mb-5 lg:mb-10',
+        sectionTitleClassName,
+        'block w-fit items-center gap-2 border-r-site border-b-site px-10 py-5',
         className,
       )}
     >

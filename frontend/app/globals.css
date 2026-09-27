@@ -56,7 +56,7 @@
 }
 
 @utility container {
-  @apply px-5 lg:px-[180px];
+  @apply px-5 lg:pl-[180px] pr-[72px];
   margin: 0 auto;
   width: 100%;
   max-width: 1920px;
@@ -68,11 +68,21 @@
   --font-sans: var(--font-poppins);
   --font-mono: var(--font-ibm-plex-mono);
   --shadow-layer: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
-  --color-black: #231f20;
+  --color-black: #1c1919;
   --color-white: #fff;
   --default-transition-duration: 250ms;
   --header-height: 88px;
   --max-width: 1728px;
+  /* Structural rules (`border-*-site`) and the grid center line. */
+  --border-width-site: 2px;
+}
+
+/* Warm off-white so dark-mode type and rules sit softer on #141112. */
+@layer theme {
+  .dark {
+    --color-white: #fff9f1;
+    --color-black: #1c1919;
+  }
 }
 
 :root {

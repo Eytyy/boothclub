@@ -21,7 +21,8 @@ type MappableProjectItem = {
   title: string | null
   slug: string
   mainImage?: unknown
-  products?: Array<{
+  gallery?: unknown
+  product?: {
     _id: string
     title: string | null
     slug: string
@@ -30,7 +31,7 @@ type MappableProjectItem = {
       title: string | null
       slug: string
     } | null
-  }> | null
+  } | null
 }
 
 type MappableProduct = {
@@ -51,23 +52,34 @@ function toProjectImage(image: unknown): ProjectCardImage {
   return image as ProjectCardImage
 }
 
-function mapProductsField(value: unknown): ProjectCardRelatedEntity[] | null {
-  if (!value || !Array.isArray(value)) return null
-  return value.map((entity) => {
-    const product = entity as MappableProduct
-    return {
-      _id: product._id,
-      title: product.title,
-      slug: product.slug,
-      category: product.category
-        ? {
-            _id: product.category._id,
-            title: product.category.title,
-            slug: product.category.slug,
-          }
-        : null,
-    }
-  })
+function toProjectGallery(value: unknown): NonNullable<ProjectCardImage>[] | undefined {
+  if (!Array.isArray(value)) return undefined
+  const images = value
+    .map((image) => toProjectImage(image))
+    .filter((image): image is NonNullable<ProjectCardImage> => Boolean(image?.asset?._ref))
+  return images.length > 0 ? images : undefined
+}
+
+function readGallery(item: object): unknown {
+  return 'gallery' in item ? item.gallery : undefined
+}
+
+function mapProductField(value: unknown): ProjectCardRelatedEntity | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null
+  const product = value as MappableProduct
+  if (!product._id) return null
+  return {
+    _id: product._id,
+    title: product.title,
+    slug: product.slug,
+    category: product.category
+      ? {
+          _id: product.category._id,
+          title: product.category.title,
+          slug: product.category.slug,
+        }
+      : null,
+  }
 }
 
 function toProjectCardData(item: {
@@ -75,14 +87,16 @@ function toProjectCardData(item: {
   title: string | null
   slug: string
   mainImage?: unknown
-  products?: unknown
+  gallery?: unknown
+  product?: unknown
 }): ProjectCardData {
   return {
     _id: item._id,
     title: item.title ?? '',
     slug: item.slug,
     mainImage: toProjectImage(item.mainImage),
-    products: mapProductsField(item.products),
+    gallery: toProjectGallery(item.gallery),
+    product: mapProductField(item.product),
   }
 }
 
@@ -109,16 +123,17 @@ export function applyFeaturedOrder(
 export function mapAllProjectItemToProjectCardData(
   item: AllProjectItem | MappableProjectItem,
 ): ProjectCardData {
-  return toProjectCardData(item)
+  return toProjectCardData({
+    ...item,
+    gallery: readGallery(item),
+  })
 }
 
 export function mapProductFeaturedProjectItemToProjectCardData(
   item: ProductFeaturedProjectItem,
 ): ProjectCardData {
   return toProjectCardData({
-    _id: item._id,
-    title: item.title,
-    slug: item.slug,
-    mainImage: item.mainImage,
+    ...item,
+    gallery: readGallery(item),
   })
 }

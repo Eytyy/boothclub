@@ -8,7 +8,6 @@ import MenuToggle from '../ui/MenuToggle.client'
 import HeaderLogo from '../ui/HeaderLogo.client'
 import MenuOverlay from './MenuOverlay.client'
 import {useFooterOverlap} from '@/app/hooks/useFooterOverlap'
-import {useHeroLogoPast} from '@/app/hooks/useHeroLogoPast'
 import {cn} from '@/app/lib/utils'
 import type {SiteMenuItem} from '@/sanity/lib/types'
 
@@ -20,7 +19,6 @@ interface HeaderClientProps {
 export default function HeaderClient({items, ctaLabel}: HeaderClientProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const onBrandFooter = useFooterOverlap()
-  const showBackdrop = useHeroLogoPast() && !onBrandFooter
 
   const closeMenu = useCallback(() => setMenuOpen(false), [])
 

@@ -25,19 +25,17 @@ export default function NavMenuItem({item, pathname, onNavigate, className}: Nav
   const isActive = href === pathname || (href !== homeHref && pathname.startsWith(`${href}/`))
 
   return (
-    <li>
-      <ResolvedLink
-        link={link}
-        onClick={onNavigate}
-        aria-current={isActive ? 'page' : undefined}
-        className={cn(
-          'hover:underline text-2xl font-semibold leading-[1.1]',
-          isActive && 'underline underline-offset-4',
-          className,
-        )}
-      >
-        {item.title}
-      </ResolvedLink>
-    </li>
+    <ResolvedLink
+      link={link}
+      onClick={onNavigate}
+      aria-current={isActive ? 'page' : undefined}
+      className={cn(
+        'hover:underline text-2xl leading-[1.1] lg:text-6xl font-bold block h-full',
+        isActive && 'underline underline-offset-4',
+        className,
+      )}
+    >
+      {item.title}
+    </ResolvedLink>
   )
 }

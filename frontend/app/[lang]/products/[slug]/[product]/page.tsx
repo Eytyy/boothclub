@@ -11,16 +11,14 @@ import {getProductQuery, otherProductsQuery, productSlugs} from '@/sanity/lib/qu
 import {resolveMetaTitle, resolveOpenGraphImage, toPortableTextBlocks} from '@/sanity/lib/utils'
 import ContactFormSection from '@/app/components/forms/ContactFormSection'
 import {fetchFormConfigByKey} from '@/sanity/lib/data'
-import SectionTitle from '@/app/components/ui/SectionTitle'
 
-import {HeroShuffle} from './Bits.client'
-import FeaturedProjects from './FeaturedProjects.client'
-import {ProductMainMedia} from '../ProductMainMedia'
-import GridContainer from '@/app/components/ui/GridContainer'
-import ProductHeroText from '../ProductMainText'
-import ProductCard from '../ProductCard'
+import {PageMainMedia} from '@/app/components/page/PageMainMedia'
+import PageHeroText from '@/app/components/page/PageHeroText'
+import FeaturedProjects from '@/app/components/project/FeaturedProjects.client'
+import ScrollCue from '@/app/components/page/ScrollCue.client'
+import {GridContainer, GridBlock, GridColumn} from '@/app/components/ui/GridSystem'
+import OtherProducts from '@/app/components/product/OtherProducts.client'
 import SpecsBlock from '@/app/components/product/SpecsBlock'
-import CopyBlock from '@/app/components/product/CopyBlock'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string; product: string}>
@@ -95,20 +93,13 @@ export default async function ProductPage(props: Props) {
     fetchFormConfigByKey('contact-us', lang),
   ])
 
-  const featuredProjectItems =
-    product.featuredProjects
-      ?.filter((item): item is NonNullable<typeof item> & {slug: string} =>
-        Boolean(item?._id && item.slug),
-      )
-      .map((item) => mapProductFeaturedProjectItemToProjectCardData(item)) ?? []
-
   const otherProducts = (otherProductsRaw ?? []).filter(
     (item): item is NonNullable<typeof item> & {title: string; slug: string} =>
       Boolean(item?._id && item.title && item.slug),
   )
 
   const productHref = localizedPath(lang, productPath(product.category.slug, product.slug))
-  const {mainImage, heroVideo, description, title} = product
+  const {mainImage, heroVideo, description, title, featuredProjects} = product
   const heroPlaybackId =
     heroVideo != null &&
     typeof heroVideo === 'object' &&
@@ -118,80 +109,78 @@ export default async function ProductPage(props: Props) {
       ? heroVideo.playbackId
       : null
 
+  const featuredProjectItems =
+    featuredProjects
+      ?.filter((item): item is NonNullable<typeof item> & {slug: string} =>
+        Boolean(item?._id && item.slug),
+      )
+      .map((item) => mapProductFeaturedProjectItemToProjectCardData(item)) ?? []
+
   return (
-    <div className="container">
-      <GridContainer>
-        <div className="col-span-6 grid grid-rows-[auto_14svh] self-start sticky top-0 h-svh">
-          <div className="p-10 relative">
-            <ProductMainMedia
-              className="absolute inset-10"
-              mainImage={mainImage}
-              title={title ?? ''}
-              heroPlaybackId={heroPlaybackId}
+    <div className="container grid">
+      <ScrollCue />
+      <div className="col-start-1 row-start-1">
+        <GridContainer>
+          <GridColumn
+            span={6}
+            className="grid grid-rows-[auto_14svh] self-start sticky top-0 h-svh"
+          >
+            <GridBlock borders="none" className="p-10 relative">
+              <PageMainMedia
+                className="absolute inset-10"
+                mainImage={mainImage}
+                title={title ?? ''}
+                heroPlaybackId={heroPlaybackId}
+              />
+            </GridBlock>
+            <GridBlock borders="top" className="w-full">
+              {null}
+            </GridBlock>
+          </GridColumn>
+          <GridColumn span={6} className="sticky">
+            <GridBlock borders="bottom">
+              <PageHeroText
+                title={title ?? ''}
+                description={description ? toPortableTextBlocks(description) : null}
+              />
+            </GridBlock>
+            {featuredProjectItems.length > 0 ? (
+              <FeaturedProjects items={featuredProjectItems} />
+            ) : null}
+            {product.specs?.items?.length ? (
+              <SpecsBlock
+                items={product.specs.items.filter((item): item is {_key: string; text: string} =>
+                  Boolean(item?._key && item.text),
+                )}
+              />
+            ) : null}
+          </GridColumn>
+        </GridContainer>
+        <GridContainer variant="compact" className="max-lg:grid-cols-1 max-lg:after:hidden ">
+          <GridColumn span={6} className="min-w-0 max-lg:contents -mt-[14svh]">
+            <ContactFormSection
+              className=" max-lg:order-4 h-full flex-col flex pb-[14svh]"
+              form={formConfig}
+              context={{title: title || undefined, url: productHref}}
+              title="Get an Instant Quote"
             />
-          </div>
-          <div className="flex-1 flex items-center justify-center p-10 border-t-4 border-black dark:border-white ">
-            <div className="flex flex-col items-center justify-center">
-              <div className="w-6 h-6 border-4 border-t-0 border-r-0 border-black dark:border-white -rotate-45"></div>
-              <div className="w-6 h-6 border-4 border-t-0 border-r-0 border-black dark:border-white -rotate-45"></div>
-            </div>
-          </div>
-        </div>
-        <div className="col-span-6 sticky">
-          <div className="p-10 border-b-4 border-black dark:border-white">
-            <HeroShuffle items={featuredProjectItems} />
-          </div>
-          <div className="p-10 border-b-4 border-black dark:border-white">
-            <ProductHeroText
-              title={title ?? ''}
-              description={description ? toPortableTextBlocks(description) : null}
-            />
-          </div>
-          {product.specs?.items?.length ? (
-            <SpecsBlock
-              items={product.specs.items.filter((item): item is {_key: string; text: string} =>
-                Boolean(item?._key && item.text),
-              )}
-            />
-          ) : null}
-        </div>
-      </GridContainer>
-      <GridContainer variant="compact" className="max-lg:grid-cols-1 max-lg:after:hidden">
-        <div className="col-span-6 min-w-0 max-lg:contents">
-          {product.copy ? (
-            <CopyBlock
-              showHeadline={product.copy.showHeadline ?? undefined}
-              showText={product.copy.showText ?? undefined}
-              headline={product.copy.headline ?? undefined}
-              text={product.copy.text ?? undefined}
-            />
-          ) : null}
-          {featuredProjectItems.length > 0 ? (
-            <FeaturedProjects className="max-lg:order-3" items={featuredProjectItems} />
-          ) : null}
-          {otherProducts.length > 0 && (
-            <>
-              {otherProducts.map((otherProduct) => (
-                <ProductCard
-                  className="last:border-b-0 first:pt-0"
-                  key={otherProduct._id}
-                  href={productPath(product.category.slug, otherProduct.slug)}
-                  title={otherProduct.title}
-                  image={otherProduct.mainImage}
-                />
-              ))}
-            </>
-          )}
-        </div>
-        <div className="col-span-6 max-lg:contents">
-          <ContactFormSection
-            className="p-10 lg:sticky lg:top-0 max-lg:order-4"
-            form={formConfig}
-            context={{title: title || undefined, url: productHref}}
-            heading={<SectionTitle as="h2">Get in Touch</SectionTitle>}
-          />
-        </div>
-      </GridContainer>
+          </GridColumn>
+          <GridColumn span={6} className="max-lg:contents">
+            {otherProducts.length > 0 ? (
+              <OtherProducts
+                heading="Other Products"
+                items={otherProducts.map((otherProduct) => ({
+                  _id: otherProduct._id,
+                  title: otherProduct.title,
+                  href: productPath(product.category.slug, otherProduct.slug),
+                  subtitle: product.category.title,
+                  image: otherProduct.mainImage,
+                }))}
+              />
+            ) : null}
+          </GridColumn>
+        </GridContainer>
+      </div>
     </div>
   )
 }

@@ -50,6 +50,13 @@ export type BlockSplitMedia = {
   right: BlockMedia
 }
 
+export type BlockMedia = {
+  _type: 'block.media'
+  type: 'image' | 'video'
+  image?: BlockImage
+  video?: BlockVideo
+}
+
 export type BlockContentSection = {
   _type: 'block.contentSection'
   headline?: InternationalizedArrayText
@@ -59,13 +66,6 @@ export type BlockContentSection = {
 export type BlockVideo = {
   _type: 'block.video'
   muxVideo?: MuxVideo
-}
-
-export type BlockMedia = {
-  _type: 'block.media'
-  type: 'image' | 'video'
-  image?: BlockImage
-  video?: BlockVideo
 }
 
 export type BlockText = {
@@ -477,24 +477,27 @@ export type Project = {
   _rev: string
   title: InternationalizedArrayText
   description: InternationalizedArrayBlockContentTextOnly
-  mainImage?: BlockImage
-  heroVideo?: MuxVideo
-  pageBuilder?: Array<
+  blocks?: Array<
     | ({
         _key: string
-      } & BlockContentSection)
+      } & BlockCopy)
     | ({
         _key: string
       } & BlockMedia)
-    | ({
-        _key: string
-      } & BlockSplitMedia)
   >
-  product?: Array<
+  output?: Array<
     {
       _key: string
-    } & ProductReference
+    } & BlockImage
   >
+  mainImage?: BlockImage
+  heroVideo?: MuxVideo
+  gallery?: Array<
+    {
+      _key: string
+    } & BlockImage
+  >
+  product?: ProductReference
   slug: Slug
   legacySlugs?: Array<string>
   seo?: Seo
@@ -1169,9 +1172,9 @@ export type AllSanitySchemaTypes =
   | BlockCopy
   | ProductSpecs
   | BlockSplitMedia
+  | BlockMedia
   | BlockContentSection
   | BlockVideo
-  | BlockMedia
   | BlockText
   | SanityImageAssetReference
   | BlockImage

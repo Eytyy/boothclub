@@ -11,7 +11,7 @@ import {linkResolver, toPortableTextBlocks} from '@/sanity/lib/utils'
 import type {DereferencedLink} from '@/sanity/lib/types'
 import {resolveButtonLink} from '@/app/lib/sanity/button'
 import type {SettingsQueryResult} from '@/sanity.types'
-import GridContainer from '../ui/GridContainer'
+import {GridContainer, GridBlock} from '@/app/components/ui/GridSystem'
 
 /** Single location row from `settingsQuery`. */
 type FooterLocation = NonNullable<NonNullable<SettingsQueryResult>['locations']>[number]
@@ -39,8 +39,10 @@ export default async function Footer({lang}: {lang: Locale}) {
   return (
     <footer className="relative container" id="footer">
       <GridContainer className="" variant="compact">
-        <div className="col-span-full p-10 relative bg-white z-10 border-y-4 border-black dark:border-white space-y-4 dark:bg-black dark:text-white">
-          <LogoStatic linkToHome={false} />
+        <div className="col-span-full   relative bg-white z-10 border-y-site border-black dark:border-white space-y-4 dark:bg-black dark:text-white">
+          <div className="p-10 pb-5">
+            <LogoStatic linkToHome={false} />
+          </div>
           {cta ? (
             <GetInTouchCTA
               heading={cta.heading}
@@ -50,7 +52,7 @@ export default async function Footer({lang}: {lang: Locale}) {
             />
           ) : null}
         </div>
-        <div className="col-span-full relative bg-white z-10 border-b-4 border-black dark:border-white dark:bg-black dark:text-white">
+        <div className="col-span-full relative bg-white z-10 border-b-site border-black dark:border-white dark:bg-black dark:text-white">
           {locations.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 ">
               {locations.map((location, index) => (
@@ -70,10 +72,8 @@ export default async function Footer({lang}: {lang: Locale}) {
 const LocationCard = ({location}: {location: FooterLocation}) => {
   const blocks = toPortableTextBlocks(location?.content)
   return (
-    <div className="flex flex-col text-sm lg:text-lg min-w-0 p-10 border-r-4 border-black dark:border-white last:border-r-0">
-      {location?.name ? (
-        <p className="text-base lg:text-2xl font-semibold">{location.name}</p>
-      ) : null}
+    <div className="flex flex-col text-sm lg:text-lg min-w-0 p-10 border-r-site border-black dark:border-white last:border-r-0 space-y-5">
+      {location?.name ? <p className="text-base lg:text-4xl font-bold">{location.name}</p> : null}
       {blocks.length > 0 ? (
         <PortableText
           value={blocks}

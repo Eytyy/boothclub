@@ -1,3 +1,7 @@
+import {GridBlock} from '@/app/components/ui/GridSystem'
+import {cn} from '@/app/lib/utils'
+import SectionTitleMarquee from '../ui/SectionTitleMarquee'
+
 type SpecItem = {
   _key: string
   text: string
@@ -5,21 +9,20 @@ type SpecItem = {
 
 type SpecsBlockProps = {
   items?: SpecItem[]
+  className?: string
 }
 
-export default function SpecsBlock({items}: SpecsBlockProps) {
+export default function SpecsBlock({items, className}: SpecsBlockProps) {
   if (!items?.length) return null
 
   return (
-    <ul className="text-3xl font-bold">
-      {items.map((item, index) => (
-        <li className="p-10 border-b-4 border-black dark:border-white" key={item._key}>
-          <span className="rounded-full bg-black dark:bg-white p-2 w-10 h-10 inline-flex items-center justify-center text-4xl font-bold text-white dark:text-black">
-            {index + 1}
-          </span>{' '}
-          <span className="">{item.text}</span>
-        </li>
+    <div className={cn(className)}>
+      <SectionTitleMarquee>Specs</SectionTitleMarquee>
+      {items.map((item) => (
+        <GridBlock as="div" borders="bottom" key={item._key} className="text-2xl font-bold">
+          <span>{item.text}</span>
+        </GridBlock>
       ))}
-    </ul>
+    </div>
   )
 }

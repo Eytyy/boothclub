@@ -1,10 +1,8 @@
-import type {PortableTextBlock} from 'next-sanity'
-
-import PageTitle from '@/app/components/ui/PageTitle'
 import PortableText from '@/app/components/ui/PortableText'
 import LocalizedLink from '@/app/components/ui/LocalizedLink'
+import {PortableTextBlock} from 'next-sanity'
 
-type ProductHeroTextProps = {
+type PageHeroTextProps = {
   title: string
   titleVariant?: 'default' | 'large'
   eyebrow?: string | null
@@ -13,18 +11,18 @@ type ProductHeroTextProps = {
   description?: PortableTextBlock[] | null
 }
 
-export default function ProductHeroText({
+export default function PageHeroText({
   title,
   titleVariant = 'default',
   eyebrow,
   eyebrowHref,
   tagline,
   description,
-}: ProductHeroTextProps) {
+}: PageHeroTextProps) {
   const eyebrowTitle = eyebrow ? <PageTitle as="p">{eyebrow}</PageTitle> : null
 
   return (
-    <div className="space-y-5 flex flex-col items-center">
+    <div className="space-y-5 flex flex-col">
       {eyebrowTitle ? (
         eyebrowHref ? (
           <LocalizedLink href={eyebrowHref}>{eyebrowTitle}</LocalizedLink>
@@ -35,17 +33,22 @@ export default function ProductHeroText({
       <header>
         <PageTitle variant={titleVariant}>{title}</PageTitle>
       </header>
-      {tagline ? (
-        <p className="text-6xl font-bold text-center 2xl:max-w-[36ch]">{tagline}</p>
+      {tagline ? <p className="text-6xl font-bold  2xl:max-w-[36ch]">{tagline}</p> : null}
+      {description && description.length > 0 ? (
+        <PortableText className="text-base md:text-lg leading-relaxed" value={description} />
       ) : null}
-      <div className="text-center px-5 lg:px-10">
-        {description && description.length > 0 ? (
-          <PortableText
-            className="mx-auto 2xl:max-w-[75ch] text-center text-base md:text-lg leading-relaxed"
-            value={description}
-          />
-        ) : null}
-      </div>
     </div>
   )
+}
+
+type PageTitleProps = {
+  children: React.ReactNode
+  as?: 'h1' | 'h2' | 'p'
+  className?: string
+  variant?: 'default' | 'large'
+}
+
+function PageTitle({children, as = 'h1'}: PageTitleProps) {
+  const Tag = as || 'h1'
+  return <Tag className={'text-6xl font-bold 2xl:max-w-[36ch]'}>{children}</Tag>
 }

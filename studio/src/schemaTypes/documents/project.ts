@@ -1,5 +1,5 @@
 import {CaseIcon, SearchIcon, ComposeSparklesIcon, TagIcon, ImageIcon} from '@sanity/icons'
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 import {localizedString, slugFromLocalized} from '../../lib/i18n'
 
@@ -30,7 +30,30 @@ export const project = defineType({
       validation: (rule) => rule.required(),
       group: 'contents',
     }),
-
+    defineField({
+      name: 'blocks',
+      title: 'Project blocks',
+      type: 'array',
+      of: [defineArrayMember({type: 'block.copy'}), defineArrayMember({type: 'block.media'})],
+      group: 'contents',
+    }),
+    defineField({
+      name: 'output',
+      title: 'Output',
+      type: 'array',
+      of: [defineArrayMember({type: 'block.image'})],
+      description: 'Optional row of images below the project blocks. Leave empty or add exactly 3.',
+      options: {layout: 'grid'},
+      validation: (rule) =>
+        rule.max(3).custom((images) => {
+          const count = images?.length ?? 0
+          if (count === 0 || count === 3) {
+            return true
+          }
+          return 'Add exactly 3 images, or leave empty'
+        }),
+      group: 'contents',
+    }),
     defineField({
       name: 'mainImage',
       title: 'Main Image',
@@ -46,18 +69,17 @@ export const project = defineType({
       group: 'media',
     }),
     defineField({
-      name: 'pageBuilder',
-      title: 'Page sections',
-      description: 'Taglines, full-width media, and two-column media.',
+      name: 'gallery',
+      title: 'Gallery',
       type: 'array',
-      of: [{type: 'block.contentSection'}, {type: 'block.media'}, {type: 'block.splitMedia'}],
-      group: 'contents',
+      of: [defineArrayMember({type: 'block.image'})],
+      group: 'media',
     }),
     defineField({
       name: 'product',
       title: 'Product',
-      type: 'array',
-      of: [{type: 'reference', to: [{type: 'product'}]}],
+      type: 'reference',
+      to: [{type: 'product'}],
       group: 'meta',
     }),
     defineField({
@@ -94,19 +116,13 @@ export const project = defineType({
     select: {
       title: 'title',
       media: 'mainImage',
-      product1: 'product.0.title',
-      product2: 'product.1.title',
-      product3: 'product.2.title',
-      product4: 'product.3.title',
+      productTitle: 'product.title',
     },
-    prepare({title, media, product1, product2, product3, product4}) {
-      const products = [product1, product2, product3, product4]
-        .map(localizedString)
-        .filter(Boolean)
+    prepare({title, media, productTitle}) {
       return {
         title: localizedString(title) || 'Untitled',
         media,
-        subtitle: products.join(', ') || 'No products',
+        subtitle: localizedString(productTitle) || 'No product',
       }
     },
   },

@@ -14,8 +14,8 @@ export default function PageTitle({children, as = 'h1', className, variant = 'de
     <Tag
       className={cn(
         variant === 'large'
-          ? 'text-6xl font-bold text-center 2xl:max-w-[36ch]'
-          : 'text-xl font-medium leading-[0.9] tracking-tight text-center',
+          ? 'text-6xl font-bold  '
+          : 'text-xl font-medium leading-[0.9] tracking-tight ',
         className,
       )}
     >

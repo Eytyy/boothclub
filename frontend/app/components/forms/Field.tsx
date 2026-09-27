@@ -40,7 +40,7 @@ export const FieldLabel = ({
   className?: string
 }) => {
   return (
-    <label htmlFor={htmlFor} className={cn('font-medium', className)}>
+    <label htmlFor={htmlFor} className={cn('font-medium text-lg', className)}>
       {children}
     </label>
   )

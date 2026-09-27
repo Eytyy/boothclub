@@ -139,7 +139,7 @@ export default async function RootLayout({children, params}: Props) {
         <LocaleProvider value={lang}>
           <Providers>
             <Header lang={lang} />
-            <main className="min-h-svh relative z-20 bg-white dark:bg-black">{children}</main>
+            <main className="relative z-20 bg-white dark:bg-black">{children}</main>
             <Footer lang={lang} />
           </Providers>
         </LocaleProvider>
