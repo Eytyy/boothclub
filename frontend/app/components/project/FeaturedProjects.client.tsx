@@ -10,7 +10,8 @@ import {cn} from '@/app/lib/utils'
 import {useEffect, useMemo, useState} from 'react'
 
 import {GridBlock} from '../ui/GridSystem'
-import SectionTitleMarquee from '../ui/SectionTitleMarquee'
+import {Locale} from '@/app/lib/i18n/config'
+import ArrowIcon from '../ui/icons/ArrowIcon'
 
 const SHUFFLE_INTERVAL_MS = 1000
 
@@ -36,10 +37,12 @@ export default function FeaturedProjects({
   items,
   heading = 'Featured Projects',
   className,
+  lang,
 }: {
   items: ProjectCardData[]
   heading?: string
   className?: string
+  lang: Locale
 }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [frameIndex, setFrameIndex] = useState(0)
@@ -72,7 +75,7 @@ export default function FeaturedProjects({
 
   return (
     <div className={cn('border-b-site border-black dark:border-white', className)}>
-      <SectionTitleMarquee>{heading}</SectionTitleMarquee>
+      <SectionTitle>{heading}</SectionTitle>
       <GridBlock className="grid grid-rows-[min-content_1fr] pb-0">
         <SpotlightCaption title={title} detail={product?.title} />
         <SquareMediaStage href={`/projects/${slug}`} label={`View ${title}`} image={displayImage}>
@@ -93,7 +96,11 @@ export default function FeaturedProjects({
         </SquareMediaStage>
       </GridBlock>
       <div className="flex justify-end">
-        <Button href="/projects">all projects &rarr;</Button>
+        <Button href="/projects">
+          <span className="flex items-center gap-2">
+            {lang === 'ar' ? 'جميع المشاريع' : 'all projects'} <ArrowIcon lang={lang} />
+          </span>
+        </Button>
       </div>
     </div>
   )

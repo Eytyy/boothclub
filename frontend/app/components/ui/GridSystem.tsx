@@ -56,12 +56,12 @@ export function GridBlock<T extends ElementType = 'div'>({
   const borderClasses = cn({
     'border-t-site border-black dark:border-white': borders === 'top',
     'border-b-site border-black dark:border-white': borders === 'bottom',
-    'border-l-site border-black dark:border-white': borders === 'left',
-    'border-r-site border-black dark:border-white': borders === 'right',
-    'border-t-site border-l-site border-black dark:border-white': borders === 'top-left',
-    'border-t-site border-r-site border-black dark:border-white': borders === 'top-right',
-    'border-b-site border-l-site border-black dark:border-white': borders === 'bottom-left',
-    'border-b-site border-r-site border-black dark:border-white': borders === 'bottom-right',
+    'border-s-site border-black dark:border-white': borders === 'left',
+    'border-e-site border-black dark:border-white': borders === 'right',
+    'border-t-site border-s-site border-black dark:border-white': borders === 'top-left',
+    'border-t-site border-e-site border-black dark:border-white': borders === 'top-right',
+    'border-b-site border-s-site border-black dark:border-white': borders === 'bottom-left',
+    'border-b-site border-e-site border-black dark:border-white': borders === 'bottom-right',
     'border-y-site border-black dark:border-white': borders === 'y',
     'border-x-site border-black dark:border-white': borders === 'x',
   })

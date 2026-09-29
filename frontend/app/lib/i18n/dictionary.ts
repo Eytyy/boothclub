@@ -18,6 +18,9 @@ const en = {
   'actions.allWork': 'All work',
   'actions.joinTheTeam': 'Join the team',
 
+  'language.switchToArabic': 'Switch to Arabic',
+  'language.switchToEnglish': 'Switch to English',
+
   'sections.otherWork': 'Other Work',
 
   'form.label.fullName': 'Full Name',
@@ -65,6 +68,9 @@ const ar: Dictionary = {
   'actions.backToHome': 'العودة إلى الرئيسية',
   'actions.allWork': 'كل الأعمال',
   'actions.joinTheTeam': 'انضم إلى الفريق',
+
+  'language.switchToArabic': 'التبديل إلى العربية',
+  'language.switchToEnglish': 'التبديل إلى الإنجليزية',
 
   'sections.otherWork': 'أعمال أخرى',
 

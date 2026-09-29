@@ -145,7 +145,7 @@ export default async function ProductPage(props: Props) {
               />
             </GridBlock>
             {featuredProjectItems.length > 0 ? (
-              <FeaturedProjects items={featuredProjectItems} />
+              <FeaturedProjects items={featuredProjectItems} lang={lang} />
             ) : null}
             {product.specs?.items?.length ? (
               <SpecsBlock

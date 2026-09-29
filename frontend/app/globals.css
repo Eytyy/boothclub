@@ -3,10 +3,6 @@
 @plugin "@tailwindcss/typography";
 
 @layer base {
-  body {
-    font-family: var(--font-poppins), sans-serif;
-  }
-
   h1,
   h2,
   h3,
@@ -56,7 +52,7 @@
 }
 
 @utility container {
-  @apply px-5 lg:pl-[180px] pr-[72px];
+  @apply px-5 lg:ps-[180px] pe-[72px];
   margin: 0 auto;
   width: 100%;
   max-width: 1920px;
@@ -65,8 +61,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: var(--font-poppins);
-  --font-mono: var(--font-ibm-plex-mono);
+  --font-sans: var(--font-poppins), sans-serif;
+  --font-rtl: var(--font-tajawal), sans-serif;
   --shadow-layer: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
   --color-black: #1c1919;
   --color-white: #fff;

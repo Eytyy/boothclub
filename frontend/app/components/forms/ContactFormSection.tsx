@@ -20,7 +20,7 @@ export default function ContactFormSection({form, context, title, className}: Pr
 
   return (
     <section className={cn('h-full', className)}>
-      <SectionTitleMarquee as="h2">{title}</SectionTitleMarquee>
+      <SectionTitle as="h2">{title}</SectionTitle>
       <div className="flex-1">
         <ContactForm
           formKey="contact-us"

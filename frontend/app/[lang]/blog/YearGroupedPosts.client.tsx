@@ -83,7 +83,7 @@ export default function YearGroupedPosts({groups, currentYear}: Props) {
                         </LocalizedLink>
                         <time
                           dateTime={post.date ?? undefined}
-                          className="text-black/40 dark:text-white/40 text-xs font-mono shrink-0"
+                          className="text-black/40 dark:text-white/40 text-xs shrink-0"
                         >
                           <DateComponent dateString={post.date ?? undefined} />
                         </time>

@@ -2,7 +2,7 @@ import '../globals.css'
 
 import {SpeedInsights} from '@vercel/speed-insights/next'
 import type {Metadata} from 'next'
-import {IBM_Plex_Mono, Poppins} from 'next/font/google'
+import {Poppins, Tajawal} from 'next/font/google'
 import {draftMode} from 'next/headers'
 import {notFound} from 'next/navigation'
 import {VisualEditing} from 'next-sanity/visual-editing'
@@ -82,12 +82,15 @@ const poppins = Poppins({
   weight: ['400', '500', '600', '700', '800', '900'],
   subsets: ['latin'],
   display: 'swap',
+  // The metric fallback is a full-range Arial face. It would take Arabic
+  // characters before Tajawal if it stayed in the stack.
+  adjustFontFallback: false,
 })
 
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: '--font-ibm-plex-mono',
-  weight: ['400'],
-  subsets: ['latin'],
+const tajawal = Tajawal({
+  variable: '--font-tajawal',
+  weight: ['300', '400', '500', '700', '800', '900'],
+  subsets: ['arabic'],
   display: 'swap',
 })
 
@@ -104,7 +107,7 @@ export default async function RootLayout({children, params}: Props) {
     <html
       lang={lang}
       dir={lang === 'ar' ? 'rtl' : 'ltr'}
-      className={`${poppins.variable} ${ibmPlexMono.variable} bg-white text-black dark:bg-black dark:text-white`}
+      className={`${poppins.variable} ${tajawal.variable} bg-white text-black dark:bg-black dark:text-white`}
       suppressHydrationWarning
     >
       <head>
@@ -114,7 +117,7 @@ export default async function RootLayout({children, params}: Props) {
           }}
         />
       </head>
-      <body className="font-sans">
+      <body className="font-sans rtl:font-rtl">
         {GTM_ID && (
           <noscript>
             <iframe

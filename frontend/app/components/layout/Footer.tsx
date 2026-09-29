@@ -72,7 +72,7 @@ export default async function Footer({lang}: {lang: Locale}) {
 const LocationCard = ({location}: {location: FooterLocation}) => {
   const blocks = toPortableTextBlocks(location?.content)
   return (
-    <div className="flex flex-col text-sm lg:text-lg min-w-0 p-10 border-r-site border-black dark:border-white last:border-r-0 space-y-5">
+    <div className="flex flex-col text-sm lg:text-lg min-w-0 p-10 border-e-site border-black dark:border-white last:border-e-0 space-y-5">
       {location?.name ? <p className="text-base lg:text-4xl font-bold">{location.name}</p> : null}
       {blocks.length > 0 ? (
         <PortableText

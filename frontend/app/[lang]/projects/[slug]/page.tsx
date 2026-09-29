@@ -180,14 +180,12 @@ export default async function ProjectDetailPage(props: Props) {
         ) : null}
         {outputItems.length > 0 ? (
           <GridContainer variant="compact" className="relative">
-            <SectionTitleMarquee className="absolute top-0 left-0 z-100">
-              Output
-            </SectionTitleMarquee>
+            <SectionTitle className="absolute top-0 left-0 z-100">Output</SectionTitle>
             {outputItems.map((item) => (
               <GridBlock
                 key={item._key}
                 borders="bottom-right"
-                className="col-span-4 last:border-r-0 bg-white dark:bg-black relative z-40 pt-28"
+                className="col-span-4 last:border-e-0 bg-white dark:bg-black relative z-40 pt-28"
               >
                 <MediaItem media={{type: 'image', image: item}} />
               </GridBlock>
@@ -209,6 +207,7 @@ export default async function ProjectDetailPage(props: Props) {
                 className="border-b-0"
                 heading="related projects"
                 items={otherProjects}
+                lang={lang}
               />
             ) : null}
           </GridColumn>

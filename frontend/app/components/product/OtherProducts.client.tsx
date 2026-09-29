@@ -45,7 +45,7 @@ export default function OtherProducts({
 
   return (
     <div className={cn(className)}>
-      <SectionTitleMarquee>{heading}</SectionTitleMarquee>
+      <SectionTitle>{heading}</SectionTitle>
       <GridBlock className="grid grid-rows-[min-content_1fr] pb-0">
         <SpotlightCaption title={title} detail={subtitle} />
         <SquareMediaStage href={href} label={`View ${title}`} image={image}>

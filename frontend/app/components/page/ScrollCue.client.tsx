@@ -47,7 +47,7 @@ export default function ScrollCue() {
       ref={anchorRef}
       className="pointer-events-none sticky top-0 z-30 col-start-1 row-start-1 h-svh self-start "
     >
-      <div className="absolute bottom-0 left-10 flex h-[14svh] w-[calc(((100%-5rem)/2)-(var(--border-width-site)/2))] items-center justify-center bg-white dark:bg-black border-l-site border-t-site">
+      <div className="absolute bottom-0 rtl:right-10 ltr:left-10 flex h-[14svh] w-[calc(((100%-5rem)/2)-(var(--border-width-site)/2))] items-center justify-center bg-white dark:bg-black border-s-site border-t-site">
         <button
           type="button"
           tabIndex={released ? 0 : -1}

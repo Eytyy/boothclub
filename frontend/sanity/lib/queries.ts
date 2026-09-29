@@ -12,7 +12,9 @@ const linkReference = /* groq */ `
   }
 `
 
-const localizedValue = /* groq */ `[language == $lang][0].value`
+// Active language, then English. length() treats "" and [] as missing.
+// Parentheses keep `desc` attached to the comparison; the API rejects it on `$lang`.
+const localizedValue = /* groq */ `[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value`
 
 const imageProjection = /* groq */ `
   ...,

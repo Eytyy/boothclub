@@ -142,9 +142,9 @@ function FilterButton({
       onClick={onClick}
       aria-label={ariaLabel}
       className={cn(
-        'uppercase block p-10 lg:text-lg font-bold tracking-normal transition-colors border-r-site min-w-max whitespace-nowrap border-black dark:border-white border-b-site',
+        'uppercase block p-10 lg:text-lg font-bold tracking-normal transition-colors border-e-site min-w-max whitespace-nowrap border-black dark:border-white border-b-site',
         pinned ? 'shrink-0' : 'flex-1',
-        !keepEndBorder && 'last:border-r-0',
+        !keepEndBorder && 'last:border-e-0',
         active && 'bg-black text-white dark:bg-white dark:text-black',
       )}
     >

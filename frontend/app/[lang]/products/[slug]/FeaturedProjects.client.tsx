@@ -7,6 +7,7 @@ import ProjectCarousel from '@/app/components/project/ProjectCarousel.client'
 import {ProjectCardData} from '@/app/components/project/types'
 import {useDictionary} from '@/app/lib/i18n/LocaleProvider.client'
 import SectionTitle from '@/app/components/ui/SectionTitle'
+import SectionTitleMarquee from '@/app/components/ui/SectionTitleMarquee'
 
 export default function FeaturedProjects({
   items,
@@ -23,7 +24,7 @@ export default function FeaturedProjects({
       header={
         tagline ? (
           <SectionTitle as="h2" className="px-5 lg:px-10  mx-auto">
-            <AnimatedWords text={tagline} />
+            {tagline}
           </SectionTitle>
         ) : null
       }

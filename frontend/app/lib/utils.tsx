@@ -14,6 +14,8 @@ const twMerge = extendTailwindMerge({
       "border-w-r": [{ "border-r": ["site"] }],
       "border-w-b": [{ "border-b": ["site"] }],
       "border-w-l": [{ "border-l": ["site"] }],
+      "border-w-s": [{ "border-s": ["site"] }],
+      "border-w-e": [{ "border-e": ["site"] }],
     },
   },
 });

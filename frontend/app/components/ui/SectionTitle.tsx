@@ -16,7 +16,7 @@ export default function SectionTitle({children, as = 'h2', className}: Props) {
     <Tag
       className={cn(
         sectionTitleClassName,
-        'block w-fit items-center gap-2 border-r-site border-b-site px-10 py-5',
+        'block w-fit items-center gap-2 border-e-site border-b-site px-10 py-5',
         className,
       )}
     >

@@ -26,6 +26,7 @@ import ScrollCue from '@/app/components/page/ScrollCue.client'
 import {GridContainer, GridBlock, GridColumn} from '@/app/components/ui/GridSystem'
 import ProductCard from '@/app/components/product/ProductCard'
 import OtherProducts from '@/app/components/product/OtherProducts.client'
+import SectionTitleMarquee from '@/app/components/ui/SectionTitleMarquee'
 type Props = {
   params: Promise<{lang: Locale; slug: string}>
 }
@@ -134,9 +135,7 @@ export default async function ProductCategoryPage(props: Props) {
               />
             </GridBlock>
             <div>
-              <div className="tracking-normal block w-fit items-center gap-2 uppercase text-sm font-semibold sm:text-base md:text-lg lg:text-xl xl:text-2xl border-r-site border-b-site px-10 py-5">
-                Products
-              </div>
+              <SectionTitle>Products</SectionTitle>
               {products.length > 0 && (
                 <>
                   {products.map((product) => (
