@@ -11,6 +11,7 @@ import {linkResolver, toPortableTextBlocks} from '@/sanity/lib/utils'
 import type {DereferencedLink} from '@/sanity/lib/types'
 import {resolveButtonLink} from '@/app/lib/sanity/button'
 import type {SettingsQueryResult} from '@/sanity.types'
+import {GridContainer, GridBlock} from '@/app/components/ui/GridSystem'
 
 /** Single location row from `settingsQuery`. */
 type FooterLocation = NonNullable<NonNullable<SettingsQueryResult>['locations']>[number]
@@ -36,37 +37,34 @@ export default async function Footer({lang}: {lang: Locale}) {
   )
 
   return (
-    <footer className="relative" id="footer">
-      <div className="bg-black text-white dark:text-black dark:bg-white pt-(--header-height) lg:pt-0 min-h-dvh lg:min-h-auto">
-        <div className="px-5 lg:p-10 h-full min-h-0">
-          <div className="lg:grid lg:grid-rows-[1fr_auto] lg:gap-10 h-full min-h-0">
-            <LogoStatic
-              linkToHome={false}
-              className="hidden w-full h-full min-h-0 lg:flex items-end"
-            />
-            <div className="space-y-10 lg:space-y-12 min-h-0 lg:overflow-y-auto">
-              {cta ? (
-                <GetInTouchCTA
-                  heading={cta.heading}
-                  buttonLabel={cta.buttonLabel}
-                  link={ctaLink}
-                  lang={lang}
-                />
-              ) : null}
-
-              {locations.length > 0 ? (
-                <div className="grid gap-5 md:grid-cols-3 md:gap-10">
-                  {locations.map((location, index) => (
-                    <LocationCard key={`${location.name ?? 'loc'}-${index}`} location={location} />
-                  ))}
-                </div>
-              ) : null}
-
-              <FooterBottomBar footerMenu={footerMenu} socialLinks={socialLinks} lang={lang} />
-            </div>
+    <footer className="relative container" id="footer">
+      <GridContainer className="" variant="compact">
+        <div className="col-span-full   relative bg-white z-10 border-y-site border-black dark:border-white space-y-4 dark:bg-black dark:text-white">
+          <div className="p-10 pb-5">
+            <LogoStatic linkToHome={false} />
           </div>
+          {cta ? (
+            <GetInTouchCTA
+              heading={cta.heading}
+              buttonLabel={cta.buttonLabel}
+              link={ctaLink}
+              lang={lang}
+            />
+          ) : null}
         </div>
-      </div>
+        <div className="col-span-full relative bg-white z-10 border-b-site border-black dark:border-white dark:bg-black dark:text-white">
+          {locations.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 ">
+              {locations.map((location, index) => (
+                <LocationCard key={`${location.name ?? 'loc'}-${index}`} location={location} />
+              ))}
+            </div>
+          ) : null}
+        </div>
+        <div className="col-span-full p-10 bg-white relative dark:bg-black dark:text-white">
+          <FooterBottomBar footerMenu={footerMenu} socialLinks={socialLinks} lang={lang} />
+        </div>
+      </GridContainer>
     </footer>
   )
 }
@@ -74,15 +72,13 @@ export default async function Footer({lang}: {lang: Locale}) {
 const LocationCard = ({location}: {location: FooterLocation}) => {
   const blocks = toPortableTextBlocks(location?.content)
   return (
-    <div className="flex flex-col text-sm lg:text-lg min-w-0">
-      {location?.name ? (
-        <p className="text-base lg:text-2xl font-semibold">{location.name}</p>
-      ) : null}
+    <div className="flex flex-col text-sm lg:text-lg min-w-0 p-10 border-e-site border-black dark:border-white last:border-e-0 space-y-5">
+      {location?.name ? <p className="text-base lg:text-4xl font-bold">{location.name}</p> : null}
       {blocks.length > 0 ? (
         <PortableText
           value={blocks}
           invert={false}
-          className="text-sm lg:text-lg text-black wrap-break-word [&_a]:underline [&_a]:underline-offset-2"
+          className="text-sm lg:text-lg wrap-break-word [&_a]:underline [&_a]:underline-offset-2"
         />
       ) : null}
     </div>
@@ -132,7 +128,6 @@ function FooterBottomBar({
 }
 
 const GetInTouchCTA = ({
-  heading,
   buttonLabel,
   link,
   lang,

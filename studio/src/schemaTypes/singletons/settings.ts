@@ -55,7 +55,7 @@ export const settings = defineType({
       name: 'siteMenu',
       title: 'Header navigation',
       description:
-        'Point to a menu with groups only. Set the menu’s CTA button label in that document to show Get in touch at the end of the last group.',
+        'Point to a menu with groups only. Set the menu’s CTA button label in that document to show Get an Instant Quote at the end of the last group.',
       type: 'reference',
       to: [{type: 'menu'}],
       group: 'main',
@@ -70,7 +70,7 @@ export const settings = defineType({
     }),
     defineField({
       name: 'getInTouchCTA',
-      title: 'Get in touch CTA',
+      title: 'Get an Instant Quote CTA',
       type: 'object',
       group: 'footer',
       fields: [

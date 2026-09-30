@@ -15,10 +15,46 @@
 export declare const internalGroqTypeReferenceTo: unique symbol
 
 // Source: ../sanity.schema.json
+export type BlockGallery = {
+  _type: 'block.gallery'
+  items?: Array<
+    | ({
+        _key: string
+      } & BlockImage)
+    | ({
+        _key: string
+      } & BlockVideo)
+  >
+}
+
+export type BlockCopy = {
+  _type: 'block.copy'
+  showHeadline?: boolean
+  showText?: boolean
+  headline?: InternationalizedArrayText
+  text?: InternationalizedArrayText
+}
+
+export type ProductSpecs = {
+  _type: 'product.specs'
+  items?: Array<{
+    text: InternationalizedArrayString
+    _type: 'spec'
+    _key: string
+  }>
+}
+
 export type BlockSplitMedia = {
   _type: 'block.splitMedia'
   left: BlockMedia
   right: BlockMedia
+}
+
+export type BlockMedia = {
+  _type: 'block.media'
+  type: 'image' | 'video'
+  image?: BlockImage
+  video?: BlockVideo
 }
 
 export type BlockContentSection = {
@@ -30,13 +66,6 @@ export type BlockContentSection = {
 export type BlockVideo = {
   _type: 'block.video'
   muxVideo?: MuxVideo
-}
-
-export type BlockMedia = {
-  _type: 'block.media'
-  type: 'image' | 'video'
-  image?: BlockImage
-  video?: BlockVideo
 }
 
 export type BlockText = {
@@ -448,24 +477,27 @@ export type Project = {
   _rev: string
   title: InternationalizedArrayText
   description: InternationalizedArrayBlockContentTextOnly
-  mainImage?: BlockImage
-  heroVideo?: MuxVideo
-  pageBuilder?: Array<
+  blocks?: Array<
     | ({
         _key: string
-      } & BlockContentSection)
+      } & BlockCopy)
     | ({
         _key: string
       } & BlockMedia)
-    | ({
-        _key: string
-      } & BlockSplitMedia)
   >
-  product?: Array<
+  output?: Array<
     {
       _key: string
-    } & ProductReference
+    } & BlockImage
   >
+  mainImage?: BlockImage
+  heroVideo?: MuxVideo
+  gallery?: Array<
+    {
+      _key: string
+    } & BlockImage
+  >
+  product?: ProductReference
   slug: Slug
   legacySlugs?: Array<string>
   seo?: Seo
@@ -499,17 +531,8 @@ export type Product = {
   category: ProductCategoryReference
   excerpt?: InternationalizedArrayText
   description: InternationalizedArrayBlockContentTextOnly
-  pageBuilder?: Array<
-    | ({
-        _key: string
-      } & BlockContentSection)
-    | ({
-        _key: string
-      } & BlockMedia)
-    | ({
-        _key: string
-      } & BlockSplitMedia)
-  >
+  specs?: ProductSpecs
+  copy?: BlockCopy
   featuredProjects?: Array<
     {
       _key: string
@@ -1145,10 +1168,13 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
+  | BlockGallery
+  | BlockCopy
+  | ProductSpecs
   | BlockSplitMedia
+  | BlockMedia
   | BlockContentSection
   | BlockVideo
-  | BlockMedia
   | BlockText
   | SanityImageAssetReference
   | BlockImage

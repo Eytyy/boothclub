@@ -227,7 +227,7 @@ function DesktopLayout({products}: {products: ValidProduct[]}) {
       </motion.div>
 
       {/* Col 3: excerpt */}
-      <div className="flex items-center pl-6 pr-2">
+      <div className="flex items-center ps-6 pe-2">
         <AnimatePresence mode="wait">
           {activeProduct && (
             <motion.div

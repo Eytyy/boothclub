@@ -7,7 +7,7 @@ export const menu = defineType({
   name: 'menu',
   title: 'Menu',
   description:
-    'Add top-level menu links directly, or organize them inside groups (each group expands to reveal its links). Optional "CTA button label" (header menu only) renders a Get in touch button after the last entry, linking to /contact.',
+    'Add top-level menu links directly, or organize them inside groups (each group expands to reveal its links). Optional "CTA button label" (header menu only) renders a Get an Instant Quote button after the last entry, linking to /contact.',
   type: 'document',
   icon: MenuIcon,
   fields: [
@@ -21,10 +21,7 @@ export const menu = defineType({
       name: 'items',
       title: 'Items',
       type: 'array',
-      of: [
-        defineArrayMember({type: 'menuItemGroup'}),
-        defineArrayMember({type: 'menuItem'}),
-      ],
+      of: [defineArrayMember({type: 'menuItemGroup'}), defineArrayMember({type: 'menuItem'})],
     }),
     defineField({
       name: 'ctaLabel',

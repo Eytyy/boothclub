@@ -5,22 +5,17 @@ import {AnimatePresence, motion} from 'framer-motion'
 import {cn} from '@/app/lib/utils'
 import type {SiteMenuGroup} from '@/sanity/lib/types'
 import NavMenuItem from './NavMenuItem'
+import {useState} from 'react'
 
 interface NavMenuItemGroupProps {
   group: SiteMenuGroup & {_key: string}
   pathname: string
   onNavigate: () => void
-  isActive: boolean
-  onToggle: (key: string) => void
 }
 
-export default function NavMenuItemGroup({
-  group,
-  pathname,
-  onNavigate,
-  isActive,
-  onToggle,
-}: NavMenuItemGroupProps) {
+export default function NavMenuItemGroup({group, pathname, onNavigate}: NavMenuItemGroupProps) {
+  const [isActive, setIsActive] = useState(false)
+  const handleToggle = () => setIsActive((prev) => !prev)
   const title = group.title?.trim()
   if (!title) return null
 
@@ -28,51 +23,32 @@ export default function NavMenuItemGroup({
   const panelId = `menu-group-panel-${group._key}`
 
   return (
-    <li className="flex flex-col">
-      <button
-        type="button"
-        id={buttonId}
-        aria-expanded={isActive}
-        aria-controls={panelId}
-        onClick={() => onToggle(group._key)}
-        className={cn(
-          'group/menu-group flex items-center gap-3 md:gap-4 text-left',
-          'text-2xl md:text-3xl lg:text-5xl font-semibold leading-[1.1]',
-          'transition-colors',
-          isActive && 'md:underline md:underline-offset-4',
-        )}
-      >
-        <span>{title}</span>
-        <ExpandIcon isActive={isActive} />
-      </button>
-
+    <div className="col-span-6">
+      <span>{title}</span>
       <AnimatePresence initial={false}>
-        {isActive && (
-          <motion.div
-            id={panelId}
-            role="region"
-            aria-labelledby={buttonId}
-            className="md:hidden overflow-hidden"
-            initial={{height: 0, opacity: 0}}
-            animate={{height: 'auto', opacity: 1}}
-            exit={{height: 0, opacity: 0}}
-            transition={{duration: 0.3, ease: [0.22, 1, 0.36, 1]}}
-          >
-            <ul role="list" className="flex flex-col gap-3 pt-4 pb-2 pl-1">
-              {group.items?.map((child) => (
-                <NavMenuItem
-                  key={child._key}
-                  item={child}
-                  pathname={pathname}
-                  onNavigate={onNavigate}
-                  className="text-lg md:text-xl xl:text-2xl"
-                />
-              ))}
-            </ul>
-          </motion.div>
-        )}
+        <motion.div
+          id={panelId}
+          role="region"
+          aria-labelledby={buttonId}
+          className="overflow-hidden"
+          initial={{height: 0, opacity: 0}}
+          animate={{height: 'auto', opacity: 1}}
+          exit={{height: 0, opacity: 0}}
+          transition={{duration: 0.3, ease: [0.22, 1, 0.36, 1]}}
+        >
+          <ul role="list" className="flex flex-col gap-3 pt-4 pb-2 ">
+            {group.items?.map((child) => (
+              <NavMenuItem
+                key={child._key}
+                item={child}
+                pathname={pathname}
+                onNavigate={onNavigate}
+              />
+            ))}
+          </ul>
+        </motion.div>
       </AnimatePresence>
-    </li>
+    </div>
   )
 }
 

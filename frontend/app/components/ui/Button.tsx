@@ -7,11 +7,11 @@ import {DereferencedLink} from '@/sanity/lib/types'
 export type ButtonVariant = 'footer' | 'primary'
 
 const baseStyles =
-  'tracking-normal inline-flex items-center gap-2  text-sm font-medium  sm:text-base md:text-lg lg:text-xl xl:text-2xl lowercase transition-colors disabled:cursor-not-allowed disabled:bg-[#ddd] disabled:text-[#aaa] disabled:border-[#ddd] disabled:hover:bg-[#ddd] disabled:hover:border-[#ddd] disabled:hover:text-[#aaa]'
+  'tracking-normal inline-flex items-center gap-2 text-sm font-medium  sm:text-base md:text-lg lg:text-xl xl:text-2xl lowercase transition-colors disabled:cursor-not-allowed disabled:bg-[#ddd] disabled:text-[#aaa] disabled:border-[#ddd] disabled:hover:bg-[#ddd] disabled:hover:border-[#ddd] disabled:hover:text-[#aaa]'
 
 export const variantStyles: Record<ButtonVariant, string> = {
-  footer: `${baseStyles}  text-white dark:text-black`,
-  primary: `${baseStyles} text-black `,
+  footer: `${baseStyles} bg-black text-white dark:text-black dark:bg-white px-10 py-5`,
+  primary: `${baseStyles} text-white bg-black dark:bg-white dark:text-black px-10 font-normal py-5`,
 }
 
 type CommonProps = {

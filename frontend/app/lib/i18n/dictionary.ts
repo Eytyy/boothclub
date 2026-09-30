@@ -18,13 +18,16 @@ const en = {
   'actions.allWork': 'All work',
   'actions.joinTheTeam': 'Join the team',
 
+  'language.switchToArabic': 'Switch to Arabic',
+  'language.switchToEnglish': 'Switch to English',
+
   'sections.otherWork': 'Other Work',
 
   'form.label.fullName': 'Full Name',
   'form.label.email': 'Email',
   'form.label.company': 'Company',
   'form.label.phone': 'Phone',
-  'form.label.message': 'Tell us about your project',
+  'form.label.message': 'Got a specific booth in mind for your event? Let us know!',
   'form.label.notifications': 'I agree to receive notifications.',
   'form.label.consent': 'I consent to the processing of my personal data.',
   'form.label.submit': 'Submit',
@@ -65,6 +68,9 @@ const ar: Dictionary = {
   'actions.backToHome': 'العودة إلى الرئيسية',
   'actions.allWork': 'كل الأعمال',
   'actions.joinTheTeam': 'انضم إلى الفريق',
+
+  'language.switchToArabic': 'التبديل إلى العربية',
+  'language.switchToEnglish': 'التبديل إلى الإنجليزية',
 
   'sections.otherWork': 'أعمال أخرى',
 

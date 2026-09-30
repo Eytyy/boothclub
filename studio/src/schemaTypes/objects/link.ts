@@ -88,7 +88,7 @@ export const link = defineType({
       validation: (Rule) =>
         // Custom validation to ensure post reference is provided if the link type is 'post'
         Rule.custom((value, context) => {
-          const parent = context.parent as Link
+          const parent = context.parent as {linkType?: string} | undefined
           if (parent?.linkType === 'post' && !value) {
             return 'Post reference is required when Link Type is Post'
           }

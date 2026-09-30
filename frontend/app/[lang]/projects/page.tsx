@@ -4,12 +4,11 @@ import {Suspense} from 'react'
 import type {ProjectFilterOption} from '@/app/components/project/types'
 import type {Locale} from '@/app/lib/i18n/config'
 import {localeAlternates} from '@/app/lib/seo/alternates'
-import {applyFeaturedOrder, mapAllProjectItemToProjectCardData} from '@/app/lib/project/mappers'
+import {mapAllProjectItemToProjectCardData} from '@/app/lib/project/mappers'
 import ProjectPageContent from './ProjectPageContent.client'
 import {sanityFetch} from '@/sanity/lib/live'
 import {projectsPageQuery, allProjectsQuery, projectFiltersQuery} from '@/sanity/lib/queries'
 import {resolveMetaTitle} from '@/sanity/lib/utils'
-import PageTitle from '@/app/components/ui/PageTitle'
 
 type Props = {
   params: Promise<{lang: Locale}>
@@ -32,8 +31,7 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
 
 export default async function ProjectsPage({params}: Props) {
   const {lang} = await params
-  const [{data: page}, {data: projects}, {data: filters}] = await Promise.all([
-    sanityFetch({query: projectsPageQuery, params: {lang}}),
+  const [{data: projects}, {data: filters}] = await Promise.all([
     sanityFetch({query: allProjectsQuery, params: {lang}}),
     sanityFetch({query: projectFiltersQuery, params: {lang}}),
   ])
@@ -42,8 +40,6 @@ export default async function ProjectsPage({params}: Props) {
     projects
       ?.filter((project): project is typeof project & {title: string} => Boolean(project.title))
       .map((project) => mapAllProjectItemToProjectCardData(project)) ?? []
-
-  const {items: orderedItems, featuredCount} = applyFeaturedOrder(projectItems, page?.featuredIds)
 
   const filterOptions: ProjectFilterOption[] =
     filters
@@ -62,19 +58,10 @@ export default async function ProjectsPage({params}: Props) {
       })) ?? []
 
   return (
-    <div className="mt-(--header-height) xl:mt-5  min-h-screen container">
-      <PageTitle className="text-center mx-auto " variant="large">
-        {page?.title ?? 'Projects'}
-      </PageTitle>
-      <div className="">
-        <Suspense>
-          <ProjectPageContent
-            items={orderedItems}
-            filters={filterOptions}
-            featuredCount={featuredCount}
-          />
-        </Suspense>
-      </div>
+    <div className="container">
+      <Suspense>
+        <ProjectPageContent items={projectItems} filters={filterOptions} />
+      </Suspense>
     </div>
   )
 }

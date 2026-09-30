@@ -1,4 +1,6 @@
 import Button, {type ButtonVariant} from '@/app/components/ui/Button'
+import {Locale} from '@/app/lib/i18n/config'
+import ArrowIcon from '../ui/icons/ArrowIcon'
 
 type Props = {
   isSubmitting: boolean
@@ -7,6 +9,7 @@ type Props = {
   submittingLabel: string
   variant?: ButtonVariant
   className?: string
+  lang: Locale
 }
 
 export default function SubmitButton({
@@ -16,6 +19,7 @@ export default function SubmitButton({
   submittingLabel,
   variant = 'primary',
   className,
+  lang,
 }: Props) {
   return (
     <Button
@@ -24,7 +28,13 @@ export default function SubmitButton({
       variant={variant}
       className={className}
     >
-      {isSubmitting ? submittingLabel : label}
+      {isSubmitting ? (
+        submittingLabel
+      ) : (
+        <span className="">
+          {label} <ArrowIcon lang={lang} />
+        </span>
+      )}
     </Button>
   )
 }

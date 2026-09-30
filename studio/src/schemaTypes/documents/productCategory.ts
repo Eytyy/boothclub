@@ -68,7 +68,7 @@ export const productCategory = defineType({
 
               return {
                 filter:
-                  '(!defined($categoryId) || $categoryId in product[]->category._ref) && !(_id in $selectedRefs)',
+                  '(!defined($categoryId) || product->category._ref == $categoryId) && !(_id in $selectedRefs)',
                 params: {categoryId, selectedRefs},
               }
             },
@@ -83,7 +83,6 @@ export const productCategory = defineType({
       type: 'block.image',
       validation: (rule) => rule.required(),
       group: 'media',
-      hidden: true,
     }),
     defineField({
       name: 'heroVideo',
@@ -92,7 +91,6 @@ export const productCategory = defineType({
       description:
         'Optional Mux video shown at the top of the category page in place of the main image. Falls back to the main image if not set.',
       group: 'media',
-      hidden: true,
     }),
     defineField({
       name: 'seo',

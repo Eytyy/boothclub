@@ -12,7 +12,9 @@ const linkReference = /* groq */ `
   }
 `
 
-const localizedValue = /* groq */ `[language == $lang][0].value`
+// Active language, then English. length() treats "" and [] as missing.
+// Parentheses keep `desc` attached to the comparison; the API rejects it on `$lang`.
+const localizedValue = /* groq */ `[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value`
 
 const imageProjection = /* groq */ `
   ...,
@@ -198,26 +200,29 @@ const projectMediaProjection = /* groq */ `
   }
 `
 
-/** Project/product document `pageBuilder` — content section, full media, split media. */
-const contentBlocksProjection = /* groq */ `
-  "pageBuilder": pageBuilder[]{
+/** Project document `blocks` (copy + media), `gallery`, and `output` images. */
+const projectBlocksProjection = /* groq */ `
+  blocks[]{
     _key,
     _type,
-    _type == "block.contentSection" => {
+    _type == "block.copy" => {
+      showHeadline,
+      showText,
       "headline": headline${localizedValue},
       "text": text${localizedValue}
     },
     _type == "block.media" => {
       ${projectMediaProjection}
-    },
-    _type == "block.splitMedia" => {
-      "left": left {
-        ${projectMediaProjection}
-      },
-      "right": right {
-        ${projectMediaProjection}
-      }
     }
+  },
+  gallery[] {
+    _key,
+    ${imageProjection},
+    "dimensions": asset->metadata.dimensions
+  },
+  output[] {
+    _key,
+    ${imageProjection}
   }
 `
 
@@ -294,19 +299,12 @@ const productListItemFields = /* groq */ `
   mainImage { ${imageProjection} }
 `
 
-const featuredProjectFields = /* groq */ `
-  _id,
-  "title": title${localizedValue},
-  "slug": slug.current,
-  mainImage { ${imageProjection} }
-`
-
 const projectCardFields = /* groq */ `
   _id,
   "title": title${localizedValue},
   "slug": slug.current,
   mainImage { ${imageProjection} },
-  "products": product[]->{
+  "product": product->{
     ${projectProductFields}
   }
 `
@@ -409,11 +407,11 @@ export const projectDetailQuery = defineQuery(`
     heroVideo {
       ${muxVideoProjection}
     },
-    "products": product[]->{
+    "product": product->{
       ${projectProductFields}
     },
     "description": description${localizedPortableText},
-    ${contentBlocksProjection},
+    ${projectBlocksProjection},
     seo {
       ${seoFields}
     }
@@ -603,7 +601,7 @@ export const getProductCategoryQuery = defineQuery(`
       ${seoFields}
     },
     "featuredProjects": featuredProjects[]->{
-      ${featuredProjectFields}
+      ${projectCardFields}
     },
     "products": *[_type == "product" && category._ref == ^._id && defined(slug.current)] | order(title${localizedValue} asc) {
       ${productListItemFields}
@@ -628,12 +626,27 @@ export const getProductQuery = defineQuery(`
     heroVideo {
       ${muxVideoProjection}
     },
-    ${contentBlocksProjection},
+    specs {
+      items[]{
+        _key,
+        "text": text${localizedValue}
+      }
+    },
+    copy {
+      showHeadline,
+      showText,
+      "headline": headline${localizedValue},
+      "text": text${localizedValue}
+    },
     seo {
       ${seoFields}
     },
     "featuredProjects": featuredProjects[]->{
-      ${featuredProjectFields}
+      ${projectCardFields},
+      gallery[] {
+        _key,
+        ${imageProjection}
+      }
     }
   }
 `)
@@ -644,15 +657,23 @@ export const otherProductsQuery = defineQuery(`
   }
 `)
 
-export const otherProjectsQuery = defineQuery(`
-  *[_type == "project" && _id != $currentId && defined(slug.current) && count(product[@._ref in $productRefs]) > 0] | order(_createdAt desc) [0...5] {
+export const otherProductsCategoryQuery = defineQuery(`
+  *[_type == "productCategory" && _id != $currentId && defined(slug.current)] | order(title${localizedValue} asc) {
     _id,
     "title": title${localizedValue},
+    "tagline": tagline${localizedValue},
     "slug": slug.current,
     mainImage { ${imageProjection} },
-    "products": product[]->{
-      ${projectProductFields}
-    },
+  }
+`)
+
+export const otherProjectsQuery = defineQuery(`
+  *[_type == "project" && _id != $currentId && defined(slug.current) && product._ref == $productId] | order(_createdAt desc) [0...5] {
+    ${projectCardFields},
+    gallery[] {
+      _key,
+      ${imageProjection}
+    }
   }
 `)
 

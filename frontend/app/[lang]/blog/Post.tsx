@@ -36,7 +36,7 @@ export const Post = ({post}: {post: AllPostsQueryResult[number]}) => {
         </div>
       )}
       <div>
-        <time className="text-black/50 dark:text-white/50 text-xs font-mono" dateTime={date}>
+        <time className="text-black/50 dark:text-white/50 text-xs" dateTime={date}>
           <DateComponent dateString={date} />
         </time>
         <h3 className="lg:text-2xl">{title}</h3>

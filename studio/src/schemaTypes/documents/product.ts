@@ -57,11 +57,15 @@ export const product = defineType({
       group: 'contents',
     }),
     defineField({
-      name: 'pageBuilder',
-      title: 'Page sections',
-      description: 'Taglines, full-width media, and two-column media.',
-      type: 'array',
-      of: [{type: 'block.contentSection'}, {type: 'block.media'}, {type: 'block.splitMedia'}],
+      name: 'specs',
+      title: 'Specs',
+      type: 'product.specs',
+      group: 'contents',
+    }),
+    defineField({
+      name: 'copy',
+      title: 'Copy',
+      type: 'block.copy',
       group: 'contents',
     }),
     defineField({

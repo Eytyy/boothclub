@@ -2,17 +2,11 @@ import type {Metadata, ResolvingMetadata} from 'next'
 import {notFound, permanentRedirect} from 'next/navigation'
 import type {SanityImageSource} from '@sanity/image-url/lib/types/types'
 
-import ContentBlocks from '@/app/components/page-builder/ContentBlocks'
-import ProjectContent from '@/app/components/project/ProjectContent.client'
-import ProjectMeta from '@/app/components/project/ProjectMeta'
-import ProjectCarousel from '@/app/components/project/ProjectCarousel.client'
-import ProjectHeroVideo from '@/app/components/project/ProjectHeroVideo.client'
-import Image from '@/app/components/ui/SanityImage.client'
 import {locales, localizedPath, type Locale} from '@/app/lib/i18n/config'
-import {getDictionary} from '@/app/lib/i18n/dictionary'
 import {localeAlternates} from '@/app/lib/seo/alternates'
 import {mapAllProjectItemToProjectCardData} from '@/app/lib/project/mappers'
 import {sanityFetch} from '@/sanity/lib/live'
+import {fetchFormConfigByKey} from '@/sanity/lib/data'
 import {otherProjectsQuery, projectDetailQuery, projectSlugs} from '@/sanity/lib/queries'
 import {
   resolveMetaTitle,
@@ -20,8 +14,18 @@ import {
   toMetaDescription,
   toPortableTextBlocks,
 } from '@/sanity/lib/utils'
-import ArrowButton from '@/app/components/ui/ArrowButton'
-import PageTitle from '@/app/components/ui/PageTitle'
+import type {OtherProjectsQueryResult} from '@/sanity.types'
+import {GridContainer, GridBlock, GridColumn} from '@/app/components/ui/GridSystem'
+import SectionTitle from '@/app/components/ui/SectionTitle'
+import {PageMainMedia} from '@/app/components/page/PageMainMedia'
+import PageHeroText from '@/app/components/page/PageHeroText'
+import ProjectGallery from './ProjectGallery.client'
+import CopyBlock from '@/app/components/product/CopyBlock'
+import MediaItem from '@/app/components/page-builder/blocks/MediaItem.client'
+import FeaturedProjects from '@/app/components/project/FeaturedProjects.client'
+import ContactFormSection from '@/app/components/forms/ContactFormSection'
+import SectionTitleMarquee from '@/app/components/ui/SectionTitleMarquee'
+import OtherProducts from '@/app/components/product/OtherProducts.client'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string}>
@@ -69,7 +73,6 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
 
 export default async function ProjectDetailPage(props: Props) {
   const {lang, slug} = await props.params
-  const t = getDictionary(lang)
   const {data: project} = await sanityFetch({
     query: projectDetailQuery,
     params: {lang, slug},
@@ -92,76 +95,131 @@ export default async function ProjectDetailPage(props: Props) {
     heroVideo.playbackId.length > 0
       ? heroVideo.playbackId
       : null
-  const productRefs = project.products?.map((product) => product._id).filter(Boolean) ?? []
-  const {data: otherProjectsRaw} =
-    productRefs.length > 0
-      ? await sanityFetch({
-          query: otherProjectsQuery,
-          params: {lang, currentId: project._id, productRefs},
-        })
-      : {data: []}
+  const productId = project.product?._id
+  const projectHref = localizedPath(lang, `/projects/${project.slug}`)
 
-  const otherProjects = (otherProjectsRaw ?? [])
-    .filter((item): item is (typeof otherProjectsRaw)[number] & {title: string} =>
+  const [otherProjectsResult, formConfig] = await Promise.all([
+    productId
+      ? sanityFetch({
+          query: otherProjectsQuery,
+          params: {lang, currentId: project._id, productId},
+        })
+      : Promise.resolve({data: [] as OtherProjectsQueryResult}),
+    fetchFormConfigByKey('contact-us', lang),
+  ])
+
+  const otherProjects = (otherProjectsResult.data ?? [])
+    .filter((item): item is (typeof otherProjectsResult.data)[number] & {title: string} =>
       Boolean(item.title),
     )
     .map(mapAllProjectItemToProjectCardData)
 
-  return (
-    <>
-      <div className="space-y-10 lg:space-y-16 mb-20 container mt-5 ">
-        <div className="aspect-video lg:pb-5 px-5 lg:px-10">
-          {heroPlaybackId ? (
-            <ProjectHeroVideo playbackId={heroPlaybackId} title={title} />
-          ) : mainImage?.asset?._ref ? (
-            <Image
-              className="h-full w-full rounded-sm object-cover"
-              id={mainImage.asset._ref}
-              alt=""
-              aria-hidden="true"
-              width={1200}
-              height={675}
-              mode="cover"
-              hotspot={mainImage.hotspot}
-              crop={mainImage.crop}
-              preview={mainImage.lqip ?? undefined}
-            />
-          ) : (
-            <div className="h-full w-full bg-black/5 dark:bg-white/5" />
-          )}
-        </div>
-        <ProjectContent
-          title={
-            <PageTitle className="whitespace-pre-line text-left px-0 lg:text-[clamp(2rem,5vw,4rem)]">
-              {title}
-            </PageTitle>
-          }
-          value={toPortableTextBlocks(description)}
-        >
-          <ProjectMeta products={project.products} />
-        </ProjectContent>
-      </div>
-      <div className="my-16 lg:my-24 container">
-        <ContentBlocks blocks={project.pageBuilder ?? []} />
-      </div>
+  const galleryItems = (project.gallery ?? []).map((item) => ({
+    id: item._key,
+    image: item,
+    width: item.dimensions?.width ?? undefined,
+    height: item.dimensions?.height ?? undefined,
+  }))
+  const blocks = project.blocks ?? []
+  const outputItems = (project.output ?? []).filter((item) => item.asset?._ref)
 
-      {otherProjects.length > 0 && (
-        <section className="relative flex flex-col space-y-10 lg:px-10 mb-16 lg:mb-20">
-          <ProjectCarousel
-            items={otherProjects}
-            header={
-              <h2 className="text-center text-[8vw] lg:text-[5vw] font-bold uppercase leading-none tracking-tight">
-                {t['sections.otherWork']}
-              </h2>
-            }
-            cta={
-              <ArrowButton href="/projects" variant="primary">
-                {t['actions.allWork']}
-              </ArrowButton>
-            }
-          />
-        </section>
-      )}
-    </>
+  return (
+    <div className="container grid">
+      <div className="col-start-1 row-start-1">
+        <GridContainer>
+          <GridColumn span={6} className="grid self-start sticky top-0 h-svh">
+            <GridBlock className="p-10 relative">
+              <PageMainMedia
+                className="absolute inset-10"
+                mainImage={mainImage}
+                title={title ?? ''}
+                heroPlaybackId={heroPlaybackId}
+              />
+            </GridBlock>
+          </GridColumn>
+          <GridColumn span={6} className="sticky">
+            <GridBlock borders="bottom">
+              <PageHeroText
+                title={title ?? ''}
+                description={description ? toPortableTextBlocks(description) : null}
+              />
+            </GridBlock>
+            {galleryItems.length > 0 ? (
+              <GridBlock className="col-span-6 p-0">
+                <ProjectGallery items={galleryItems} />
+              </GridBlock>
+            ) : null}
+          </GridColumn>
+        </GridContainer>
+        {blocks.length > 0 ? (
+          <GridContainer variant="compact">
+            {blocks.map((block, index) => {
+              const isLastOdd = index === blocks.length - 1 && blocks.length % 2 === 1
+              const spanClass = isLastOdd
+                ? 'col-span-12 relative z-10 bg-white dark:bg-black'
+                : 'col-span-6'
+
+              if (block._type === 'block.copy') {
+                return (
+                  <div key={block._key} className={spanClass}>
+                    <CopyBlock
+                      className="border-y-site border-black dark:border-white"
+                      showHeadline={block.showHeadline ?? undefined}
+                      showText={block.showText ?? undefined}
+                      headline={block.headline ?? undefined}
+                      text={block.text ?? undefined}
+                    />
+                  </div>
+                )
+              }
+
+              return (
+                <div key={block._key} className={`${spanClass} p-10`}>
+                  <MediaItem media={block} aspect="video" />
+                </div>
+              )
+            })}
+          </GridContainer>
+        ) : null}
+        {outputItems.length > 0 ? (
+          <GridContainer variant="compact" className="relative">
+            {outputItems.map((item) => (
+              <GridBlock
+                key={item._key}
+                borders="right"
+                className="col-span-4 last:border-e-0 bg-white dark:bg-black relative z-40"
+              >
+                <MediaItem media={{type: 'image', image: item}} />
+              </GridBlock>
+            ))}
+          </GridContainer>
+        ) : null}
+        <GridContainer className="max-lg:grid-cols-1 max-lg:after:hidden border-t-site border-black dark:border-white">
+          <GridColumn
+            span={8}
+            className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100 border-e-site border-black dark:border-white"
+          >
+            <ContactFormSection
+              className=" max-lg:order-4 h-full flex-col flex"
+              form={formConfig}
+              context={{title: title || undefined, url: projectHref}}
+              title="Tell us the vision, we bring the setup, the tech, the vibe and the results. Get an Instant Quote."
+            />
+          </GridColumn>
+          <GridColumn span={4} className="max-lg:contents">
+            {otherProjects.length > 0 ? (
+              <OtherProducts
+                items={otherProjects.map((p) => ({
+                  _id: p._id,
+                  title: p.title,
+                  href: `/projects/${p.slug}`,
+                  image: p.mainImage,
+                }))}
+              />
+            ) : null}
+          </GridColumn>
+        </GridContainer>
+      </div>
+    </div>
   )
 }

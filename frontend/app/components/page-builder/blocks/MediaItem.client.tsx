@@ -24,11 +24,12 @@ export type MediaBlockData = {
   video?: VideoBlockData | null
 }
 
-export type MediaAspect = 'video' | 'square'
+export type MediaAspect = 'video' | 'square' | 'original'
 
-const ASPECT_CONFIG: Record<MediaAspect, {className: string; width: number; height: number}> = {
+const ASPECT_CONFIG: Record<MediaAspect, {className: string; width: number; height?: number}> = {
   video: {className: 'aspect-video', width: 1600, height: 900},
   square: {className: 'aspect-square', width: 1600, height: 1600},
+  original: {className: 'aspect-original', width: 1600},
 }
 
 export default function MediaItem({
@@ -36,12 +37,12 @@ export default function MediaItem({
   aspect,
 }: {
   media: MediaBlockData | null | undefined
-  aspect: MediaAspect
+  aspect?: MediaAspect
 }) {
   if (!media) return null
 
   const kind = stegaClean(media.type) ?? 'image'
-  const {className: aspectClass, width, height} = ASPECT_CONFIG[aspect]
+  const {className: aspectClass, width, height} = ASPECT_CONFIG[aspect ?? 'original']
 
   if (kind === 'video') {
     const playbackId = media.video?.muxVideo?.playbackId
@@ -69,7 +70,7 @@ export default function MediaItem({
           crop={img.crop as {top: number; bottom: number; left: number; right: number} | undefined}
           preview={img.lqip ?? undefined}
           width={width}
-          height={height}
+          height={height ?? undefined}
           className="h-full w-full object-cover"
           mode="cover"
         />

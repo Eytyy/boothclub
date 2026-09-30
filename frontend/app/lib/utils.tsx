@@ -1,8 +1,24 @@
 import Link from "next/link";
 import clsx, { type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
 
 import { localizedPath, type Locale } from "@/app/lib/i18n/config";
+
+const twMerge = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      "border-w": [{ border: ["site"] }],
+      "border-w-x": [{ "border-x": ["site"] }],
+      "border-w-y": [{ "border-y": ["site"] }],
+      "border-w-t": [{ "border-t": ["site"] }],
+      "border-w-r": [{ "border-r": ["site"] }],
+      "border-w-b": [{ "border-b": ["site"] }],
+      "border-w-l": [{ "border-l": ["site"] }],
+      "border-w-s": [{ "border-s": ["site"] }],
+      "border-w-e": [{ "border-e": ["site"] }],
+    },
+  },
+});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

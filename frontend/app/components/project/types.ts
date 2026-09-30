@@ -30,5 +30,6 @@ export type ProjectCardData = {
   title: string
   slug: string
   mainImage?: ProjectCardImage
-  products?: ProjectCardRelatedEntity[] | null
+  gallery?: NonNullable<ProjectCardImage>[]
+  product?: ProjectCardRelatedEntity | null
 }

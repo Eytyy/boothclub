@@ -5,7 +5,7 @@ import MuxPlayer, {type MuxCSSProperties} from '@mux/mux-player-react'
 import type MuxPlayerElement from '@mux/mux-player'
 import clsx from 'clsx'
 
-type ProjectHeroVideoProps = {
+type HeroVideoProps = {
   playbackId: string
   title?: string | null
 }
@@ -26,7 +26,7 @@ function PauseIcon() {
   )
 }
 
-export default function ProjectHeroVideo({playbackId, title}: ProjectHeroVideoProps) {
+export default function HeroVideo({playbackId, title}: HeroVideoProps) {
   const playerRef = useRef<MuxPlayerElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
 

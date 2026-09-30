@@ -13,11 +13,11 @@ export const FIELD_DEFS: Record<string, FieldDef[]> = {
   'contact-us': [
     {name: 'fullName', type: 'text', required: true, autoComplete: 'name'},
     {name: 'email', type: 'email', required: true, autoComplete: 'email'},
-    {name: 'company', type: 'text', autoComplete: 'organization'},
+    // {name: 'company', type: 'text', autoComplete: 'organization'},
     {name: 'phone', type: 'tel', autoComplete: 'tel'},
     {name: 'message', type: 'textarea', required: true},
-    {name: 'notifications', type: 'checkbox'},
-    {name: 'consent', type: 'checkbox', required: true},
+    // {name: 'notifications', type: 'checkbox'},
+    // {name: 'consent', type: 'checkbox', required: true},
   ],
 }
 
@@ -28,11 +28,11 @@ export function getLabels(lang: Locale) {
     'contact-us': {
       fullName: t['form.label.fullName'],
       email: t['form.label.email'],
-      company: t['form.label.company'],
+      // company: t['form.label.company'],
       phone: t['form.label.phone'],
       message: t['form.label.message'],
-      notifications: t['form.label.notifications'],
-      consent: t['form.label.consent'],
+      // notifications: t['form.label.notifications'],
+      // consent: t['form.label.consent'],
       submit: t['form.label.submit'],
     },
   } as const
