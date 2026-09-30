@@ -45,7 +45,7 @@ export default function ProjectPageContent({items, filters}: ProjectPageContentP
   const lastRowSize = filteredItems.length % 2 === 0 ? 2 : 1
 
   return (
-    <GridContainer variant="compact">
+    <GridContainer>
       <ProjectFilters className="col-span-full self-start" filters={filters} />
       {hasResults ? (
         filteredItems.map((item, index) => (

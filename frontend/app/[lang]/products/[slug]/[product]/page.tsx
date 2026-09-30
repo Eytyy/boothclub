@@ -131,7 +131,7 @@ export default async function ProductPage(props: Props) {
 
   return (
     <div className="container">
-      <GridContainer variant="compact">
+      <GridContainer>
         <GridColumn
           span={6}
           className="self-start sticky top-0 grid grid-rows-[1fr_14svh] min-h-svh"
