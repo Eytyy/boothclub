@@ -1,29 +1,43 @@
 import type {Metadata, ResolvingMetadata} from 'next'
 import {notFound} from 'next/navigation'
+import {stegaClean} from '@sanity/client/stega'
 
-import Avatar from '@/app/components/ui/Avatar'
-import ArrowButton from '@/app/components/ui/ArrowButton'
-import PostsCarousel from '@/app/components/blog/PostsCarousel.client'
 import PortableText from '@/app/components/ui/PortableText'
 import Image from '@/app/components/ui/SanityImage.client'
 import {locales, localizedPath, type Locale} from '@/app/lib/i18n/config'
+import {productCategoryPath, productPath} from '@/app/lib/product/paths'
 import {localeAlternates} from '@/app/lib/seo/alternates'
 import {sanityFetch} from '@/sanity/lib/live'
-import {morePostsQuery, postPagesSlugs, postQuery} from '@/sanity/lib/queries'
-import {resolveOpenGraphImage, toPortableTextBlocks} from '@/sanity/lib/utils'
+import {adjacentPostsQuery, postPagesSlugs, postQuery} from '@/sanity/lib/queries'
+import {dataAttr, resolveOpenGraphImage, toPortableTextBlocks} from '@/sanity/lib/utils'
+import {GridBlock, GridColumn, GridContainer} from '@/app/components/ui/GridSystem'
+import PageTitle from '@/app/components/ui/PageTitle'
+import type {AdjacentPostsQueryResult, PostQueryResult} from '@/sanity.types'
+import LocalizedLink from '@/app/components/ui/LocalizedLink'
+import PostBody from './PostBody'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string}>
 }
 
-/**
- * Generate the static params for the page.
- * Learn more: https://nextjs.org/docs/app/api-reference/functions/generate-static-params
- */
+type TaggedKind = 'product' | 'productCategory' | 'project'
+
+type TaggedLink = {
+  id: string
+  kind: TaggedKind
+  title: string
+  href: string
+}
+
+const taggedLabels: Record<TaggedKind, string> = {
+  product: 'Product',
+  productCategory: 'Category',
+  project: 'Project',
+}
+
 export async function generateStaticParams() {
   const {data} = await sanityFetch({
     query: postPagesSlugs,
-    // Use the published perspective in generateStaticParams
     perspective: 'published',
     stega: false,
   })
@@ -34,28 +48,21 @@ export async function generateStaticParams() {
   )
 }
 
-/**
- * Generate metadata for the page.
- * Learn more: https://nextjs.org/docs/app/api-reference/functions/generate-metadata#generatemetadata-function
- */
 export async function generateMetadata(props: Props, parent: ResolvingMetadata): Promise<Metadata> {
   const {lang, slug} = await props.params
   const {data: post} = await sanityFetch({
     query: postQuery,
     params: {lang, slug},
-    // Metadata should never contain stega
     stega: false,
   })
   const previousImages = (await parent).openGraph?.images || []
   const ogImage = resolveOpenGraphImage(post?.coverImage)
-  const authorName = post?.author?.name
 
   return {
     alternates: {
       ...localeAlternates(lang, `/blog/${slug}`),
-      canonical: post?.canonicalUrl || localizedPath(lang, `/blog/${slug}`),
+      canonical: localizedPath(lang, `/blog/${slug}`),
     },
-    authors: authorName ? [{name: authorName}] : [],
     title: post?.meta?.title || post?.title || undefined,
     description: post?.meta?.description || post?.excerpt || undefined,
     openGraph: {
@@ -67,83 +74,202 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
 export default async function PostPage(props: Props) {
   const {lang, slug} = await props.params
   const {data: post} = await sanityFetch({query: postQuery, params: {lang, slug}})
-  const authorName = post?.author?.name
 
   if (!post?._id || !post.title || !post.slug) {
     return notFound()
   }
 
-  const categoryIds =
-    post.categories?.map((c) => c._id).filter((id): id is string => Boolean(id)) ?? []
-
-  const {data: morePosts} = await sanityFetch({
-    query: morePostsQuery,
-    params: {lang, skip: post._id, categoryIds, limit: 4},
+  const {data: adjacent} = await sanityFetch({
+    query: adjacentPostsQuery,
+    params: {lang, date: post.date, id: post._id},
   })
 
-  const morePostsWithTitle = (morePosts ?? []).filter(
-    (item): item is (typeof morePosts)[number] & {title: string; slug: string} =>
-      Boolean(item.title && item.slug),
-  )
+  const taggedLinks = extractTaggedLinks(post.sections)
+  const previousPost = usableAdjacentPost(adjacent?.previous)
+  const nextPost = usableAdjacentPost(adjacent?.next)
 
   return (
     <>
-      <div className="grid gap-10 px-5 lg:px-10 lg:-mt-20">
-        <div className="grid gap-10 grid-cols-1  max-w-4xl mx-auto ">
-          <div className="relative overflow-hidden rounded-sm aspect-video">
-            {post?.coverImage && (
-              <Image
-                id={post.coverImage.asset?._ref || ''}
-                alt={post.coverImage.alt || ''}
-                className="w-full h-full object-cover"
-                width={1000}
-                height={600}
-                mode="cover"
-                hotspot={post.coverImage.hotspot}
-                crop={post.coverImage.crop}
-                preview={post.coverImage.lqip ?? undefined}
-              />
-            )}
-          </div>
-          <div className="space-y-2">
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-semibold">{post.title}</h1>
-            {post.author && authorName ? <Avatar person={post.author} date={post.date} /> : null}
-          </div>
-          <article className="gap-6 grid article-content">
-            {post.content?.length && (
-              <PortableText
-                className="max-w-full prose-headings:font-medium prose-headings:tracking-tight"
-                value={toPortableTextBlocks(post.content)}
-              />
-            )}
-          </article>
-          {post.blogPostFooter?.length ? (
-            <footer className="article-content border-t border-black/10 dark:border-white/10 pt-8 mb-12">
-              <PortableText
-                className="max-w-full "
-                value={toPortableTextBlocks(post.blogPostFooter)}
-              />
-            </footer>
-          ) : null}
-        </div>
+      <div className="container">
+        <GridContainer columns={[4, 8]}>
+          <GridColumn span={4} className="self-start sticky top-0">
+            <GridBlock className="relative aspect-square" borders="bottom">
+              {post?.coverImage?.asset?._ref ? (
+                <Image
+                  id={post.coverImage.asset?._ref || ''}
+                  alt={post.coverImage.alt || ''}
+                  className="w-full h-full object-cover"
+                  width={1000}
+                  height={600}
+                  mode="cover"
+                  hotspot={post.coverImage.hotspot}
+                  crop={post.coverImage.crop}
+                  preview={post.coverImage.lqip ?? undefined}
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-200" />
+              )}
+            </GridBlock>
+            {taggedLinks.length > 0 ? (
+              <GridBlock as="aside" className="space-y-5" borders="bottom">
+                <h2 className="font-normal">Tagged in this article</h2>
+                {taggedLinks.map((item) => (
+                  <SidebarEntry
+                    key={item.id}
+                    href={item.href}
+                    label={taggedLabels[item.kind]}
+                    title={item.title}
+                  />
+                ))}
+              </GridBlock>
+            ) : null}
+            <GridBlock className="space-y-5">
+              {previousPost ? (
+                <SidebarEntry
+                  href={`/blog/${previousPost.slug}`}
+                  label="Previous"
+                  title={previousPost.title}
+                  sanity={{id: previousPost._id, type: 'post'}}
+                />
+              ) : null}
+              {nextPost ? (
+                <SidebarEntry
+                  href={`/blog/${nextPost.slug}`}
+                  label="Next"
+                  title={nextPost.title}
+                  sanity={{id: nextPost._id, type: 'post'}}
+                />
+              ) : null}
+            </GridBlock>
+          </GridColumn>
+          <GridColumn span={8}>
+            <GridBlock>
+              <div className="space-y-10">
+                <PageTitle>{post.title}</PageTitle>
+                <article className="article-content">
+                  <PostBody sections={post.sections ?? []} />
+                </article>
+              </div>
+              {post.blogPostFooter?.length ? (
+                <footer className="article-content border-t border-black/10 dark:border-white/10 pt-8 mb-12">
+                  <PortableText
+                    className="max-w-full "
+                    value={toPortableTextBlocks(post.blogPostFooter)}
+                  />
+                </footer>
+              ) : null}
+            </GridBlock>
+          </GridColumn>
+        </GridContainer>
       </div>
-      {morePostsWithTitle.length > 0 && (
-        <section className="relative flex flex-col space-y-10 lg:px-10 mb-16 lg:mb-20 mt-10 lg:mt-20">
-          <PostsCarousel
-            items={morePostsWithTitle}
-            header={
-              <h2 className="text-center text-[5vw] font-bold uppercase leading-none tracking-tight">
-                Recent Posts
-              </h2>
-            }
-            cta={
-              <ArrowButton href="/blog" variant="primary">
-                All posts
-              </ArrowButton>
-            }
-          />
-        </section>
-      )}
     </>
+  )
+}
+
+type AdjacentPost = NonNullable<AdjacentPostsQueryResult['previous']>
+
+function usableAdjacentPost(
+  post: AdjacentPost | null | undefined,
+): (AdjacentPost & {title: string; slug: string}) | null {
+  if (!post?._id || !post.title || !post.slug) return null
+  return post as AdjacentPost & {title: string; slug: string}
+}
+
+function extractTaggedLinks(
+  sections: NonNullable<PostQueryResult>['sections'] | null | undefined,
+): TaggedLink[] {
+  const seen = new Set<string>()
+  const items: TaggedLink[] = []
+
+  for (const section of sections ?? []) {
+    for (const block of section.blocks ?? []) {
+      if (block._type !== 'post.content') continue
+      for (const node of block.content ?? []) {
+        if (!('markDefs' in node) || !node.markDefs) continue
+        for (const mark of node.markDefs) {
+          const tagged = taggedLinkFromMark(mark)
+          if (!tagged || seen.has(tagged.id)) continue
+          seen.add(tagged.id)
+          items.push(tagged)
+        }
+      }
+    }
+  }
+
+  return items
+}
+
+function taggedLinkFromMark(mark: unknown): TaggedLink | null {
+  const rec = asRecord(mark)
+  if (!rec || rec._type !== 'link') return null
+
+  const linkType = stringField(rec.linkType)
+  if (linkType === 'product') {
+    const product = asRecord(rec.product)
+    const id = stringField(product?._id)
+    const title = stringField(product?.title)
+    const slug = stringField(product?.slug)
+    const categorySlug = stringField(product?.categorySlug)
+    if (!id || !title || !slug || !categorySlug) return null
+    return {id, kind: 'product', title, href: productPath(categorySlug, slug)}
+  }
+
+  if (linkType === 'productCategory') {
+    const category = rec.productCategory
+    const obj = asRecord(category)
+    const id = stringField(obj?._id)
+    const title = stringField(obj?.title)
+    const slug = stringField(typeof category === 'string' ? category : obj?.slug)
+    if (!id || !title || !slug) return null
+    return {id, kind: 'productCategory', title, href: productCategoryPath(slug)}
+  }
+
+  if (linkType === 'project') {
+    const project = asRecord(rec.project)
+    const id = stringField(project?._id)
+    const title = stringField(project?.title)
+    const slug = stringField(project?.slug)
+    if (!id || !title || !slug) return null
+    return {id, kind: 'project', title, href: `/projects/${slug}`}
+  }
+
+  return null
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object' ? (value as Record<string, unknown>) : null
+}
+
+function stringField(value: unknown): string | null {
+  if (typeof value !== 'string') return null
+  return stegaClean(value) || null
+}
+
+function SidebarEntry({
+  href,
+  label,
+  title,
+  sanity,
+}: {
+  href: string
+  label: string
+  title: string
+  sanity?: {id: string; type: string}
+}) {
+  return (
+    <article
+      data-sanity={
+        sanity ? dataAttr({id: sanity.id, type: sanity.type, path: 'title'}).toString() : undefined
+      }
+      className="rounded-sm flex flex-col justify-start transition-colors relative"
+    >
+      <LocalizedLink className="underline transition-colors" href={href}>
+        <span className="absolute inset-0 z-10" />
+      </LocalizedLink>
+      <div>
+        <p className="text-black/50 dark:text-white/50 text-xs">{label}</p>
+        <h3 className="lg:text-2xl font-bold">{title}</h3>
+      </div>
+    </article>
   )
 }

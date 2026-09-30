@@ -7,7 +7,12 @@ import {productPath} from '@/app/lib/product/paths'
 import {localeAlternates} from '@/app/lib/seo/alternates'
 import {mapProductFeaturedProjectItemToProjectCardData} from '@/app/lib/project/mappers'
 import {sanityFetch} from '@/sanity/lib/live'
-import {getProductQuery, otherProductsQuery, productSlugs} from '@/sanity/lib/queries'
+import {
+  getProductQuery,
+  otherProductsQuery,
+  productSlugs,
+  relatedPostsQuery,
+} from '@/sanity/lib/queries'
 import {resolveMetaTitle, resolveOpenGraphImage, toPortableTextBlocks} from '@/sanity/lib/utils'
 import ContactFormSection from '@/app/components/forms/ContactFormSection'
 import {fetchFormConfigByKey} from '@/sanity/lib/data'
@@ -19,6 +24,8 @@ import ScrollCue from '@/app/components/page/ScrollCue.client'
 import {GridContainer, GridBlock, GridColumn} from '@/app/components/ui/GridSystem'
 import OtherProducts from '@/app/components/product/OtherProducts.client'
 import SpecsBlock from '@/app/components/product/SpecsBlock.client'
+import RelatedPosts from '@/app/components/blog/RelatedPosts'
+import {mapRelatedPosts} from '@/app/components/blog/mapRelatedPosts'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string; product: string}>
@@ -85,10 +92,15 @@ export default async function ProductPage(props: Props) {
     return notFound()
   }
 
-  const [{data: otherProductsRaw}, formConfig] = await Promise.all([
+  const documentId = product._id.replace(/^drafts\./, '')
+  const [{data: otherProductsRaw}, relatedPostsResult, formConfig] = await Promise.all([
     sanityFetch({
       query: otherProductsQuery,
       params: {lang, currentId: product._id, categoryId: product.category._id},
+    }),
+    sanityFetch({
+      query: relatedPostsQuery,
+      params: {lang, documentId},
     }),
     fetchFormConfigByKey('contact-us', lang),
   ])
@@ -97,6 +109,7 @@ export default async function ProductPage(props: Props) {
     (item): item is NonNullable<typeof item> & {title: string; slug: string} =>
       Boolean(item?._id && item.title && item.slug),
   )
+  const relatedPosts = mapRelatedPosts(relatedPostsResult.data)
 
   const productHref = localizedPath(lang, productPath(product.category.slug, product.slug))
   const {mainImage, heroVideo, description, title, featuredProjects} = product
@@ -156,10 +169,20 @@ export default async function ProductPage(props: Props) {
           ) : null}
         </GridColumn>
       </GridContainer>
-      <GridContainer className="max-lg:grid-cols-1 max-lg:after:hidden ">
+      {relatedPosts.length > 0 ? (
+        <GridContainer columns="none">
+          <GridColumn span="full" className="border-b-site border-black dark:border-white">
+            <RelatedPosts posts={relatedPosts} />
+          </GridColumn>
+        </GridContainer>
+      ) : null}
+      <GridContainer
+        columns={[8, 4]}
+        className="max-lg:grid-cols-1 max-lg:[&_.grid-divider]:hidden"
+      >
         <GridColumn
           span={8}
-          className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100 border-e-site border-black dark:border-white"
+          className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100"
         >
           <ContactFormSection
             className=" max-lg:order-4 h-full flex-col flex"

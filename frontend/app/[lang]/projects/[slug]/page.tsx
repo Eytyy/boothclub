@@ -7,7 +7,12 @@ import {localeAlternates} from '@/app/lib/seo/alternates'
 import {mapAllProjectItemToProjectCardData} from '@/app/lib/project/mappers'
 import {sanityFetch} from '@/sanity/lib/live'
 import {fetchFormConfigByKey} from '@/sanity/lib/data'
-import {otherProjectsQuery, projectDetailQuery, projectSlugs} from '@/sanity/lib/queries'
+import {
+  otherProjectsQuery,
+  projectDetailQuery,
+  projectSlugs,
+  relatedPostsQuery,
+} from '@/sanity/lib/queries'
 import {
   resolveMetaTitle,
   resolveOpenGraphImage,
@@ -16,16 +21,15 @@ import {
 } from '@/sanity/lib/utils'
 import type {OtherProjectsQueryResult} from '@/sanity.types'
 import {GridContainer, GridBlock, GridColumn} from '@/app/components/ui/GridSystem'
-import SectionTitle from '@/app/components/ui/SectionTitle'
 import {PageMainMedia} from '@/app/components/page/PageMainMedia'
 import PageHeroText from '@/app/components/page/PageHeroText'
 import ProjectGallery from './ProjectGallery.client'
 import CopyBlock from '@/app/components/product/CopyBlock'
 import MediaItem from '@/app/components/page-builder/blocks/MediaItem.client'
-import FeaturedProjects from '@/app/components/project/FeaturedProjects.client'
 import ContactFormSection from '@/app/components/forms/ContactFormSection'
-import SectionTitleMarquee from '@/app/components/ui/SectionTitleMarquee'
 import OtherProducts from '@/app/components/product/OtherProducts.client'
+import RelatedPosts from '@/app/components/blog/RelatedPosts'
+import {mapRelatedPosts} from '@/app/components/blog/mapRelatedPosts'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string}>
@@ -98,13 +102,18 @@ export default async function ProjectDetailPage(props: Props) {
   const productId = project.product?._id
   const projectHref = localizedPath(lang, `/projects/${project.slug}`)
 
-  const [otherProjectsResult, formConfig] = await Promise.all([
+  const documentId = project._id.replace(/^drafts\./, '')
+  const [otherProjectsResult, relatedPostsResult, formConfig] = await Promise.all([
     productId
       ? sanityFetch({
           query: otherProjectsQuery,
           params: {lang, currentId: project._id, productId},
         })
       : Promise.resolve({data: [] as OtherProjectsQueryResult}),
+    sanityFetch({
+      query: relatedPostsQuery,
+      params: {lang, documentId},
+    }),
     fetchFormConfigByKey('contact-us', lang),
   ])
 
@@ -113,6 +122,7 @@ export default async function ProjectDetailPage(props: Props) {
       Boolean(item.title),
     )
     .map(mapAllProjectItemToProjectCardData)
+  const relatedPosts = mapRelatedPosts(relatedPostsResult.data)
 
   const galleryItems = (project.gallery ?? []).map((item) => ({
     id: item._key,
@@ -122,6 +132,7 @@ export default async function ProjectDetailPage(props: Props) {
   }))
   const blocks = project.blocks ?? []
   const outputItems = (project.output ?? []).filter((item) => item.asset?._ref)
+  const hasBlocks = blocks.length > 0
 
   return (
     <div className="container grid">
@@ -151,8 +162,8 @@ export default async function ProjectDetailPage(props: Props) {
             ) : null}
           </GridColumn>
         </GridContainer>
-        {blocks.length > 0 ? (
-          <GridContainer variant="compact">
+        {hasBlocks ? (
+          <GridContainer>
             {blocks.map((block, index) => {
               const isLastOdd = index === blocks.length - 1 && blocks.length % 2 === 1
               const spanClass = isLastOdd
@@ -182,22 +193,32 @@ export default async function ProjectDetailPage(props: Props) {
           </GridContainer>
         ) : null}
         {outputItems.length > 0 ? (
-          <GridContainer variant="compact" className="relative">
+          <GridContainer columns={[4, 4, 4]} className="relative">
             {outputItems.map((item) => (
               <GridBlock
                 key={item._key}
-                borders="right"
-                className="col-span-4 last:border-e-0 bg-white dark:bg-black relative z-40"
+                borders={hasBlocks ? 'none' : 'top'}
+                className="col-span-4 bg-white dark:bg-black relative z-40"
               >
                 <MediaItem media={{type: 'image', image: item}} />
               </GridBlock>
             ))}
           </GridContainer>
         ) : null}
-        <GridContainer className="max-lg:grid-cols-1 max-lg:after:hidden border-t-site border-black dark:border-white">
+        {relatedPosts.length > 0 ? (
+          <GridContainer columns="none">
+            <GridColumn span="full" className="border-t-site border-black dark:border-white">
+              <RelatedPosts posts={relatedPosts} />
+            </GridColumn>
+          </GridContainer>
+        ) : null}
+        <GridContainer
+          columns={[8, 4]}
+          className="max-lg:grid-cols-1 max-lg:[&_.grid-divider]:hidden border-t-site border-black dark:border-white"
+        >
           <GridColumn
             span={8}
-            className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100 border-e-site border-black dark:border-white"
+            className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100"
           >
             <ContactFormSection
               className=" max-lg:order-4 h-full flex-col flex"

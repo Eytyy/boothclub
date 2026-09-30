@@ -1,20 +1,31 @@
 import {defineQuery} from 'next-sanity'
 
+// Active language, then English. length() treats "" and [] as missing.
+// Parentheses keep `desc` attached to the comparison; the API rejects it on `$lang`.
+const localizedValue = /* groq */ `[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value`
+
 const linkReference = /* groq */ `
   _type == "link" => {
     "page": page->{ _type, "slug": slug.current },
     "post": post->slug.current,
     "product": product->{
+      _id,
+      "title": title${localizedValue},
       "slug": slug.current,
       "categorySlug": category->slug.current
     },
-    "productCategory": productCategory->slug.current
+    "productCategory": productCategory->{
+      _id,
+      "title": title${localizedValue},
+      "slug": slug.current
+    },
+    "project": project->{
+      _id,
+      "title": title${localizedValue},
+      "slug": slug.current
+    }
   }
 `
-
-// Active language, then English. length() treats "" and [] as missing.
-// Parentheses keep `desc` attached to the comparison; the API rejects it on `$lang`.
-const localizedValue = /* groq */ `[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value`
 
 const imageProjection = /* groq */ `
   ...,
@@ -61,12 +72,6 @@ const postFields = /* groq */ `
   },
   "coverImage": coalesce(mainImage, coverImage) { ${imageProjection} },
   "date": coalesce(publishedAt, date, _updatedAt),
-  canonicalUrl,
-  "author": author->{
-    "name": name${localizedValue},
-    "picture": coalesce(image, picture) { ${imageProjection} }
-  },
-  "categories": categories[]->{_id, "title": title${localizedValue}, slug},
 `
 
 /** Latest posts for featuredBlog blocks (not stored on the document). */
@@ -440,16 +445,53 @@ export const allPostsQuery = defineQuery(`
   }
 `)
 
-export const morePostsQuery = defineQuery(`
-  *[_type == "post" && _id != $skip && defined(slug.current)] {
-    "relevance": count(categories[@._ref in $categoryIds]),
+export const relatedPostsQuery = defineQuery(`
+  *[_type == "post" && defined(slug.current) && references($documentId)]
+    | order(coalesce(publishedAt, date, _updatedAt) desc) {
     ${postFields}
-  } | order(relevance desc, date desc, _updatedAt desc) [0...$limit]
+  }
 `)
+
+/** Previous (nearest older) and next (nearest newer) posts relative to `$date` / `$id`. */
+export const adjacentPostsQuery = defineQuery(`{
+  "previous": *[_type == "post" && _id != $id && defined(slug.current) && (
+    coalesce(publishedAt, date, _updatedAt) < $date ||
+    (coalesce(publishedAt, date, _updatedAt) == $date && _id < $id)
+  )] | order(coalesce(publishedAt, date, _updatedAt) desc, _id desc) [0] {
+    ${postFields}
+  },
+  "next": *[_type == "post" && _id != $id && defined(slug.current) && (
+    coalesce(publishedAt, date, _updatedAt) > $date ||
+    (coalesce(publishedAt, date, _updatedAt) == $date && _id > $id)
+  )] | order(coalesce(publishedAt, date, _updatedAt) asc, _id asc) [0] {
+    ${postFields}
+  }
+}`)
+
+const postSectionsProjection = /* groq */ `
+  "sections": body[]{
+    _key,
+    _type,
+    columns,
+    blocks[]{
+      _key,
+      _type,
+      span,
+      _type == "post.content" => {
+        "content": content${localizedPortableTextWithImages}
+      },
+      _type == "post.media" => {
+        media {
+          ${projectMediaProjection}
+        }
+      }
+    }
+  }
+`
 
 export const postQuery = defineQuery(`
   *[_type == "post" && slug.current == $slug] [0] {
-    "content": body${localizedPortableTextWithImages},
+    ${postSectionsProjection},
     "blogPostFooter": *[_type == "blog" && _id == "blogPage"][0].blogPostFooter${localizedPortableTextWithImages},
     ${postFields}
   }

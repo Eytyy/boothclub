@@ -1,26 +1,71 @@
-import {DocumentTextIcon} from '@sanity/icons'
+import {DocumentTextIcon, TagIcon} from '@sanity/icons'
 import {format, parseISO} from 'date-fns'
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 import {localizedString, slugFromLocalized} from '../../lib/i18n'
-
-/**
- * Post schema.  Define and edit the fields for the 'post' content type.
- * Learn more: https://www.sanity.io/docs/schema-types
- */
 
 export const post = defineType({
   name: 'post',
   title: 'Post',
   icon: DocumentTextIcon,
   type: 'document',
+  groups: [
+    {
+      name: 'content',
+      title: 'Content',
+      icon: DocumentTextIcon,
+      default: true,
+    },
+    {
+      name: 'seo',
+      title: 'SEO',
+      icon: TagIcon,
+    },
+  ],
   fields: [
     defineField({
       name: 'title',
       title: 'Title',
       type: 'internationalizedArrayString',
       validation: (rule) => rule.required(),
+      group: 'content',
     }),
+
+    defineField({
+      name: 'publishedAt',
+      title: 'Published At',
+      type: 'datetime',
+      validation: (rule) => rule.required(),
+      group: 'content',
+    }),
+    defineField({
+      name: 'mainImage',
+      title: 'Main Image',
+      type: 'image',
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        {
+          name: 'alt',
+          type: 'internationalizedArrayString',
+          title: 'Alternative text',
+          description: 'Important for SEO and accessibility.',
+        },
+      ],
+      validation: (rule) => rule.required(),
+      group: 'content',
+    }),
+
+    defineField({
+      name: 'body',
+      title: 'Body',
+      type: 'array',
+      of: [defineArrayMember({type: 'post.section'})],
+      validation: (rule) => rule.required().min(1),
+      group: 'content',
+    }),
+
     defineField({
       name: 'slug',
       title: 'Slug',
@@ -32,50 +77,7 @@ export const post = defineType({
         isUnique: (value, context) => context.defaultIsUnique(value, context),
       },
       validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: 'body',
-      title: 'Body',
-      type: 'internationalizedArrayBlockContent',
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: 'mainImage',
-      title: 'Main Image',
-      type: 'image',
-      options: {
-        hotspot: true,
-        // aiAssist: {
-        //   imageDescriptionField: 'alt',
-        // },
-      },
-      fields: [
-        {
-          name: 'alt',
-          type: 'internationalizedArrayString',
-          title: 'Alternative text',
-          description: 'Important for SEO and accessibility.',
-        },
-      ],
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: 'publishedAt',
-      title: 'Published At',
-      type: 'datetime',
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: 'author',
-      title: 'Author',
-      type: 'reference',
-      to: [{type: 'author'}],
-    }),
-    defineField({
-      name: 'categories',
-      title: 'Categories',
-      type: 'array',
-      of: [{type: 'reference', to: [{type: 'category'}]}],
+      group: 'content',
     }),
     defineField({
       name: 'meta',
@@ -99,34 +101,7 @@ export const post = defineType({
           options: {hotspot: true},
         }),
       ],
-    }),
-    defineField({
-      name: 'canonicalUrl',
-      title: 'Canonical URL',
-      type: 'url',
-      description: 'Optional explicit canonical URL. If omitted, frontend derives /blog/[slug].',
-    }),
-    defineField({
-      name: 'sourceId',
-      title: 'Contentful Source ID',
-      type: 'string',
-      hidden: true,
-      readOnly: true,
-    }),
-    defineField({
-      name: 'sourceType',
-      title: 'Source Type',
-      type: 'string',
-      initialValue: 'contentful',
-      hidden: true,
-      readOnly: true,
-    }),
-    defineField({
-      name: 'sourceUpdatedAt',
-      title: 'Source Updated At',
-      type: 'datetime',
-      hidden: true,
-      readOnly: true,
+      group: 'seo',
     }),
   ],
   // List preview configuration. https://www.sanity.io/docs/previews-list-views

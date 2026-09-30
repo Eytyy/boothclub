@@ -6,7 +6,8 @@ import {localeAlternates} from '@/app/lib/seo/alternates'
 import {sanityFetch} from '@/sanity/lib/live'
 import {blogPageQuery, allPostsQuery} from '@/sanity/lib/queries'
 import {resolveMetaTitle} from '@/sanity/lib/utils'
-import YearGroupedPosts from './YearGroupedPosts.client'
+import {Post} from './Post'
+import {GridBlock, GridColumn, GridContainer} from '@/app/components/ui/GridSystem'
 
 type Props = {
   params: Promise<{lang: Locale}>
@@ -37,30 +38,22 @@ export default async function BlogPage({params}: Props) {
     sanityFetch({query: allPostsQuery, params: {lang}}),
   ])
 
-  const currentYear = new Date().getFullYear()
-
-  const groups = Object.entries(
-    (posts ?? [])
-      .filter((post): post is (typeof posts)[number] & {title: string; slug: string} =>
-        Boolean(post.title && post.slug),
-      )
-      .reduce<Record<number, NonNullable<typeof posts>>>((acc, post) => {
-        const year = post.date ? new Date(post.date).getFullYear() : currentYear
-        ;(acc[year] ??= []).push(post)
-        return acc
-      }, {}),
-  )
-    .map(([year, yearPosts]) => ({year: Number(year), posts: yearPosts}))
-    .sort((a, b) => b.year - a.year)
+  const visiblePosts = (posts ?? []).filter((post) => Boolean(post.title && post.slug))
 
   return (
-    <div className="mt-10 lg:-mt-20 min-h-screen">
-      <PageTitle as="h1">{page?.title ?? 'Our Blog'}</PageTitle>
-      <div className="px-5 lg:px-10">
-        <aside className="py-12 sm:py-20">
-          <YearGroupedPosts groups={groups} currentYear={currentYear} />
-        </aside>
-      </div>
+    <div className="container">
+      <PageTitle className="hidden" as="h1">
+        {page?.title ?? 'Our Blog'}
+      </PageTitle>
+      <GridContainer columns={[4, 4, 4]}>
+        <GridColumn span={'full'} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {visiblePosts.map((post) => (
+            <GridBlock key={post._id}>
+              <Post post={post} />
+            </GridBlock>
+          ))}
+        </GridColumn>
+      </GridContainer>
     </div>
   )
 }

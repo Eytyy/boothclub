@@ -23,7 +23,6 @@ export type CardsCarouselControls = {
 type CardsCarouselProps<T extends {_id: string}> = {
   items: readonly T[]
   renderItem: (item: T, index: number) => ReactNode
-  header?: ReactNode
   cta?: ReactNode
   controls?: (nav: CardsCarouselControls) => ReactNode
   className?: string
@@ -34,7 +33,6 @@ type CardsCarouselProps<T extends {_id: string}> = {
 export default function CardsCarousel<T extends {_id: string}>({
   items,
   renderItem,
-  header,
   cta,
   controls,
   className,
@@ -76,7 +74,6 @@ export default function CardsCarousel<T extends {_id: string}>({
 
   return (
     <section className={cn('flex min-w-0 flex-col gap-6 md:gap-10', className)}>
-      <React.Fragment>{header}</React.Fragment>
       <div className="overflow-x-clip" ref={emblaRef}>
         <div className={cn('flex', !isSingle && 'gap-10 px-5 lg:px-10')}>
           {items.map((item, index) => (

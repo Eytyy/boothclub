@@ -30,19 +30,36 @@ export type ExtractPageBuilderType<T extends PageBuilderSection['_type']> = Extr
 
 /** Product reference after GROQ dereference (`slug` + parent `categorySlug`). */
 export type DereferencedProduct = {
+  _id?: string | null
+  title?: string | null
   slug?: string | null
   categorySlug?: string | null
+}
+
+/** Product category after GROQ dereference. Slug-only strings remain valid until typegen catches up. */
+export type DereferencedProductCategory = {
+  _id?: string | null
+  title?: string | null
+  slug?: string | null
+}
+
+/** Project reference after GROQ dereference. */
+export type DereferencedProject = {
+  _id?: string | null
+  title?: string | null
+  slug?: string | null
 }
 
 // Represents a Link after GROQ dereferencing (page becomes an object with _type and slug, post becomes a slug string)
 export type DereferencedLink = {
   _type: 'link'
-  linkType?: 'href' | 'page' | 'post' | 'product' | 'productCategory' | 'email' | 'phone'
+  linkType?: 'href' | 'page' | 'post' | 'product' | 'productCategory' | 'project' | 'email' | 'phone'
   href?: string
   page?: {_type: string; _ref?: string; slug?: string | null} | null
   post?: string | null
   product?: DereferencedProduct | null
-  productCategory?: string | null
+  productCategory?: string | DereferencedProductCategory | null
+  project?: DereferencedProject | null
   email?: string
   phone?: string
 }

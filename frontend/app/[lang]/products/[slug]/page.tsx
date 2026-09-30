@@ -111,7 +111,7 @@ export default async function ProductCategoryPage(props: Props) {
 
   return (
     <div className="container">
-      <GridContainer variant="compact">
+      <GridContainer>
         <GridColumn
           span={6}
           className="self-start sticky top-0 grid grid-rows-[1fr_14svh] min-h-svh"
@@ -157,10 +157,13 @@ export default async function ProductCategoryPage(props: Props) {
           </div>
         </GridColumn>
       </GridContainer>
-      <GridContainer className="max-lg:grid-cols-1 max-lg:after:hidden border-t-site border-black dark:border-white">
+      <GridContainer
+        columns={[8, 4]}
+        className="max-lg:grid-cols-1 max-lg:[&_.grid-divider]:hidden border-t-site border-black dark:border-white"
+      >
         <GridColumn
           span={8}
-          className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100 border-e-site border-black dark:border-white"
+          className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100"
         >
           <ContactFormSection
             className=" max-lg:order-4 h-full flex-col flex"

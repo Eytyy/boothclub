@@ -2,23 +2,56 @@ import type {ComponentPropsWithoutRef, ElementType, ReactNode} from 'react'
 
 import {cn} from '@/app/lib/utils'
 
+const GRID_COLUMNS = 12
+
+/** Spans that sum to 12. Vertical rules are drawn on the boundaries between them. */
+export type GridColumnLayout = readonly (2 | 3 | 4 | 6 | 7 | 8 | 9 | 12)[]
+
+const ruleStops = (columns: 'none' | GridColumnLayout) => {
+  if (columns === 'none') return []
+
+  const stops: number[] = []
+  let cursor = 0
+  for (let index = 0; index < columns.length - 1; index++) {
+    cursor += columns[index]
+    if (cursor > 0 && cursor < GRID_COLUMNS) stops.push(cursor)
+  }
+  return stops
+}
+
 export const GridContainer = ({
   children,
-  variant = 'default',
   className,
+  columns = [6, 6],
 }: {
   children: ReactNode
-  variant?: 'default' | 'compact'
   className?: string
+  /**
+   * Where full-height vertical rules sit.
+   * `[6, 6]` is a center rule, `[4, 4, 4]` and `[3, 3, 3, 3]` split into equal columns,
+   * `[8, 4]` sits the rule after an 8-span column. `none` draws no rules.
+   */
+  columns?: 'none' | GridColumnLayout
 }) => {
+  const stops = ruleStops(columns)
+  // Halves stay in normal stacking so a full-width cell can still cover the center rule.
+  // Other splits sit above sticky column backgrounds so the rule remains visible.
+  const raised = columns !== 'none' && !(columns.length === 2 && columns[0] === 6 && columns[1] === 6)
+
   return (
-    <div
-      className={cn(
-        "grid grid-cols-12 border-x-site mx-10 after:content-[''] after:block after:h-full after:w-(--border-width-site) after:bg-black dark:after:bg-white after:absolute after:top-0 after:left-1/2 after:-translate-x-1/2 relative",
-        className,
-      )}
-    >
+    <div className={cn('grid grid-cols-12 border-x-site mx-10 relative', className)}>
       {children}
+      {stops.map((stop) => (
+        <span
+          key={stop}
+          aria-hidden
+          className={cn(
+            'grid-divider pointer-events-none absolute top-0 h-full w-(--border-width-site) -translate-x-1/2 bg-black dark:bg-white',
+            raised && 'z-[110]',
+          )}
+          style={{left: `${(stop / GRID_COLUMNS) * 100}%`}}
+        />
+      ))}
     </div>
   )
 }

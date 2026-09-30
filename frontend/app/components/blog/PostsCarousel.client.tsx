@@ -8,24 +8,16 @@ import type {AllPostsQueryResult} from '@/sanity.types'
 
 type PostsCarouselProps = {
   items: AllPostsQueryResult
-  header?: ReactNode
   cta?: ReactNode
   cardClassName?: string
   className?: string
 }
 
-export default function PostsCarousel({
-  items,
-  header,
-  cta,
-  cardClassName,
-  className,
-}: PostsCarouselProps) {
+export default function PostsCarousel({items, cta, cardClassName, className}: PostsCarouselProps) {
   return (
     <CardsCarousel
       items={items}
       renderItem={(post) => <Post post={post} />}
-      header={header}
       cta={cta}
       className={className}
       cardClassName={cardClassName}

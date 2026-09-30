@@ -1,0 +1,30 @@
+npm warn Unknown env config "devdir". This will stop working in the next major version of npm.
+
+> type-check
+> npm run type-check --workspaces
+
+npm warn Unknown env config "devdir". This will stop working in the next major version of npm.
+
+> studio@1.0.0 type-check
+> tsc --noEmit
+
+
+> type-check
+> tsc --noEmit
+
+app/[lang]/blog/[slug]/page.tsx(4,20): error TS2307: Cannot find module '@/app/components/ui/Avatar' or its corresponding type declarations.
+app/[lang]/blog/[slug]/page.tsx(51,28): error TS2339: Property 'author' does not exist on type '{ content: ({ children?: { marks?: string[] | undefined; text?: string | undefined; _type: "span"; _key: string; }[] | undefined; style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote" | undefined; ... 4 more ...; _key: string; } | { ...; })[] | null; ... 8 more ...; date: string; }'.
+app/[lang]/blog/[slug]/page.tsx(56,24): error TS2339: Property 'canonicalUrl' does not exist on type '{ content: ({ children?: { marks?: string[] | undefined; text?: string | undefined; _type: "span"; _key: string; }[] | undefined; style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote" | undefined; ... 4 more ...; _key: string; } | { ...; })[] | null; ... 8 more ...; date: string; }'.
+app/[lang]/blog/[slug]/page.tsx(70,28): error TS2339: Property 'author' does not exist on type '{ content: ({ children?: { marks?: string[] | undefined; text?: string | undefined; _type: "span"; _key: string; }[] | undefined; style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote" | undefined; ... 4 more ...; _key: string; } | { ...; })[] | null; ... 8 more ...; date: string; }'.
+app/[lang]/blog/[slug]/page.tsx(77,10): error TS2339: Property 'categories' does not exist on type '{ content: ({ children?: { marks?: string[] | undefined; text?: string | undefined; _type: "span"; _key: string; }[] | undefined; style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote" | undefined; ... 4 more ...; _key: string; } | { ...; })[] | null; ... 8 more ...; date: string; }'.
+app/[lang]/blog/[slug]/page.tsx(77,27): error TS7006: Parameter 'c' implicitly has an 'any' type.
+app/[lang]/blog/[slug]/page.tsx(77,48): error TS7006: Parameter 'id' implicitly has an 'any' type.
+app/[lang]/blog/[slug]/page.tsx(110,19): error TS2339: Property 'author' does not exist on type '{ content: ({ children?: { marks?: string[] | undefined; text?: string | undefined; _type: "span"; _key: string; }[] | undefined; style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote" | undefined; ... 4 more ...; _key: string; } | { ...; })[] | null; ... 8 more ...; date: string; }'.
+app/[lang]/blog/[slug]/page.tsx(110,63): error TS2339: Property 'author' does not exist on type '{ content: ({ children?: { marks?: string[] | undefined; text?: string | undefined; _type: "span"; _key: string; }[] | undefined; style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote" | undefined; ... 4 more ...; _key: string; } | { ...; })[] | null; ... 8 more ...; date: string; }'.
+npm error Lifecycle script `type-check` failed with error:
+npm error code 2
+npm error path /Users/Eytyy/Code/freelance/boothclub/frontend
+npm error workspace frontend
+npm error location /Users/Eytyy/Code/freelance/boothclub/frontend
+npm error command failed
+npm error command sh -c tsc --noEmit
