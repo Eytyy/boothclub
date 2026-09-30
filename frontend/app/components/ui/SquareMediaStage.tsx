@@ -24,7 +24,7 @@ export default function SquareMediaStage({href, label, image, children}: SquareM
   return (
     <div className="relative flex aspect-square w-full items-center justify-center">
       <LocalizedLink href={href} aria-label={label} className="absolute inset-0" />
-      <div className="pointer-events-none relative z-10 w-4/5 overflow-hidden">
+      <div className="pointer-events-none relative z-10 overflow-hidden">
         {imageRef && image ? (
           <div className="relative">
             <Image

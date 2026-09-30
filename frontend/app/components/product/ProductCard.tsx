@@ -25,11 +25,10 @@ const ProductCard = ({
       className={cn('group block', className)}
     >
       <div className="space-y-10">
-        <h3 className="text-4xl font-bold group-hover:underline">{title}</h3>
         <div className="overflow-hidden">
           {image?.asset?._ref ? (
             <Image
-              className="h-full w-2/3 object-cover aspect-square mx-auto"
+              className="h-full  object-cover aspect-square mx-auto"
               id={image.asset._ref}
               alt={image.alt || title}
               width={800}
@@ -43,7 +42,10 @@ const ProductCard = ({
             <div className="h-full w-full border-2 border-black dark:border-white" />
           )}
         </div>
-        <div className="space-y-2 w-2/3 ml-auto">{excerpt ? <p>{excerpt}</p> : null}</div>
+        <header className="space-y-4 ">
+          <h3 className="text-4xl font-bold group-hover:underline">{title}</h3>
+          <div className="">{excerpt ? <p>{excerpt}</p> : null}</div>
+        </header>
       </div>
     </GridBlock>
   )

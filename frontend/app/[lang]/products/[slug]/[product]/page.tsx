@@ -18,7 +18,7 @@ import FeaturedProjects from '@/app/components/project/FeaturedProjects.client'
 import ScrollCue from '@/app/components/page/ScrollCue.client'
 import {GridContainer, GridBlock, GridColumn} from '@/app/components/ui/GridSystem'
 import OtherProducts from '@/app/components/product/OtherProducts.client'
-import SpecsBlock from '@/app/components/product/SpecsBlock'
+import SpecsBlock from '@/app/components/product/SpecsBlock.client'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string; product: string}>
@@ -117,70 +117,71 @@ export default async function ProductPage(props: Props) {
       .map((item) => mapProductFeaturedProjectItemToProjectCardData(item)) ?? []
 
   return (
-    <div className="container grid">
-      <ScrollCue />
-      <div className="col-start-1 row-start-1">
-        <GridContainer>
-          <GridColumn
-            span={6}
-            className="grid grid-rows-[auto_14svh] self-start sticky top-0 h-svh"
-          >
-            <GridBlock borders="none" className="p-10 relative">
-              <PageMainMedia
-                className="absolute inset-10"
-                mainImage={mainImage}
-                title={title ?? ''}
-                heroPlaybackId={heroPlaybackId}
-              />
-            </GridBlock>
-            <GridBlock borders="top" className="w-full">
-              {null}
-            </GridBlock>
-          </GridColumn>
-          <GridColumn span={6} className="sticky">
-            <GridBlock borders="bottom">
-              <PageHeroText
-                title={title ?? ''}
-                description={description ? toPortableTextBlocks(description) : null}
-              />
-            </GridBlock>
-            {featuredProjectItems.length > 0 ? (
-              <FeaturedProjects items={featuredProjectItems} lang={lang} />
-            ) : null}
-            {product.specs?.items?.length ? (
-              <SpecsBlock
-                items={product.specs.items.filter((item): item is {_key: string; text: string} =>
-                  Boolean(item?._key && item.text),
-                )}
-              />
-            ) : null}
-          </GridColumn>
-        </GridContainer>
-        <GridContainer variant="compact" className="max-lg:grid-cols-1 max-lg:after:hidden ">
-          <GridColumn span={6} className="min-w-0 max-lg:contents -mt-[14svh]">
-            <ContactFormSection
-              className=" max-lg:order-4 h-full flex-col flex pb-[14svh]"
-              form={formConfig}
-              context={{title: title || undefined, url: productHref}}
-              title="Get an Instant Quote"
+    <div className="container">
+      <GridContainer variant="compact">
+        <GridColumn
+          span={6}
+          className="self-start sticky top-0 grid grid-rows-[1fr_14svh] min-h-svh"
+        >
+          <GridBlock borders="none" className="p-10 relative">
+            <PageMainMedia
+              className="absolute inset-10"
+              mainImage={mainImage}
+              title={title ?? ''}
+              heroPlaybackId={heroPlaybackId}
             />
-          </GridColumn>
-          <GridColumn span={6} className="max-lg:contents">
-            {otherProducts.length > 0 ? (
-              <OtherProducts
-                heading="Other Products"
-                items={otherProducts.map((otherProduct) => ({
-                  _id: otherProduct._id,
-                  title: otherProduct.title,
-                  href: productPath(product.category.slug, otherProduct.slug),
-                  subtitle: product.category.title,
-                  image: otherProduct.mainImage,
-                }))}
-              />
-            ) : null}
-          </GridColumn>
-        </GridContainer>
-      </div>
+          </GridBlock>
+          <ScrollCue />
+        </GridColumn>
+        <GridColumn span={6} className="grid grid-rows-[auto_1fr]">
+          <GridBlock borders="bottom">
+            <PageHeroText
+              title={title ?? ''}
+              description={description ? toPortableTextBlocks(description) : null}
+            />
+          </GridBlock>
+          {product.specs?.items?.length ? (
+            <SpecsBlock
+              items={product.specs.items.filter((item): item is {_key: string; text: string} =>
+                Boolean(item?._key && item.text),
+              )}
+            />
+          ) : null}
+        </GridColumn>
+      </GridContainer>
+      <GridContainer className="border-t-site border-black dark:border-white">
+        <GridColumn span={'full'}>
+          {featuredProjectItems.length > 0 ? (
+            <FeaturedProjects items={featuredProjectItems} lang={lang} />
+          ) : null}
+        </GridColumn>
+      </GridContainer>
+      <GridContainer className="max-lg:grid-cols-1 max-lg:after:hidden ">
+        <GridColumn
+          span={8}
+          className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100 border-e-site border-black dark:border-white"
+        >
+          <ContactFormSection
+            className=" max-lg:order-4 h-full flex-col flex"
+            form={formConfig}
+            context={{title: title || undefined, url: productHref}}
+            title="Tell us the vision, we bring the setup, the tech, the vibe and the results. Get an Instant Quote."
+          />
+        </GridColumn>
+        <GridColumn span={4} className="max-lg:contents">
+          {otherProducts.length > 0 ? (
+            <OtherProducts
+              items={otherProducts.map((otherProduct) => ({
+                _id: otherProduct._id,
+                title: otherProduct.title,
+                href: productPath(product.category.slug, otherProduct.slug),
+                subtitle: product.category.title,
+                image: otherProduct.mainImage,
+              }))}
+            />
+          ) : null}
+        </GridColumn>
+      </GridContainer>
     </div>
   )
 }

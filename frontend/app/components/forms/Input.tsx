@@ -54,7 +54,7 @@ const Input = <T extends FieldValues = FieldValues>({
     case 'textarea':
       return (
         <textarea
-          rows={8}
+          rows={5}
           className={cn(textFieldClassName, inputClassName, className)}
           {...commonProps}
         />

@@ -1,8 +1,7 @@
 import type {FormConfigByKeyQueryResult} from '@/sanity.types'
 import ContactForm, {type FormContext} from '@/app/components/forms/ContactForm.client'
 import {cn} from '@/app/lib/utils'
-import SectionTitle from '../ui/SectionTitle'
-import SectionTitleMarquee from '../ui/SectionTitleMarquee'
+import TextReveal from '../ui/TextReveal.client'
 
 type Props = {
   form: NonNullable<FormConfigByKeyQueryResult> | null | undefined
@@ -20,7 +19,7 @@ export default function ContactFormSection({form, context, title, className}: Pr
 
   return (
     <section className={cn('h-full', className)}>
-      <SectionTitle as="h2">{title}</SectionTitle>
+      <TextReveal className="text-6xl leading-tight font-bold p-10" text={title} />
       <div className="flex-1">
         <ContactForm
           formKey="contact-us"

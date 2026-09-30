@@ -173,6 +173,7 @@ export default function ContactForm({
         isSubmitting={isSubmitting}
         label={L.submit}
         submittingLabel={t['form.label.submitting']}
+        lang={lang}
       />
     </form>
   )

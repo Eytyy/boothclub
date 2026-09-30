@@ -25,6 +25,7 @@ import MediaItem from '@/app/components/page-builder/blocks/MediaItem.client'
 import FeaturedProjects from '@/app/components/project/FeaturedProjects.client'
 import ContactFormSection from '@/app/components/forms/ContactFormSection'
 import SectionTitleMarquee from '@/app/components/ui/SectionTitleMarquee'
+import OtherProducts from '@/app/components/product/OtherProducts.client'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string}>
@@ -116,6 +117,8 @@ export default async function ProjectDetailPage(props: Props) {
   const galleryItems = (project.gallery ?? []).map((item) => ({
     id: item._key,
     image: item,
+    width: item.dimensions?.width ?? undefined,
+    height: item.dimensions?.height ?? undefined,
   }))
   const blocks = project.blocks ?? []
   const outputItems = (project.output ?? []).filter((item) => item.asset?._ref)
@@ -180,34 +183,38 @@ export default async function ProjectDetailPage(props: Props) {
         ) : null}
         {outputItems.length > 0 ? (
           <GridContainer variant="compact" className="relative">
-            <SectionTitle className="absolute top-0 left-0 z-100">Output</SectionTitle>
             {outputItems.map((item) => (
               <GridBlock
                 key={item._key}
-                borders="bottom-right"
-                className="col-span-4 last:border-e-0 bg-white dark:bg-black relative z-40 pt-28"
+                borders="right"
+                className="col-span-4 last:border-e-0 bg-white dark:bg-black relative z-40"
               >
                 <MediaItem media={{type: 'image', image: item}} />
               </GridBlock>
             ))}
           </GridContainer>
         ) : null}
-        <GridContainer variant="compact" className="max-lg:grid-cols-1 max-lg:after:hidden ">
-          <GridColumn span={6} className="min-w-0 max-lg:contents">
+        <GridContainer className="max-lg:grid-cols-1 max-lg:after:hidden border-t-site border-black dark:border-white">
+          <GridColumn
+            span={8}
+            className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100 border-e-site border-black dark:border-white"
+          >
             <ContactFormSection
               className=" max-lg:order-4 h-full flex-col flex"
               form={formConfig}
               context={{title: title || undefined, url: projectHref}}
-              title="Get an Instant Quote"
+              title="Tell us the vision, we bring the setup, the tech, the vibe and the results. Get an Instant Quote."
             />
           </GridColumn>
-          <GridColumn span={6} className="max-lg:contents">
+          <GridColumn span={4} className="max-lg:contents">
             {otherProjects.length > 0 ? (
-              <FeaturedProjects
-                className="border-b-0"
-                heading="related projects"
-                items={otherProjects}
-                lang={lang}
+              <OtherProducts
+                items={otherProjects.map((p) => ({
+                  _id: p._id,
+                  title: p.title,
+                  href: `/projects/${p.slug}`,
+                  image: p.mainImage,
+                }))}
               />
             ) : null}
           </GridColumn>

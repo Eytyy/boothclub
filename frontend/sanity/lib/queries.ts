@@ -217,7 +217,8 @@ const projectBlocksProjection = /* groq */ `
   },
   gallery[] {
     _key,
-    ${imageProjection}
+    ${imageProjection},
+    "dimensions": asset->metadata.dimensions
   },
   output[] {
     _key,

@@ -30,7 +30,7 @@ export default function NavMenuItem({item, pathname, onNavigate, className}: Nav
       onClick={onNavigate}
       aria-current={isActive ? 'page' : undefined}
       className={cn(
-        'hover:underline text-2xl leading-[1.1] lg:text-6xl font-bold block h-full',
+        'hover:underline text-2xl leading-[1.1] lg:text-4xl font-bold block h-full',
         isActive && 'underline underline-offset-4',
         className,
       )}

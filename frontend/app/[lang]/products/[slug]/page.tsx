@@ -19,14 +19,14 @@ import {
 } from '@/sanity/lib/utils'
 import ContactFormSection from '@/app/components/forms/ContactFormSection'
 import {fetchFormConfigByKey} from '@/sanity/lib/data'
-import SectionTitle from '@/app/components/ui/SectionTitle'
 import {PageMainMedia} from '@/app/components/page/PageMainMedia'
 import PageHeroText from '@/app/components/page/PageHeroText'
 import ScrollCue from '@/app/components/page/ScrollCue.client'
 import {GridContainer, GridBlock, GridColumn} from '@/app/components/ui/GridSystem'
 import ProductCard from '@/app/components/product/ProductCard'
 import OtherProducts from '@/app/components/product/OtherProducts.client'
-import SectionTitleMarquee from '@/app/components/ui/SectionTitleMarquee'
+import TextReveal from '@/app/components/ui/TextReveal.client'
+
 type Props = {
   params: Promise<{lang: Locale; slug: string}>
 }
@@ -110,64 +110,69 @@ export default async function ProductCategoryPage(props: Props) {
     }))
 
   return (
-    <div className="container grid">
-      <ScrollCue />
-      <div className="col-start-1 row-start-1">
-        <GridContainer className="">
-          <GridColumn className="grid grid-rows-[auto_14svh] self-start sticky top-0 h-svh">
-            <GridBlock className="relative">
-              <PageMainMedia
-                className="absolute inset-10"
-                mainImage={category.mainImage}
-                title={categoryTitle}
-              />
-            </GridBlock>
-            <GridBlock className="flex-1" borders="top">
-              {null}
-            </GridBlock>
-          </GridColumn>
-          <GridColumn className="sticky">
-            <GridBlock borders="bottom">
-              <PageHeroText
-                title={categoryTitle}
-                tagline={category.tagline}
-                description={description ? toPortableTextBlocks(description) : null}
-              />
-            </GridBlock>
-            <div>
-              <SectionTitle>Products</SectionTitle>
-              {products.length > 0 && (
-                <>
-                  {products.map((product) => (
-                    <ProductCard
-                      key={product._id}
-                      href={productPath(category.slug, product.slug)}
-                      title={product.title}
-                      excerpt={product.excerpt}
-                      image={product.mainImage}
-                    />
-                  ))}
-                </>
-              )}
-            </div>
-          </GridColumn>
-        </GridContainer>
-        <GridContainer variant="compact" className="max-lg:grid-cols-1 max-lg:after:hidden ">
-          <GridColumn span={6} className="min-w-0 max-lg:contents -mt-[14svh]">
-            <ContactFormSection
-              className=" max-lg:order-4 h-full flex-col flex pb-[14svh]"
-              form={formConfig}
-              context={{title: title || undefined, url: categoryHref}}
-              title="Get an Instant Quote"
+    <div className="container">
+      <GridContainer variant="compact">
+        <GridColumn
+          span={6}
+          className="self-start sticky top-0 grid grid-rows-[1fr_14svh] min-h-svh"
+        >
+          <GridBlock borders="none" className="p-10 relative">
+            <PageMainMedia
+              className="absolute inset-10"
+              mainImage={category.mainImage}
+              title={categoryTitle}
             />
-          </GridColumn>
-          <GridColumn span={6} className="max-lg:contents">
-            {otherCategoryItems.length > 0 ? (
-              <OtherProducts heading="Other Categories" items={otherCategoryItems} />
-            ) : null}
-          </GridColumn>
-        </GridContainer>
-      </div>
+          </GridBlock>
+          <ScrollCue />
+        </GridColumn>
+        <GridColumn className="sticky">
+          <GridBlock className="pb-0">
+            <PageHeroText
+              title={categoryTitle}
+              tagline={category.tagline}
+              description={description ? toPortableTextBlocks(description) : null}
+            />
+          </GridBlock>
+          <div>
+            <div className="p-10 pb-0">
+              <TextReveal
+                className="text-4xl leading-tight font-bold"
+                text={`Stylish, simplistic and understated. Photobooths will never go out of fashion.`}
+              />
+            </div>
+            {products.length > 0 && (
+              <>
+                {products.map((product) => (
+                  <ProductCard
+                    className="last:border-b-0"
+                    key={product._id}
+                    href={productPath(category.slug, product.slug)}
+                    title={product.title}
+                    excerpt={product.excerpt}
+                    image={product.mainImage}
+                  />
+                ))}
+              </>
+            )}
+          </div>
+        </GridColumn>
+      </GridContainer>
+      <GridContainer className="max-lg:grid-cols-1 max-lg:after:hidden border-t-site border-black dark:border-white">
+        <GridColumn
+          span={8}
+          className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100 border-e-site border-black dark:border-white"
+        >
+          <ContactFormSection
+            className=" max-lg:order-4 h-full flex-col flex"
+            form={formConfig}
+            context={{title: title || undefined, url: categoryHref}}
+            title="Tell us the vision, we bring the setup, the tech, the vibe and the results. Get an Instant Quote."
+          />
+        </GridColumn>
+        <GridColumn span={4} className="max-lg:contents">
+          {otherCategoryItems.length > 0 ? <OtherProducts items={otherCategoryItems} /> : null}
+        </GridColumn>
+      </GridContainer>
     </div>
   )
 }

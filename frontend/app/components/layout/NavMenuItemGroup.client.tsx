@@ -24,46 +24,29 @@ export default function NavMenuItemGroup({group, pathname, onNavigate}: NavMenuI
 
   return (
     <div className="col-span-6">
-      <button
-        type="button"
-        id={buttonId}
-        aria-expanded={isActive}
-        aria-controls={panelId}
-        onClick={handleToggle}
-        className={cn(
-          'group/menu-group flex items-center gap-3 md:gap-4 text-left',
-          'text-2xl font-semibold leading-[1.1]',
-          'transition-colors',
-          isActive && 'md:underline md:underline-offset-4',
-        )}
-      >
-        <span>{title}</span>
-        <ExpandIcon isActive={isActive} />
-      </button>
+      <span>{title}</span>
       <AnimatePresence initial={false}>
-        {isActive && (
-          <motion.div
-            id={panelId}
-            role="region"
-            aria-labelledby={buttonId}
-            className="overflow-hidden"
-            initial={{height: 0, opacity: 0}}
-            animate={{height: 'auto', opacity: 1}}
-            exit={{height: 0, opacity: 0}}
-            transition={{duration: 0.3, ease: [0.22, 1, 0.36, 1]}}
-          >
-            <ul role="list" className="flex flex-col gap-3 pt-4 pb-2 ">
-              {group.items?.map((child) => (
-                <NavMenuItem
-                  key={child._key}
-                  item={child}
-                  pathname={pathname}
-                  onNavigate={onNavigate}
-                />
-              ))}
-            </ul>
-          </motion.div>
-        )}
+        <motion.div
+          id={panelId}
+          role="region"
+          aria-labelledby={buttonId}
+          className="overflow-hidden"
+          initial={{height: 0, opacity: 0}}
+          animate={{height: 'auto', opacity: 1}}
+          exit={{height: 0, opacity: 0}}
+          transition={{duration: 0.3, ease: [0.22, 1, 0.36, 1]}}
+        >
+          <ul role="list" className="flex flex-col gap-3 pt-4 pb-2 ">
+            {group.items?.map((child) => (
+              <NavMenuItem
+                key={child._key}
+                item={child}
+                pathname={pathname}
+                onNavigate={onNavigate}
+              />
+            ))}
+          </ul>
+        </motion.div>
       </AnimatePresence>
     </div>
   )

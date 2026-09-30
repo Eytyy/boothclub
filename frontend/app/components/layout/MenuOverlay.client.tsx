@@ -63,25 +63,17 @@ export default function MenuOverlay({items, onNavigate}: MenuOverlayProps) {
       initial="hidden"
       animate="visible"
       exit="hidden"
-      className="fixed inset-0 z-40 bg-white"
+      className="fixed p-10 space-y-10 right-[114px] top-0 h-svh z-40 w-[calc(50vw-114px-55px)] bg-black dark:bg-white text-white dark:text-white "
     >
-      <div className="container">
-        <GridContainer>
-          {menuItems.map((item) => (
-            <motion.div
-              className="col-span-6 p-10 bg-white text-black border-b-site border-black"
-              key={item._key}
-              variants={itemVariants}
-            >
-              {item._type === 'menuItem' ? (
-                <NavMenuItem item={item} pathname={pathname} onNavigate={onNavigate} />
-              ) : (
-                <NavMenuItemGroup group={item} pathname={pathname} onNavigate={onNavigate} />
-              )}
-            </motion.div>
-          ))}
-        </GridContainer>
-      </div>
+      {menuItems.map((item) => (
+        <motion.div className=" border-black" key={item._key} variants={itemVariants}>
+          {item._type === 'menuItem' ? (
+            <NavMenuItem item={item} pathname={pathname} onNavigate={onNavigate} />
+          ) : (
+            <NavMenuItemGroup group={item} pathname={pathname} onNavigate={onNavigate} />
+          )}
+        </motion.div>
+      ))}
     </motion.div>
   )
 }

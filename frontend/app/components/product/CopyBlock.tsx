@@ -1,4 +1,5 @@
 import {cn} from '@/app/lib/utils'
+import TextReveal from '../ui/TextReveal.client'
 
 type CopyBlockProps = {
   showHeadline?: boolean
@@ -21,9 +22,8 @@ export default function CopyBlock({
 
   return (
     <div className={cn('p-10 space-y-5', className)}>
-      {headlineVisible ? <h2 className="text-6xl font-bold">{headline}</h2> : null}
-      {textVisible ? (
-        <p className="text-base md:text-lg leading-relaxed whitespace-pre-line">{text}</p>
+      {headlineVisible && headline ? (
+        <TextReveal text={headline} className="text-6xl font-bold" />
       ) : null}
     </div>
   )

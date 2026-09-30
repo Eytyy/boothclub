@@ -14,8 +14,7 @@ export const GridContainer = ({
   return (
     <div
       className={cn(
-        "grid grid-cols-12 border-x-site mx-10 after:content-[''] after:block after:h-full after:w-(--border-width-site) after:bg-black dark:after:bg-white after:absolute after:top-0 after:left-1/2 after:-translate-x-1/2 relative min-h-svh",
-        variant === 'compact' ? 'min-h-0' : '',
+        "grid grid-cols-12 border-x-site mx-10 after:content-[''] after:block after:h-full after:w-(--border-width-site) after:bg-black dark:after:bg-white after:absolute after:top-0 after:left-1/2 after:-translate-x-1/2 relative",
         className,
       )}
     >
@@ -79,7 +78,7 @@ export function GridColumn({
 }: {
   children: ReactNode
   className?: string
-  span?: 'full' | 2 | 3 | 4 | 6
+  span?: 'full' | 2 | 3 | 4 | 6 | 7 | 8 | 9
 }) {
   const spanClasses = cn({
     'col-span-full': span === 'full',
@@ -87,6 +86,9 @@ export function GridColumn({
     'col-span-3': span === 3,
     'col-span-4': span === 4,
     'col-span-6': span === 6,
+    'col-span-7': span === 7,
+    'col-span-8': span === 8,
+    'col-span-9': span === 9,
   })
   return <div className={cn(spanClasses, className)}>{children}</div>
 }

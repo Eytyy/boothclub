@@ -3,7 +3,7 @@
 import type {ReactNode} from 'react'
 
 import CardsCarousel from '@/app/components/ui/CardsCarousel.client'
-import ProjectCard from '@/app/components/project/ProjectCard'
+import {ProjectCard} from '@/app/components/project/ProjectCard'
 import type {ProjectCardData} from '@/app/components/project/types'
 
 type ProjectCarouselProps = {
@@ -24,7 +24,7 @@ export default function ProjectCarousel({
   return (
     <CardsCarousel
       items={items}
-      renderItem={(item, index) => <ProjectCard item={item} index={index} />}
+      renderItem={(item) => <ProjectCard item={item} />}
       header={header}
       cta={cta}
       className={className}
