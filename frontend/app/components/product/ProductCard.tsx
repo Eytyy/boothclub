@@ -42,7 +42,7 @@ const ProductCard = ({
             <div className="h-full w-full border-2 border-black dark:border-white" />
           )}
         </div>
-        <header className="absolute bottom-0 left-0  px-5 py-2 bg-white dark:bg-black">
+        <header className="absolute bottom-0 left-0  pt-7 pr-8 bg-white dark:bg-black">
           <h3 className="text-3xl font-semibold group-hover:underline">{title}</h3>
         </header>
       </div>

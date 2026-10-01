@@ -151,10 +151,7 @@ export default async function ProductCategoryPage(props: Props) {
         columns={[8, 4]}
         className="max-lg:grid-cols-1 max-lg:[&_.grid-divider]:hidden border-t-site border-black dark:border-white"
       >
-        <GridColumn
-          span={8}
-          className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100"
-        >
+        <GridColumn span={8} className="min-w-0 max-lg:contents sticky top-0 self-start bg-">
           <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
             <span className="block w-4 h-4 bg-black dark:bg-white"></span>
             Get an Instant Quote
