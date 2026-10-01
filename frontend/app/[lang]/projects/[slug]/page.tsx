@@ -30,6 +30,8 @@ import ContactFormSection from '@/app/components/forms/ContactFormSection'
 import OtherProducts from '@/app/components/product/OtherProducts.client'
 import RelatedPosts from '@/app/components/blog/RelatedPosts'
 import {mapRelatedPosts} from '@/app/components/blog/mapRelatedPosts'
+import {cn} from '@/app/lib/utils'
+import ScrollCue from '@/app/components/page/ScrollCue.client'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string}>
@@ -138,7 +140,10 @@ export default async function ProjectDetailPage(props: Props) {
     <div className="container grid">
       <div className="col-start-1 row-start-1">
         <GridContainer>
-          <GridColumn span={6} className="grid self-start sticky top-0 h-svh">
+          <GridColumn
+            span={6}
+            className="grid self-start sticky top-0 h-svh lg:grid-rows-[1fr_14svh] lg:min-h-svh"
+          >
             <GridBlock className="p-10 relative">
               <PageMainMedia
                 className="absolute inset-10"
@@ -147,6 +152,7 @@ export default async function ProjectDetailPage(props: Props) {
                 heroPlaybackId={heroPlaybackId}
               />
             </GridBlock>
+            <ScrollCue />
           </GridColumn>
           <GridColumn span={6} className="sticky">
             <GridBlock borders="bottom">
@@ -193,16 +199,29 @@ export default async function ProjectDetailPage(props: Props) {
           </GridContainer>
         ) : null}
         {outputItems.length > 0 ? (
-          <GridContainer columns={[4, 4, 4]} className="relative">
-            {outputItems.map((item) => (
-              <GridBlock
-                key={item._key}
-                borders={hasBlocks ? 'none' : 'top'}
-                className="col-span-4 bg-white dark:bg-black relative z-40"
-              >
-                <MediaItem media={{type: 'image', image: item}} />
-              </GridBlock>
-            ))}
+          <GridContainer
+            columns={[4, 4, 4]}
+            className={cn(
+              'relative',
+              hasBlocks ? '' : 'border-t-site border-black dark:border-white',
+            )}
+          >
+            <GridColumn span="full">
+              <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+                <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+                Output
+              </h2>
+              <div className="grid grid-cols-12">
+                {outputItems.map((item) => (
+                  <GridBlock
+                    key={item._key}
+                    className="col-span-4 bg-white dark:bg-black relative z-40"
+                  >
+                    <MediaItem media={{type: 'image', image: item}} />
+                  </GridBlock>
+                ))}
+              </div>
+            </GridColumn>
           </GridContainer>
         ) : null}
         {relatedPosts.length > 0 ? (
@@ -220,11 +239,15 @@ export default async function ProjectDetailPage(props: Props) {
             span={8}
             className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100"
           >
+            <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+              <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+              Get an Instant Quote
+            </h2>
             <ContactFormSection
               className=" max-lg:order-4 h-full flex-col flex"
               form={formConfig}
               context={{title: title || undefined, url: projectHref}}
-              title="Tell us the vision, we bring the setup, the tech, the vibe and the results. Get an Instant Quote."
+              title="Tell us the vision, we bring the setup, the tech, the vibe and the results."
             />
           </GridColumn>
           <GridColumn span={4} className="max-lg:contents">

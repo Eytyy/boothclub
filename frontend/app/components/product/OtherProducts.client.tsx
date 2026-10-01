@@ -26,7 +26,6 @@ export default function OtherProducts({
         <span className="block w-4 h-4 bg-black dark:bg-white"></span>
         Other Products
       </h2>
-
       {items.map((item) => (
         <GridBlock
           key={item._id}

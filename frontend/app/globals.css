@@ -52,7 +52,7 @@
 }
 
 @utility container {
-  @apply px-5 xl:ps-45 xl:pe-18;
+  @apply px-5 xl:pr-45 xl:pl-18;
   margin: 0 auto;
   width: 100%;
   max-width: 100%;
@@ -85,7 +85,7 @@
   --header-height: 88px;
   --max-width: 1728px;
   /* Structural rules (`border-*-site`) and the grid center line. */
-  --border-width-site: 2px;
+  --border-width-site: 4px;
 }
 
 /* Warm off-white so dark-mode type and rules sit softer on #141112. */
