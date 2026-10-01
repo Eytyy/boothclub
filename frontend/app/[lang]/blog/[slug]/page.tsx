@@ -2,37 +2,22 @@ import type {Metadata, ResolvingMetadata} from 'next'
 import {notFound} from 'next/navigation'
 import {stegaClean} from '@sanity/client/stega'
 
-import PortableText from '@/app/components/ui/PortableText'
-import Image from '@/app/components/ui/SanityImage.client'
+import {GridColumn, GridContainer} from '@/app/components/ui/GridSystem'
 import {locales, localizedPath, type Locale} from '@/app/lib/i18n/config'
 import {productCategoryPath, productPath} from '@/app/lib/product/paths'
 import {localeAlternates} from '@/app/lib/seo/alternates'
 import {sanityFetch} from '@/sanity/lib/live'
 import {adjacentPostsQuery, postPagesSlugs, postQuery} from '@/sanity/lib/queries'
-import {dataAttr, resolveOpenGraphImage, toPortableTextBlocks} from '@/sanity/lib/utils'
-import {GridBlock, GridColumn, GridContainer} from '@/app/components/ui/GridSystem'
-import PageTitle from '@/app/components/ui/PageTitle'
+import {resolveOpenGraphImage} from '@/sanity/lib/utils'
 import type {AdjacentPostsQueryResult, PostQueryResult} from '@/sanity.types'
-import LocalizedLink from '@/app/components/ui/LocalizedLink'
+
+import AdjacentPosts from './AdjacentPosts'
 import PostBody from './PostBody'
+import PostHero from './PostHero'
+import TaggedInArticle, {type TaggedLink} from './TaggedInArticle'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string}>
-}
-
-type TaggedKind = 'product' | 'productCategory' | 'project'
-
-type TaggedLink = {
-  id: string
-  kind: TaggedKind
-  title: string
-  href: string
-}
-
-const taggedLabels: Record<TaggedKind, string> = {
-  product: 'Product',
-  productCategory: 'Category',
-  project: 'Project',
 }
 
 export async function generateStaticParams() {
@@ -89,80 +74,20 @@ export default async function PostPage(props: Props) {
   const nextPost = usableAdjacentPost(adjacent?.next)
 
   return (
-    <>
-      <div className="container">
-        <GridContainer columns={[4, 8]}>
-          <GridColumn span={4} className="self-start sticky top-0">
-            <GridBlock className="relative aspect-square" borders="bottom">
-              {post?.coverImage?.asset?._ref ? (
-                <Image
-                  id={post.coverImage.asset?._ref || ''}
-                  alt={post.coverImage.alt || ''}
-                  className="w-full h-full object-cover"
-                  width={1000}
-                  height={600}
-                  mode="cover"
-                  hotspot={post.coverImage.hotspot}
-                  crop={post.coverImage.crop}
-                  preview={post.coverImage.lqip ?? undefined}
-                />
-              ) : (
-                <div className="w-full h-full bg-gray-200" />
-              )}
-            </GridBlock>
-            {taggedLinks.length > 0 ? (
-              <GridBlock as="aside" className="space-y-5" borders="bottom">
-                <h2 className="font-normal">Tagged in this article</h2>
-                {taggedLinks.map((item) => (
-                  <SidebarEntry
-                    key={item.id}
-                    href={item.href}
-                    label={taggedLabels[item.kind]}
-                    title={item.title}
-                  />
-                ))}
-              </GridBlock>
-            ) : null}
-            <GridBlock className="space-y-5">
-              {previousPost ? (
-                <SidebarEntry
-                  href={`/blog/${previousPost.slug}`}
-                  label="Previous"
-                  title={previousPost.title}
-                  sanity={{id: previousPost._id, type: 'post'}}
-                />
-              ) : null}
-              {nextPost ? (
-                <SidebarEntry
-                  href={`/blog/${nextPost.slug}`}
-                  label="Next"
-                  title={nextPost.title}
-                  sanity={{id: nextPost._id, type: 'post'}}
-                />
-              ) : null}
-            </GridBlock>
-          </GridColumn>
-          <GridColumn span={8}>
-            <GridBlock>
-              <div className="space-y-10">
-                <PageTitle>{post.title}</PageTitle>
-                <article className="article-content">
-                  <PostBody sections={post.sections ?? []} />
-                </article>
-              </div>
-              {post.blogPostFooter?.length ? (
-                <footer className="article-content border-t border-black/10 dark:border-white/10 pt-8 mb-12">
-                  <PortableText
-                    className="max-w-full "
-                    value={toPortableTextBlocks(post.blogPostFooter)}
-                  />
-                </footer>
-              ) : null}
-            </GridBlock>
+    <div className="container">
+      <article>
+        <GridContainer columns="none">
+          <GridColumn span="full">
+            <PostHero title={post.title} date={post.date} coverImage={post.coverImage} />
           </GridColumn>
         </GridContainer>
-      </div>
-    </>
+        <div className="article-content">
+          <PostBody sections={post.sections ?? []} />
+        </div>
+        <TaggedInArticle items={taggedLinks} />
+        <AdjacentPosts previous={previousPost} next={nextPost} />
+      </article>
+    </div>
   )
 }
 
@@ -243,33 +168,4 @@ function asRecord(value: unknown): Record<string, unknown> | null {
 function stringField(value: unknown): string | null {
   if (typeof value !== 'string') return null
   return stegaClean(value) || null
-}
-
-function SidebarEntry({
-  href,
-  label,
-  title,
-  sanity,
-}: {
-  href: string
-  label: string
-  title: string
-  sanity?: {id: string; type: string}
-}) {
-  return (
-    <article
-      data-sanity={
-        sanity ? dataAttr({id: sanity.id, type: sanity.type, path: 'title'}).toString() : undefined
-      }
-      className="rounded-sm flex flex-col justify-start transition-colors relative"
-    >
-      <LocalizedLink className="underline transition-colors" href={href}>
-        <span className="absolute inset-0 z-10" />
-      </LocalizedLink>
-      <div>
-        <p className="text-black/50 dark:text-white/50 text-xs">{label}</p>
-        <h3 className="lg:text-2xl font-bold">{title}</h3>
-      </div>
-    </article>
-  )
 }

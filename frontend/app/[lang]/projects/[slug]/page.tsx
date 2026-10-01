@@ -3,6 +3,7 @@ import {notFound, permanentRedirect} from 'next/navigation'
 import type {SanityImageSource} from '@sanity/image-url/lib/types/types'
 
 import {locales, localizedPath, type Locale} from '@/app/lib/i18n/config'
+import {productPath} from '@/app/lib/product/paths'
 import {localeAlternates} from '@/app/lib/seo/alternates'
 import {mapAllProjectItemToProjectCardData} from '@/app/lib/project/mappers'
 import {sanityFetch} from '@/sanity/lib/live'
@@ -103,6 +104,13 @@ export default async function ProjectDetailPage(props: Props) {
       : null
   const productId = project.product?._id
   const projectHref = localizedPath(lang, `/projects/${project.slug}`)
+  const productEyebrow =
+    project.product?.title && project.product.slug && project.product.category?.slug
+      ? {
+          eyebrow: project.product.title,
+          eyebrowHref: productPath(project.product.category.slug, project.product.slug),
+        }
+      : null
 
   const documentId = project._id.replace(/^drafts\./, '')
   const [otherProjectsResult, relatedPostsResult, formConfig] = await Promise.all([
@@ -158,6 +166,8 @@ export default async function ProjectDetailPage(props: Props) {
             <GridBlock borders="bottom">
               <PageHeroText
                 title={title ?? ''}
+                eyebrow={productEyebrow?.eyebrow}
+                eyebrowHref={productEyebrow?.eyebrowHref}
                 description={description ? toPortableTextBlocks(description) : null}
               />
             </GridBlock>
@@ -227,6 +237,10 @@ export default async function ProjectDetailPage(props: Props) {
         {relatedPosts.length > 0 ? (
           <GridContainer columns="none">
             <GridColumn span="full" className="border-t-site border-black dark:border-white">
+              <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+                <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+                Mentioned in
+              </h2>
               <RelatedPosts posts={relatedPosts} />
             </GridColumn>
           </GridContainer>
@@ -248,6 +262,10 @@ export default async function ProjectDetailPage(props: Props) {
             />
           </GridColumn>
           <GridColumn span={4} className="max-lg:contents">
+            <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+              <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+              Other Projects
+            </h2>
             {otherProjects.length > 0 ? (
               <OtherProducts
                 items={otherProjects.map((p) => ({

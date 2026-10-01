@@ -3,7 +3,7 @@ import {notFound} from 'next/navigation'
 import type {SanityImageSource} from '@sanity/image-url/lib/types/types'
 
 import {locales, localizedPath, type Locale} from '@/app/lib/i18n/config'
-import {productPath} from '@/app/lib/product/paths'
+import {productCategoryPath, productPath} from '@/app/lib/product/paths'
 import {localeAlternates} from '@/app/lib/seo/alternates'
 import {mapProductFeaturedProjectItemToProjectCardData} from '@/app/lib/project/mappers'
 import {sanityFetch} from '@/sanity/lib/live'
@@ -150,6 +150,8 @@ export default async function ProductPage(props: Props) {
           <GridBlock borders="bottom">
             <PageHeroText
               title={title ?? ''}
+              eyebrow={product.category.title}
+              eyebrowHref={productCategoryPath(product.category.slug)}
               description={description ? toPortableTextBlocks(description) : null}
             />
           </GridBlock>
@@ -184,7 +186,7 @@ export default async function ProductPage(props: Props) {
           <GridColumn span="full" className="border-b-site border-black dark:border-white">
             <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
               <span className="block w-4 h-4 bg-black dark:bg-white"></span>
-              Related Posts
+              Mentioned in
             </h2>
             <RelatedPosts posts={relatedPosts} />
           </GridColumn>
