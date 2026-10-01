@@ -25,7 +25,6 @@ export default function ProjectCarousel({
     <CardsCarousel
       items={items}
       renderItem={(item) => <ProjectCard item={item} />}
-      header={header}
       cta={cta}
       className={className}
       cardClassName={cardClassName}
