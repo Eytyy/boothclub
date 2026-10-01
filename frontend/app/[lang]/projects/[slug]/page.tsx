@@ -3,11 +3,17 @@ import {notFound, permanentRedirect} from 'next/navigation'
 import type {SanityImageSource} from '@sanity/image-url/lib/types/types'
 
 import {locales, localizedPath, type Locale} from '@/app/lib/i18n/config'
+import {productPath} from '@/app/lib/product/paths'
 import {localeAlternates} from '@/app/lib/seo/alternates'
 import {mapAllProjectItemToProjectCardData} from '@/app/lib/project/mappers'
 import {sanityFetch} from '@/sanity/lib/live'
 import {fetchFormConfigByKey} from '@/sanity/lib/data'
-import {otherProjectsQuery, projectDetailQuery, projectSlugs} from '@/sanity/lib/queries'
+import {
+  otherProjectsQuery,
+  projectDetailQuery,
+  projectSlugs,
+  relatedPostsQuery,
+} from '@/sanity/lib/queries'
 import {
   resolveMetaTitle,
   resolveOpenGraphImage,
@@ -16,16 +22,17 @@ import {
 } from '@/sanity/lib/utils'
 import type {OtherProjectsQueryResult} from '@/sanity.types'
 import {GridContainer, GridBlock, GridColumn} from '@/app/components/ui/GridSystem'
-import SectionTitle from '@/app/components/ui/SectionTitle'
 import {PageMainMedia} from '@/app/components/page/PageMainMedia'
 import PageHeroText from '@/app/components/page/PageHeroText'
 import ProjectGallery from './ProjectGallery.client'
 import CopyBlock from '@/app/components/product/CopyBlock'
 import MediaItem from '@/app/components/page-builder/blocks/MediaItem.client'
-import FeaturedProjects from '@/app/components/project/FeaturedProjects.client'
 import ContactFormSection from '@/app/components/forms/ContactFormSection'
-import SectionTitleMarquee from '@/app/components/ui/SectionTitleMarquee'
 import OtherProducts from '@/app/components/product/OtherProducts.client'
+import RelatedPosts from '@/app/components/blog/RelatedPosts'
+import {mapRelatedPosts} from '@/app/components/blog/mapRelatedPosts'
+import {cn} from '@/app/lib/utils'
+import ScrollCue from '@/app/components/page/ScrollCue.client'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string}>
@@ -97,14 +104,26 @@ export default async function ProjectDetailPage(props: Props) {
       : null
   const productId = project.product?._id
   const projectHref = localizedPath(lang, `/projects/${project.slug}`)
+  const productEyebrow =
+    project.product?.title && project.product.slug && project.product.category?.slug
+      ? {
+          eyebrow: project.product.title,
+          eyebrowHref: productPath(project.product.category.slug, project.product.slug),
+        }
+      : null
 
-  const [otherProjectsResult, formConfig] = await Promise.all([
+  const documentId = project._id.replace(/^drafts\./, '')
+  const [otherProjectsResult, relatedPostsResult, formConfig] = await Promise.all([
     productId
       ? sanityFetch({
           query: otherProjectsQuery,
           params: {lang, currentId: project._id, productId},
         })
       : Promise.resolve({data: [] as OtherProjectsQueryResult}),
+    sanityFetch({
+      query: relatedPostsQuery,
+      params: {lang, documentId},
+    }),
     fetchFormConfigByKey('contact-us', lang),
   ])
 
@@ -113,6 +132,7 @@ export default async function ProjectDetailPage(props: Props) {
       Boolean(item.title),
     )
     .map(mapAllProjectItemToProjectCardData)
+  const relatedPosts = mapRelatedPosts(relatedPostsResult.data)
 
   const galleryItems = (project.gallery ?? []).map((item) => ({
     id: item._key,
@@ -122,12 +142,16 @@ export default async function ProjectDetailPage(props: Props) {
   }))
   const blocks = project.blocks ?? []
   const outputItems = (project.output ?? []).filter((item) => item.asset?._ref)
+  const hasBlocks = blocks.length > 0
 
   return (
     <div className="container grid">
       <div className="col-start-1 row-start-1">
         <GridContainer>
-          <GridColumn span={6} className="grid self-start sticky top-0 h-svh">
+          <GridColumn
+            span={6}
+            className="grid self-start sticky top-0 h-svh lg:grid-rows-[1fr_14svh] lg:min-h-svh"
+          >
             <GridBlock className="p-10 relative">
               <PageMainMedia
                 className="absolute inset-10"
@@ -136,11 +160,14 @@ export default async function ProjectDetailPage(props: Props) {
                 heroPlaybackId={heroPlaybackId}
               />
             </GridBlock>
+            <ScrollCue />
           </GridColumn>
           <GridColumn span={6} className="sticky">
             <GridBlock borders="bottom">
               <PageHeroText
                 title={title ?? ''}
+                eyebrow={productEyebrow?.eyebrow}
+                eyebrowHref={productEyebrow?.eyebrowHref}
                 description={description ? toPortableTextBlocks(description) : null}
               />
             </GridBlock>
@@ -151,8 +178,8 @@ export default async function ProjectDetailPage(props: Props) {
             ) : null}
           </GridColumn>
         </GridContainer>
-        {blocks.length > 0 ? (
-          <GridContainer variant="compact">
+        {hasBlocks ? (
+          <GridContainer>
             {blocks.map((block, index) => {
               const isLastOdd = index === blocks.length - 1 && blocks.length % 2 === 1
               const spanClass = isLastOdd
@@ -182,31 +209,63 @@ export default async function ProjectDetailPage(props: Props) {
           </GridContainer>
         ) : null}
         {outputItems.length > 0 ? (
-          <GridContainer variant="compact" className="relative">
-            {outputItems.map((item) => (
-              <GridBlock
-                key={item._key}
-                borders="right"
-                className="col-span-4 last:border-e-0 bg-white dark:bg-black relative z-40"
-              >
-                <MediaItem media={{type: 'image', image: item}} />
-              </GridBlock>
-            ))}
+          <GridContainer
+            columns={[4, 4, 4]}
+            className={cn(
+              'relative',
+              hasBlocks ? '' : 'border-t-site border-black dark:border-white',
+            )}
+          >
+            <GridColumn span="full">
+              <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+                <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+                Output
+              </h2>
+              <div className="grid grid-cols-12">
+                {outputItems.map((item) => (
+                  <GridBlock
+                    key={item._key}
+                    className="col-span-4 bg-white dark:bg-black relative z-40"
+                  >
+                    <MediaItem media={{type: 'image', image: item}} />
+                  </GridBlock>
+                ))}
+              </div>
+            </GridColumn>
           </GridContainer>
         ) : null}
-        <GridContainer className="max-lg:grid-cols-1 max-lg:after:hidden border-t-site border-black dark:border-white">
-          <GridColumn
-            span={8}
-            className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100 border-e-site border-black dark:border-white"
-          >
+        {relatedPosts.length > 0 ? (
+          <GridContainer columns="none">
+            <GridColumn span="full" className="border-t-site border-black dark:border-white">
+              <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+                <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+                Mentioned in
+              </h2>
+              <RelatedPosts posts={relatedPosts} />
+            </GridColumn>
+          </GridContainer>
+        ) : null}
+        <GridContainer
+          columns={[8, 4]}
+          className="max-lg:grid-cols-1 max-lg:[&_.grid-divider]:hidden border-t-site border-black dark:border-white"
+        >
+          <GridColumn span={8} className="min-w-0 max-lg:contents sticky top-0 self-start ">
+            <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+              <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+              Get an Instant Quote
+            </h2>
             <ContactFormSection
               className=" max-lg:order-4 h-full flex-col flex"
               form={formConfig}
               context={{title: title || undefined, url: projectHref}}
-              title="Tell us the vision, we bring the setup, the tech, the vibe and the results. Get an Instant Quote."
+              title="Tell us the vision, we bring the setup, the tech, the vibe and the results."
             />
           </GridColumn>
           <GridColumn span={4} className="max-lg:contents">
+            <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+              <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+              Other Projects
+            </h2>
             {otherProjects.length > 0 ? (
               <OtherProducts
                 items={otherProjects.map((p) => ({

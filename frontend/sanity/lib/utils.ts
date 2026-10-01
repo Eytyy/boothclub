@@ -6,7 +6,7 @@ import {createDataAttribute, CreateDataAttributeProps, type PortableTextBlock} f
 import {stegaClean} from '@sanity/client/stega'
 import imageUrlBuilder from '@sanity/image-url'
 import type {SanityImageSource} from '@sanity/image-url/lib/types/types'
-import {DereferencedLink, DereferencedProduct} from '@/sanity/lib/types'
+import {DereferencedLink, DereferencedProduct, DereferencedProject} from '@/sanity/lib/types'
 
 const builder = imageUrlBuilder({
   projectId: projectId || '',
@@ -81,6 +81,18 @@ function isDereferencedProduct(product: unknown): product is DereferencedProduct
   return typeof product === 'object' && product !== null && 'slug' in product
 }
 
+function slugFromCategory(category: unknown): string | null {
+  if (typeof category === 'string') return stegaClean(category) || null
+  if (category && typeof category === 'object' && 'slug' in category) {
+    return stegaClean((category as {slug?: string | null}).slug) || null
+  }
+  return null
+}
+
+function isDereferencedProject(project: unknown): project is DereferencedProject {
+  return typeof project === 'object' && project !== null && 'slug' in project
+}
+
 // Depending on the type of link, we need to fetch the corresponding page, post, or URL.  Otherwise return null.
 export function linkResolver(link: Link | DereferencedLink | undefined, lang: Locale) {
   if (!link) return null
@@ -139,11 +151,13 @@ export function linkResolver(link: Link | DereferencedLink | undefined, lang: Lo
       return localizedPath(lang, productPath(categorySlug, slug))
     }
     case 'productCategory': {
-      if (link.productCategory && typeof link.productCategory === 'string') {
-        const slug = stegaClean(link.productCategory)
-        return slug ? localizedPath(lang, productCategoryPath(slug)) : null
-      }
-      return null
+      const slug = slugFromCategory(link.productCategory)
+      return slug ? localizedPath(lang, productCategoryPath(slug)) : null
+    }
+    case 'project': {
+      if (!isDereferencedProject(link.project)) return null
+      const slug = stegaClean(link.project.slug)
+      return slug ? localizedPath(lang, `/projects/${slug}`) : null
     }
     case 'email':
       return email ? `mailto:${email}` : null

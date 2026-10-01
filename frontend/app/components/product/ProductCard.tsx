@@ -24,7 +24,7 @@ const ProductCard = ({
       href={href}
       className={cn('group block', className)}
     >
-      <div className="space-y-10">
+      <div className="relative">
         <div className="overflow-hidden">
           {image?.asset?._ref ? (
             <Image
@@ -42,9 +42,8 @@ const ProductCard = ({
             <div className="h-full w-full border-2 border-black dark:border-white" />
           )}
         </div>
-        <header className="space-y-4 ">
-          <h3 className="text-4xl font-bold group-hover:underline">{title}</h3>
-          <div className="">{excerpt ? <p>{excerpt}</p> : null}</div>
+        <header className="absolute bottom-0 left-0  pt-7 pr-8 bg-white dark:bg-black">
+          <h3 className="text-3xl font-semibold group-hover:underline">{title}</h3>
         </header>
       </div>
     </GridBlock>

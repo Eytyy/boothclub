@@ -1,7 +1,5 @@
 import {menu} from './menu'
 import {post} from './post'
-import {author} from './author'
-import {category} from './category'
 import {client} from './client'
 import {productCategory} from './productCategory'
 import {product} from './product'
@@ -14,8 +12,6 @@ export const linkableDocuments: never[] = []
 export const documents = [
   menu,
   post,
-  author,
-  category,
   client,
   productCategory,
   product,

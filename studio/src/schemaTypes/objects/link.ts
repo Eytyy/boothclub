@@ -31,10 +31,10 @@ export const link = defineType({
           {title: 'Post', value: 'post'},
           {title: 'Product Category', value: 'productCategory'},
           {title: 'Product', value: 'product'},
+          {title: 'Project', value: 'project'},
           {title: 'Email', value: 'email'},
           {title: 'Phone', value: 'phone'},
         ],
-        layout: 'radio',
       },
     }),
     defineField({
@@ -121,6 +121,21 @@ export const link = defineType({
           const parent = context.parent as any
           if (parent?.linkType === 'product' && !value) {
             return 'Product reference is required when Link Type is Product'
+          }
+          return true
+        }),
+    }),
+    defineField({
+      name: 'project',
+      title: 'Project',
+      type: 'reference',
+      to: [{type: 'project'}],
+      hidden: ({parent}) => parent?.linkType !== 'project',
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          const parent = context.parent as any
+          if (parent?.linkType === 'project' && !value) {
+            return 'Project reference is required when Link Type is Project'
           }
           return true
         }),

@@ -7,6 +7,7 @@ import {splitMediaBlock} from './splitMedia'
 import {productSpecs} from './productSpecs'
 import {copyBlock} from './copy'
 import {galleryBlock} from './gallery'
+import {postContentBlock, postMediaBlock, postSection} from './postBody'
 
 export const blocks = [
   image,
@@ -18,4 +19,7 @@ export const blocks = [
   productSpecs,
   copyBlock,
   galleryBlock,
+  postContentBlock,
+  postMediaBlock,
+  postSection,
 ]

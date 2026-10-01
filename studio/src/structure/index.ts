@@ -1,6 +1,5 @@
 import {CogIcon, DocumentIcon, DocumentsIcon, EnvelopeIcon, TagIcon, StarIcon} from '@sanity/icons'
 import type {StructureBuilder, StructureResolver} from 'sanity/structure'
-import pluralize from 'pluralize-esm'
 
 /**
  * Structure builder is useful whenever you want to control how documents are grouped and
@@ -31,8 +30,7 @@ export const structure: StructureResolver = (S: StructureBuilder) =>
         .title('Blog')
         .child(S.document().schemaType('blog').documentId('blogPage'))
         .icon(StarIcon),
-      S.documentTypeListItem('post').icon(DocumentsIcon).title('Blog Posts'),
-      S.documentTypeListItem('category').icon(TagIcon).title('Blog Posts Categories'),
+      S.documentTypeListItem('post').icon(DocumentsIcon).title('Posts'),
       S.divider(),
       S.listItem()
         .title('Careers')

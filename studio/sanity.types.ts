@@ -15,6 +15,31 @@
 export declare const internalGroqTypeReferenceTo: unique symbol
 
 // Source: ../sanity.schema.json
+export type PostSection = {
+  _type: 'post.section'
+  columns: '1' | '2' | '3'
+  blocks?: Array<
+    | ({
+        _key: string
+      } & PostContent)
+    | ({
+        _key: string
+      } & PostMedia)
+  >
+}
+
+export type PostMedia = {
+  _type: 'post.media'
+  span?: '1' | '2' | 'full'
+  media: BlockMedia
+}
+
+export type PostContent = {
+  _type: 'post.content'
+  span?: '1' | '2' | 'full'
+  content: InternationalizedArrayBlockContent
+}
+
 export type BlockGallery = {
   _type: 'block.gallery'
   items?: Array<
@@ -218,9 +243,24 @@ export type ProductReference = {
   [internalGroqTypeReferenceTo]?: 'product'
 }
 
+export type ProjectReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'project'
+}
+
 export type Link = {
   _type: 'link'
-  linkType?: 'href' | 'page' | 'post' | 'productCategory' | 'product' | 'email' | 'phone'
+  linkType?:
+    | 'href'
+    | 'page'
+    | 'post'
+    | 'productCategory'
+    | 'product'
+    | 'project'
+    | 'email'
+    | 'phone'
   href?: string
   page?:
     | HomeReference
@@ -233,15 +273,9 @@ export type Link = {
   post?: PostReference
   productCategory?: ProductCategoryReference
   product?: ProductReference
+  project?: ProjectReference
   email?: string
   phone?: string
-}
-
-export type ProjectReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'project'
 }
 
 export type FeaturedProjects = {
@@ -589,31 +623,6 @@ export type Client = {
   displaySize?: 'sm' | 'md' | 'lg'
 }
 
-export type Category = {
-  _id: string
-  _type: 'category'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: InternationalizedArrayString
-  slug: Slug
-  sourceKey?: string
-}
-
-export type AuthorReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'author'
-}
-
-export type CategoryReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'category'
-}
-
 export type Post = {
   _id: string
   _type: 'post'
@@ -621,8 +630,7 @@ export type Post = {
   _updatedAt: string
   _rev: string
   title: InternationalizedArrayString
-  slug: Slug
-  body: InternationalizedArrayBlockContent
+  publishedAt: string
   mainImage: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -631,13 +639,12 @@ export type Post = {
     alt?: InternationalizedArrayString
     _type: 'image'
   }
-  publishedAt: string
-  author?: AuthorReference
-  categories?: Array<
+  body: Array<
     {
       _key: string
-    } & CategoryReference
+    } & PostSection
   >
+  slug: Slug
   meta?: {
     title?: InternationalizedArrayString
     description?: InternationalizedArrayText
@@ -649,29 +656,6 @@ export type Post = {
       _type: 'image'
     }
   }
-  canonicalUrl?: string
-  sourceId?: string
-  sourceType?: string
-  sourceUpdatedAt?: string
-}
-
-export type Author = {
-  _id: string
-  _type: 'author'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  name: InternationalizedArrayString
-  slug: Slug
-  image?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: InternationalizedArrayString
-    _type: 'image'
-  }
-  sourceKey?: string
 }
 
 export type InternationalizedArrayBlockContent = Array<
@@ -1168,6 +1152,9 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
+  | PostSection
+  | PostMedia
+  | PostContent
   | BlockGallery
   | BlockCopy
   | ProductSpecs
@@ -1194,8 +1181,8 @@ export type AllSanitySchemaTypes =
   | PostReference
   | ProductCategoryReference
   | ProductReference
-  | Link
   | ProjectReference
+  | Link
   | FeaturedProjects
   | FeaturedProducts
   | TestimonialReference
@@ -1223,11 +1210,7 @@ export type AllSanitySchemaTypes =
   | Product
   | ProductCategory
   | Client
-  | Category
-  | AuthorReference
-  | CategoryReference
   | Post
-  | Author
   | InternationalizedArrayBlockContent
   | JobOpeningReference
   | Careers

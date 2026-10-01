@@ -2,6 +2,7 @@ import type {FormConfigByKeyQueryResult} from '@/sanity.types'
 import ContactForm, {type FormContext} from '@/app/components/forms/ContactForm.client'
 import {cn} from '@/app/lib/utils'
 import TextReveal from '../ui/TextReveal.client'
+import {GridBlock} from '../ui/GridSystem'
 
 type Props = {
   form: NonNullable<FormConfigByKeyQueryResult> | null | undefined
@@ -19,19 +20,17 @@ export default function ContactFormSection({form, context, title, className}: Pr
 
   return (
     <section className={cn('h-full', className)}>
-      <TextReveal className="text-6xl leading-tight font-bold p-10" text={title} />
-      <div className="flex-1">
-        <ContactForm
-          formKey="contact-us"
-          privacyHref={privacyHref}
-          successText={form.successMessage ?? 'Thanks — your message has been sent.'}
-          errorText={form.errorText ?? 'Something went wrong. Please try again later.'}
-          consentText={form.consentText ?? undefined}
-          notificationsLabel={form.notificationsLabel ?? undefined}
-          personalDataNote={form.personalDataNote ?? undefined}
-          context={context}
-        />
-      </div>
+      <GridBlock as={TextReveal} text={title} />
+      <ContactForm
+        formKey="contact-us"
+        privacyHref={privacyHref}
+        successText={form.successMessage ?? 'Thanks — your message has been sent.'}
+        errorText={form.errorText ?? 'Something went wrong. Please try again later.'}
+        consentText={form.consentText ?? undefined}
+        notificationsLabel={form.notificationsLabel ?? undefined}
+        personalDataNote={form.personalDataNote ?? undefined}
+        context={context}
+      />
     </section>
   )
 }

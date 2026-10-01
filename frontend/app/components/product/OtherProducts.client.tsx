@@ -20,18 +20,14 @@ export default function OtherProducts({
   items: OtherProductItem[]
   className?: string
 }) {
-  return (
-    <div className={cn(className)}>
-      {items.map((item) => (
-        <GridBlock
-          key={item._id}
-          className="grid grid-rows-[min-content_1fr] gap-5 last:border-b-0"
-          borders="bottom"
-        >
-          <SquareMediaStage href={item.href} label={`View ${item.title}`} image={item.image} />
-          <SpotlightCaption title={item.title} />
-        </GridBlock>
-      ))}
-    </div>
-  )
+  return items.map((item) => (
+    <GridBlock
+      key={item._id}
+      className="grid grid-rows-[min-content_1fr] gap-5 last:border-b-0"
+      borders="bottom"
+    >
+      <SquareMediaStage href={item.href} label={`View ${item.title}`} image={item.image} />
+      <SpotlightCaption title={item.title} />
+    </GridBlock>
+  ))
 }

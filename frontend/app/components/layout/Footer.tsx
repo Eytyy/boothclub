@@ -38,9 +38,9 @@ export default async function Footer({lang}: {lang: Locale}) {
 
   return (
     <footer className="relative container" id="footer">
-      <GridContainer className="" variant="compact">
-        <div className="col-span-full   relative bg-white z-10 border-y-site border-black dark:border-white space-y-4 dark:bg-black dark:text-white">
-          <div className="p-10 pb-5">
+      <GridContainer>
+        <div className="col-span-full relative p-10 bg-white z-10 border-y-site border-black dark:border-white space-y-10 dark:bg-black dark:text-white">
+          <div className="">
             <LogoStatic linkToHome={false} />
           </div>
           {cta ? (

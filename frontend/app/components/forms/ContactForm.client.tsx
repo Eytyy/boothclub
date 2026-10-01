@@ -105,27 +105,20 @@ export default function ContactForm({
       noValidate
       aria-busy={isSubmitting || undefined}
       onSubmit={handleSubmit(submit)}
-      className="flex flex-col justify-between h-full"
+      className="p-10 space-y-10"
     >
-      <div className="flex-1 space-y-8 p-10">
-        {submissionError ? <SubmissionError message={submissionError} /> : null}
-        {textFields.map((f) => (
-          <Field key={f.name}>
-            <FieldLabel htmlFor={f.name}>{L[f.name as keyof typeof L]}</FieldLabel>
+      {submissionError ? <SubmissionError message={submissionError} /> : null}
+      {textFields.map((f) => (
+        <Field key={f.name}>
+          <FieldLabel htmlFor={f.name}>{L[f.name as keyof typeof L]}</FieldLabel>
 
-            <Input
-              f={f}
-              register={register}
-              errors={errors}
-              id={f.name}
-              errId={f.name + '-error'}
-            />
-            <FieldError id={f.name + '-error'} message={errorsMap[f.name]?.message} />
-          </Field>
-        ))}
-        <Honeypot register={register} />
+          <Input f={f} register={register} errors={errors} id={f.name} errId={f.name + '-error'} />
+          <FieldError id={f.name + '-error'} message={errorsMap[f.name]?.message} />
+        </Field>
+      ))}
+      <Honeypot register={register} />
 
-        {/* <div className="space-y-4 rounded-lg border border-black/20 p-5 dark:border-white/20">
+      {/* <div className="space-y-4 rounded-lg border border-black/20 p-5 dark:border-white/20">
         <div className="space-y-3">
           <div className="space-y-1">
             <div className="flex items-start gap-3">
@@ -164,8 +157,7 @@ export default function ContactForm({
 
         {personalDataNote ? <p className="text-sm opacity-80">{personalDataNote}</p> : null}
       </div> */}
-        <RecaptchaNotice />
-      </div>
+      <RecaptchaNotice />
 
       <SubmitButton
         className="self-end"

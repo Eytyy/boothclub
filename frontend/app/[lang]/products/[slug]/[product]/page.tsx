@@ -3,11 +3,16 @@ import {notFound} from 'next/navigation'
 import type {SanityImageSource} from '@sanity/image-url/lib/types/types'
 
 import {locales, localizedPath, type Locale} from '@/app/lib/i18n/config'
-import {productPath} from '@/app/lib/product/paths'
+import {productCategoryPath, productPath} from '@/app/lib/product/paths'
 import {localeAlternates} from '@/app/lib/seo/alternates'
 import {mapProductFeaturedProjectItemToProjectCardData} from '@/app/lib/project/mappers'
 import {sanityFetch} from '@/sanity/lib/live'
-import {getProductQuery, otherProductsQuery, productSlugs} from '@/sanity/lib/queries'
+import {
+  getProductQuery,
+  otherProductsQuery,
+  productSlugs,
+  relatedPostsQuery,
+} from '@/sanity/lib/queries'
 import {resolveMetaTitle, resolveOpenGraphImage, toPortableTextBlocks} from '@/sanity/lib/utils'
 import ContactFormSection from '@/app/components/forms/ContactFormSection'
 import {fetchFormConfigByKey} from '@/sanity/lib/data'
@@ -19,6 +24,8 @@ import ScrollCue from '@/app/components/page/ScrollCue.client'
 import {GridContainer, GridBlock, GridColumn} from '@/app/components/ui/GridSystem'
 import OtherProducts from '@/app/components/product/OtherProducts.client'
 import SpecsBlock from '@/app/components/product/SpecsBlock.client'
+import RelatedPosts from '@/app/components/blog/RelatedPosts'
+import {mapRelatedPosts} from '@/app/components/blog/mapRelatedPosts'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string; product: string}>
@@ -85,10 +92,15 @@ export default async function ProductPage(props: Props) {
     return notFound()
   }
 
-  const [{data: otherProductsRaw}, formConfig] = await Promise.all([
+  const documentId = product._id.replace(/^drafts\./, '')
+  const [{data: otherProductsRaw}, relatedPostsResult, formConfig] = await Promise.all([
     sanityFetch({
       query: otherProductsQuery,
       params: {lang, currentId: product._id, categoryId: product.category._id},
+    }),
+    sanityFetch({
+      query: relatedPostsQuery,
+      params: {lang, documentId},
     }),
     fetchFormConfigByKey('contact-us', lang),
   ])
@@ -97,6 +109,7 @@ export default async function ProductPage(props: Props) {
     (item): item is NonNullable<typeof item> & {title: string; slug: string} =>
       Boolean(item?._id && item.title && item.slug),
   )
+  const relatedPosts = mapRelatedPosts(relatedPostsResult.data)
 
   const productHref = localizedPath(lang, productPath(product.category.slug, product.slug))
   const {mainImage, heroVideo, description, title, featuredProjects} = product
@@ -118,7 +131,7 @@ export default async function ProductPage(props: Props) {
 
   return (
     <div className="container">
-      <GridContainer variant="compact">
+      <GridContainer>
         <GridColumn
           span={6}
           className="self-start sticky top-0 grid grid-rows-[1fr_14svh] min-h-svh"
@@ -137,35 +150,62 @@ export default async function ProductPage(props: Props) {
           <GridBlock borders="bottom">
             <PageHeroText
               title={title ?? ''}
+              eyebrow={product.category.title}
+              eyebrowHref={productCategoryPath(product.category.slug)}
               description={description ? toPortableTextBlocks(description) : null}
             />
           </GridBlock>
           {product.specs?.items?.length ? (
-            <SpecsBlock
-              items={product.specs.items.filter((item): item is {_key: string; text: string} =>
-                Boolean(item?._key && item.text),
-              )}
-            />
+            <section>
+              <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+                <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+                Features
+              </h2>
+              <SpecsBlock
+                items={product.specs.items.filter((item): item is {_key: string; text: string} =>
+                  Boolean(item?._key && item.text),
+                )}
+              />
+            </section>
           ) : null}
         </GridColumn>
       </GridContainer>
-      <GridContainer className="border-t-site border-black dark:border-white">
+      <GridContainer columns={[4, 4, 4]} className="border-t-site border-black dark:border-white">
         <GridColumn span={'full'}>
+          <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+            <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+            Featured Projects
+          </h2>
           {featuredProjectItems.length > 0 ? (
             <FeaturedProjects items={featuredProjectItems} lang={lang} />
           ) : null}
         </GridColumn>
       </GridContainer>
-      <GridContainer className="max-lg:grid-cols-1 max-lg:after:hidden ">
-        <GridColumn
-          span={8}
-          className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100 border-e-site border-black dark:border-white"
-        >
+      {relatedPosts.length > 0 ? (
+        <GridContainer columns="none">
+          <GridColumn span="full" className="border-b-site border-black dark:border-white">
+            <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+              <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+              Mentioned in
+            </h2>
+            <RelatedPosts posts={relatedPosts} />
+          </GridColumn>
+        </GridContainer>
+      ) : null}
+      <GridContainer
+        columns={[8, 4]}
+        className="max-lg:grid-cols-1 max-lg:[&_.grid-divider]:hidden"
+      >
+        <GridColumn span={8} className="min-w-0 max-lg:contents sticky top-0 self-start">
+          <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+            <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+            Get an Instant Quote
+          </h2>
           <ContactFormSection
-            className=" max-lg:order-4 h-full flex-col flex"
+            className=" max-lg:order-4 h-full flex-col flex pt-0 lg:pt-0"
             form={formConfig}
             context={{title: title || undefined, url: productHref}}
-            title="Tell us the vision, we bring the setup, the tech, the vibe and the results. Get an Instant Quote."
+            title="Tell us the vision, we bring the setup, the tech, the vibe and the results."
           />
         </GridColumn>
         <GridColumn span={4} className="max-lg:contents">

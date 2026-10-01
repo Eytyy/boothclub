@@ -13,7 +13,7 @@ export default function MenuToggle({isOpen, onClick}: MenuToggleProps) {
       onClick={onClick}
       aria-label={isOpen ? 'Close menu' : 'Open menu'}
       aria-expanded={isOpen}
-      className="flex items-center justify-center lg:w-8 lg:h-8 w-6 h-6 border-2  rounded-full"
+      className="flex items-center justify-center w-8 h-8 border-2  rounded-full"
     >
       <AnimatePresence mode="wait" initial={false}>
         {isOpen ? <CloseIcon /> : <OpenIcon />}
