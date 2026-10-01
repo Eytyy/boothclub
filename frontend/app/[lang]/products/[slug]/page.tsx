@@ -114,47 +114,37 @@ export default async function ProductCategoryPage(props: Props) {
       <GridContainer>
         <GridColumn
           span={6}
-          className="self-start sticky top-0 grid grid-rows-[1fr_14svh] min-h-svh"
+          className="lg:self-start lg:sticky lg:top-0 lg:grid lg:grid-rows-[1fr_14svh] lg:min-h-svh"
         >
-          <GridBlock borders="none" className="p-10 relative">
+          <GridBlock borders="none" className="relative">
             <PageMainMedia
-              className="absolute inset-10"
+              className="lg:absolute lg:inset-10"
               mainImage={category.mainImage}
               title={categoryTitle}
             />
           </GridBlock>
           <ScrollCue />
         </GridColumn>
-        <GridColumn className="sticky">
-          <GridBlock className="pb-0">
+        <GridColumn className="lg:sticky">
+          <GridBlock className="pb-0 lg:pb-0">
             <PageHeroText
               title={categoryTitle}
               tagline={category.tagline}
               description={description ? toPortableTextBlocks(description) : null}
             />
           </GridBlock>
-          <div>
-            <div className="p-10 pb-0">
-              <TextReveal
-                className="text-4xl leading-tight font-bold"
-                text={`Stylish, simplistic and understated. Photobooths will never go out of fashion.`}
+
+          {products.length > 0 &&
+            products.map((product) => (
+              <ProductCard
+                className="last:border-b-0 "
+                key={product._id}
+                href={productPath(category.slug, product.slug)}
+                title={product.title}
+                excerpt={product.excerpt}
+                image={product.mainImage}
               />
-            </div>
-            {products.length > 0 && (
-              <>
-                {products.map((product) => (
-                  <ProductCard
-                    className="last:border-b-0"
-                    key={product._id}
-                    href={productPath(category.slug, product.slug)}
-                    title={product.title}
-                    excerpt={product.excerpt}
-                    image={product.mainImage}
-                  />
-                ))}
-              </>
-            )}
-          </div>
+            ))}
         </GridColumn>
       </GridContainer>
       <GridContainer
@@ -165,11 +155,15 @@ export default async function ProductCategoryPage(props: Props) {
           span={8}
           className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100"
         >
+          <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+            <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+            Get an Instant Quote
+          </h2>
           <ContactFormSection
-            className=" max-lg:order-4 h-full flex-col flex"
+            className="max-lg:order-4 h-full flex-col flex"
             form={formConfig}
             context={{title: title || undefined, url: categoryHref}}
-            title="Tell us the vision, we bring the setup, the tech, the vibe and the results. Get an Instant Quote."
+            title="Tell us the vision, we bring the setup, the tech, the vibe and the results."
           />
         </GridColumn>
         <GridColumn span={4} className="max-lg:contents">

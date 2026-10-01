@@ -36,18 +36,21 @@ export const GridContainer = ({
   const stops = ruleStops(columns)
   // Halves stay in normal stacking so a full-width cell can still cover the center rule.
   // Other splits sit above sticky column backgrounds so the rule remains visible.
-  const raised = columns !== 'none' && !(columns.length === 2 && columns[0] === 6 && columns[1] === 6)
+  const raised =
+    columns !== 'none' && !(columns.length === 2 && columns[0] === 6 && columns[1] === 6)
 
   return (
-    <div className={cn('grid grid-cols-12 border-x-site mx-10 relative', className)}>
+    <div
+      className={cn('pt-13 lg:pt-0 grid grid-cols-12 border-x-site lg:mx-10 relative', className)}
+    >
       {children}
       {stops.map((stop) => (
         <span
           key={stop}
           aria-hidden
           className={cn(
-            'grid-divider pointer-events-none absolute top-0 h-full w-(--border-width-site) -translate-x-1/2 bg-black dark:bg-white',
-            raised && 'z-[110]',
+            'hidden lg:grid-divider lg:block pointer-events-none absolute top-0 h-full w-(--border-width-site) -translate-x-1/2 bg-black dark:bg-white',
+            raised && 'z-110',
           )}
           style={{left: `${(stop / GRID_COLUMNS) * 100}%`}}
         />
@@ -56,8 +59,8 @@ export const GridContainer = ({
   )
 }
 
-type GridBlockOwnProps<T extends ElementType> = {
-  children: ReactNode
+type GridBlockOwnProps = {
+  children?: ReactNode
   className?: string
   borders?:
     | 'none'
@@ -71,11 +74,16 @@ type GridBlockOwnProps<T extends ElementType> = {
     | 'bottom-right'
     | 'y'
     | 'x'
-  as?: T
 }
 
-type GridBlockProps<T extends ElementType> = GridBlockOwnProps<T> &
-  Omit<ComponentPropsWithoutRef<T>, keyof GridBlockOwnProps<T>>
+/**
+ * `as` is its own intersection member so TypeScript infers the element from
+ * that prop. Nesting it with the other props makes the generic fall back to
+ * the default `"div"`, and every custom component then fails to type-check.
+ */
+type GridBlockProps<T extends ElementType> = GridBlockOwnProps & {
+  as?: T
+} & Omit<ComponentPropsWithoutRef<T>, keyof GridBlockOwnProps | 'as'>
 
 export function GridBlock<T extends ElementType = 'div'>({
   children,
@@ -98,7 +106,7 @@ export function GridBlock<T extends ElementType = 'div'>({
     'border-x-site border-black dark:border-white': borders === 'x',
   })
   return (
-    <Component className={cn('p-10 block', borderClasses, className)} {...props}>
+    <Component className={cn(borderClasses, 'p-5 lg:p-10 block', className)} {...props}>
       {children}
     </Component>
   )
@@ -114,14 +122,14 @@ export function GridColumn({
   span?: 'full' | 2 | 3 | 4 | 6 | 7 | 8 | 9
 }) {
   const spanClasses = cn({
-    'col-span-full': span === 'full',
-    'col-span-2': span === 2,
-    'col-span-3': span === 3,
-    'col-span-4': span === 4,
-    'col-span-6': span === 6,
-    'col-span-7': span === 7,
-    'col-span-8': span === 8,
-    'col-span-9': span === 9,
+    'lg:col-span-full': span === 'full',
+    'lg:col-span-2': span === 2,
+    'lg:col-span-3': span === 3,
+    'lg:col-span-4': span === 4,
+    'lg:col-span-6': span === 6,
+    'lg:col-span-7': span === 7,
+    'lg:col-span-8': span === 8,
+    'lg:col-span-9': span === 9,
   })
-  return <div className={cn(spanClasses, className)}>{children}</div>
+  return <div className={cn('col-span-full', spanClasses, className)}>{children}</div>
 }

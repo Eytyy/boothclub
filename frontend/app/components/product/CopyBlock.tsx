@@ -22,9 +22,7 @@ export default function CopyBlock({
 
   return (
     <div className={cn('p-10 space-y-5', className)}>
-      {headlineVisible && headline ? (
-        <TextReveal text={headline} className="text-6xl font-bold" />
-      ) : null}
+      {headlineVisible && headline ? <TextReveal text={headline} /> : null}
     </div>
   )
 }

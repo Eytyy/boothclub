@@ -9,5 +9,5 @@ type Props = {
 
 export default function PageTitle({children, as = 'h1', className}: Props) {
   const Tag = as || 'h1'
-  return <Tag className={cn('text-7xl font-bold leading-[1.1]', className)}>{children}</Tag>
+  return <Tag className={cn('page-title', className)}>{children}</Tag>
 }

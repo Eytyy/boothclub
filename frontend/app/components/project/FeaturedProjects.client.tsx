@@ -71,11 +71,6 @@ export default function FeaturedProjects({
         className,
       )}
     >
-      <div className="z-10 hidden md:grid grid-cols-3 absolute inset-0 pointer-events-none">
-        <div />
-        <div className="border-x-site border-black dark:border-white" />
-        <div />
-      </div>
       <div className="relative grid grid-cols-1 md:grid-cols-3">
         <div className="relative min-w-0 md:col-span-2">
           <div className="overflow-x-clip" ref={emblaRef}>

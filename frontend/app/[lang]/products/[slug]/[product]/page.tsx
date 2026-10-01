@@ -154,16 +154,26 @@ export default async function ProductPage(props: Props) {
             />
           </GridBlock>
           {product.specs?.items?.length ? (
-            <SpecsBlock
-              items={product.specs.items.filter((item): item is {_key: string; text: string} =>
-                Boolean(item?._key && item.text),
-              )}
-            />
+            <section>
+              <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+                <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+                Features
+              </h2>
+              <SpecsBlock
+                items={product.specs.items.filter((item): item is {_key: string; text: string} =>
+                  Boolean(item?._key && item.text),
+                )}
+              />
+            </section>
           ) : null}
         </GridColumn>
       </GridContainer>
-      <GridContainer className="border-t-site border-black dark:border-white">
+      <GridContainer columns={[4, 4, 4]} className="border-t-site border-black dark:border-white">
         <GridColumn span={'full'}>
+          <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+            <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+            Featured Projects
+          </h2>
           {featuredProjectItems.length > 0 ? (
             <FeaturedProjects items={featuredProjectItems} lang={lang} />
           ) : null}
@@ -172,6 +182,10 @@ export default async function ProductPage(props: Props) {
       {relatedPosts.length > 0 ? (
         <GridContainer columns="none">
           <GridColumn span="full" className="border-b-site border-black dark:border-white">
+            <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+              <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+              Related Posts
+            </h2>
             <RelatedPosts posts={relatedPosts} />
           </GridColumn>
         </GridContainer>
@@ -184,11 +198,15 @@ export default async function ProductPage(props: Props) {
           span={8}
           className="min-w-0 max-lg:contents sticky top-0 self-start bg-white z-100"
         >
+          <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+            <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+            Get an Instant Quote
+          </h2>
           <ContactFormSection
-            className=" max-lg:order-4 h-full flex-col flex"
+            className=" max-lg:order-4 h-full flex-col flex pt-0 lg:pt-0"
             form={formConfig}
             context={{title: title || undefined, url: productHref}}
-            title="Tell us the vision, we bring the setup, the tech, the vibe and the results. Get an Instant Quote."
+            title="Tell us the vision, we bring the setup, the tech, the vibe and the results."
           />
         </GridColumn>
         <GridColumn span={4} className="max-lg:contents">

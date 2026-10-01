@@ -22,6 +22,11 @@ export default function OtherProducts({
 }) {
   return (
     <div className={cn(className)}>
+      <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
+        <span className="block w-4 h-4 bg-black dark:bg-white"></span>
+        Other Products
+      </h2>
+
       {items.map((item) => (
         <GridBlock
           key={item._id}

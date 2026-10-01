@@ -35,7 +35,7 @@ export default function HeaderClient({items, ctaLabel}: HeaderClientProps) {
     <>
       <div
         className={cn(
-          'fixed z-50 top-10 px-5 lg:px-10 transition-colors ',
+          'fixed z-50 top-5 lg:top-10 px-10 transition-colors left-0 ',
           onBrandFooter && 'text-black',
         )}
       >
@@ -43,7 +43,7 @@ export default function HeaderClient({items, ctaLabel}: HeaderClientProps) {
       </div>
       <div
         className={cn(
-          'fixed z-50 top-0 py-5 lg:py-10 px-5 lg:px-10 ltr:right-0 rtl:left-0 flex items-center gap-2 bottom-0',
+          'fixed z-50 top-0 py-5 lg:py-10 px-10 right-0 flex items-center gap-2 bottom-0',
           'flex flex-col items-center gap-6 transition-colors justify-between',
           onBrandFooter && 'text-black',
         )}
@@ -55,7 +55,7 @@ export default function HeaderClient({items, ctaLabel}: HeaderClientProps) {
       </div>
       <div
         className={cn(
-          'fixed z-50 bottom-0 py-5 lg:py-10 px-5 lg:px-10 ltr:left-0 rtl:right-0 flex items-center gap-2',
+          'fixed z-50 bottom-0 py-5 lg:py-10 px-10 left-0 flex items-center gap-2',
           'flex flex-col items-center gap-6 transition-colors justify-between',
           onBrandFooter && 'text-black',
         )}
