@@ -33,12 +33,6 @@ export const structure: StructureResolver = (S: StructureBuilder) =>
       S.documentTypeListItem('post').icon(DocumentsIcon).title('Posts'),
       S.divider(),
       S.listItem()
-        .title('Careers')
-        .child(S.document().schemaType('careers').documentId('careersPage'))
-        .icon(StarIcon),
-      S.documentTypeListItem('jobOpening').icon(DocumentsIcon).title('Job openings'),
-      S.divider(),
-      S.listItem()
         .title('About')
         .child(S.document().schemaType('about').documentId('aboutPage'))
         .icon(StarIcon),

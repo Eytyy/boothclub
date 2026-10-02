@@ -7,7 +7,6 @@ import {project} from './project'
 import {teamMember} from './teamMember'
 import {testimonial} from './testimonial'
 import formConfig from './formConfig'
-import {jobOpening} from './jobOpening'
 export const linkableDocuments: never[] = []
 export const documents = [
   menu,
@@ -19,5 +18,4 @@ export const documents = [
   teamMember,
   testimonial,
   formConfig,
-  jobOpening,
 ]
