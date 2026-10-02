@@ -1,6 +1,6 @@
 'use client'
 import TextReveal from '@/app/components/ui/TextReveal.client'
-import {motion} from 'framer-motion'
+import {motion, type Variants} from 'framer-motion'
 
 type Props = {}
 
@@ -37,7 +37,7 @@ export default function HomeHero({}: Props) {
   )
 }
 
-const mediaBlockVariants = {
+const mediaBlockVariants: Variants = {
   hidden: {scale: 0},
   visible: {
     scale: 1,
