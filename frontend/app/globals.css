@@ -134,7 +134,11 @@
 }
 
 .hero-column-track {
-  animation: scroll-y-half var(--hero-column-duration, 40s) linear infinite;
+  animation-name: scroll-y-half;
+  animation-duration: var(--hero-column-duration, 40s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: var(--hero-scroll-delay, 0s);
   will-change: transform;
 }
 
@@ -142,8 +146,35 @@
   animation-play-state: paused;
 }
 
+@keyframes hero-card-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-card-rise {
+  from {
+    transform: translate3d(0, 2.25rem, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.hero-card-enter {
+  animation-name: hero-card-in, hero-card-rise;
+  animation-duration: 0s, var(--hero-card-duration, 0.55s);
+  animation-timing-function: linear, cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both, both;
+  animation-delay: var(--hero-card-delay, 0s), var(--hero-card-delay, 0s);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .hero-column-track {
+  .hero-column-track,
+  .hero-card-enter {
     animation: none;
   }
 }
