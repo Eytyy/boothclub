@@ -1,7 +1,7 @@
 import {GridColumn, GridContainer} from '@/app/components/ui/GridSystem'
 import {dataAttr} from '@/sanity/lib/utils'
 
-import PostMarqueeRow from './PostMarqueeRow'
+import PostMarqueeRow from '@/app/components/blog/PostMarqueeRow'
 
 type AdjacentPost = {
   _id: string

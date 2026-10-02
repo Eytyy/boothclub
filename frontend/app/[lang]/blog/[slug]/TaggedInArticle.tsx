@@ -1,6 +1,6 @@
 import {GridColumn, GridContainer} from '@/app/components/ui/GridSystem'
 
-import PostMarqueeRow from './PostMarqueeRow'
+import PostMarqueeRow from '@/app/components/blog/PostMarqueeRow'
 
 export type TaggedKind = 'product' | 'productCategory' | 'project'
 

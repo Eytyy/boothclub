@@ -8,7 +8,33 @@ import {resolveMetaTitle, resolveOpenGraphImage} from '@/sanity/lib/utils'
 import JsonLd from '@/app/components/seo/JsonLd'
 import {buildHomeStructuredData} from '@/app/lib/seo/structuredData'
 import TextReveal from '@/app/components/ui/TextReveal.client'
+import {Marquee} from '@/app/components/ui/Marquee.client'
 import HomeHero from './Hero.client'
+import {GridContainer} from '@/app/components/ui/GridSystem'
+import PageTitle from '@/app/components/ui/PageTitle'
+import LocalizedLink from '@/app/components/ui/LocalizedLink'
+import PostMarqueeRow from '@/app/components/blog/PostMarqueeRow'
+
+const FEATURED_POSTS = [
+  {label: '12 Mar', title: 'Glambot at a Chanel store opening'},
+  {label: '4 Feb', title: 'AI portraits for Formula 1 hospitality'},
+  {label: '18 Jan', title: 'A permanent booth built for Dior'},
+]
+
+const CLIENTS = [
+  'Prada',
+  'Adidas',
+  'Chanel',
+  'Formula 1',
+  'Dior',
+  'Aston Martin',
+  'Louis Vuitton',
+  'Gucci',
+  'Ferrari',
+  'Hermès',
+  'Cartier',
+  'Balenciaga',
+]
 
 type Props = {
   params: Promise<{lang: Locale}>
@@ -42,19 +68,15 @@ export default async function Page({params}: Props) {
       <JsonLd data={buildHomeStructuredData(process.env.NEXT_PUBLIC_SITE_URL, lang)} />
       <div className="container">
         <div className="mx-10  border-x-site">
-          <div className="p-10">
-            <HomeHero />
-          </div>
-          <div className="border-t-site grid gap-10 p-10">
-            <h2 className="text-lg font-semibold uppercase lg:pb-0 flex items-center gap-5">
-              <span className="block w-4 h-4 bg-black dark:bg-white"></span>
-              Our Products
-            </h2>
-            <TextReveal
-              className="text-reveal-compact font-bold"
-              text="Glambot, AI portraits and custom-built booths for store openings, activations and celebrations. Designed around your brand, run by our crew, measured after."
-            />
-            <div className="grid grid-cols-3 gap-10">
+          <HomeHero />
+          <div className="px-10">
+            <div className="max-w-[1000px] ">
+              <TextReveal
+                className="body-text font-normal"
+                text="Glambot, AI portraits and custom-built booths for store openings, activations and celebrations. Designed around your brand, run by our crew, measured after."
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-10 py-10">
               <ProductCard
                 title="Local rentals"
                 description="Local rentals for your brand. From AI portraits to custom-built booths, we have you covered."
@@ -69,9 +91,62 @@ export default async function Page({params}: Props) {
               />
             </div>
           </div>
-          <div className="p-10">Clients scroll</div>
-          <div className="p-10">1 Project Highlight</div>
-          <div className="p-10">3 Featured blog posts Scroll</div>
+          <div className="border-y-site">
+            <Marquee
+              speed={70}
+              runClassName="mx-0"
+              className="h-auto py-8"
+              accessibleText={CLIENTS.join(', ')}
+            >
+              <div className="flex items-center text-2xl font-semibold tracking-tight md:text-4xl">
+                {CLIENTS.map((name) => (
+                  <span key={name} className="px-8">
+                    {name}
+                  </span>
+                ))}
+              </div>
+            </Marquee>
+          </div>
+          <GridContainer
+            columns={[6, 6]}
+            className="grid grid-cols-2 gap-10 border-x-0 mx-0 p-0 lg:p-0 lg:mx-0 border-b-site border-black dark:border-white"
+          >
+            <div className="p-10">
+              <div className="bg-black aspect-square w-full" />
+            </div>
+            <div className="p-10">
+              <div className="space-y-5 flex flex-col">
+                <header className="space-y-2">
+                  <LocalizedLink
+                    href={'/'}
+                    className="inline-block text-sm font-semibold uppercase tracking-wide hover:underline"
+                  >
+                    AI BOOTH
+                  </LocalizedLink>
+                  <PageTitle as="h2">Saudia x Formula E</PageTitle>
+                </header>
+                <TextReveal
+                  className="body-text font-normal text-black"
+                  text={`An experience that blends aviation and motorsport branding with collectible design aesthetics, delivering highly shareable digital outputs and optional prints that feel like personalised retail products.`}
+                />
+              </div>
+            </div>
+          </GridContainer>
+          <div className="border-b-site border-black dark:border-white">
+            <h2 className="flex items-center gap-5 p-5 pb-0 text-lg font-semibold uppercase lg:p-10 lg:pb-0">
+              <span className="block h-4 w-4 bg-black dark:bg-white" />
+              Journal
+            </h2>
+            {FEATURED_POSTS.map((post, index) => (
+              <PostMarqueeRow
+                key={post.title}
+                href="/blog"
+                label={post.label}
+                title={post.title}
+                index={index}
+              />
+            ))}
+          </div>
           <div className="p-10">Contact Form + Statement "maybe steps of how it works"</div>
         </div>
       </div>

@@ -124,6 +124,30 @@
   }
 }
 
+@keyframes scroll-y-half {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -50%, 0);
+  }
+}
+
+.hero-column-track {
+  animation: scroll-y-half var(--hero-column-duration, 40s) linear infinite;
+  will-change: transform;
+}
+
+.hero-column-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-column-track {
+    animation: none;
+  }
+}
+
 .featured-clients-marquee-track {
   display: flex;
   width: max-content;
