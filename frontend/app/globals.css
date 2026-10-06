@@ -133,16 +133,40 @@
   }
 }
 
-.hero-column-track {
-  animation-name: scroll-y-half;
-  animation-duration: var(--hero-column-duration, 40s);
+@keyframes scroll-x-half {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.hero-column-track,
+.hero-row-track {
+  animation-duration: var(--hero-track-duration, 40s);
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   animation-delay: var(--hero-scroll-delay, 0s);
   will-change: transform;
 }
 
-.hero-column-track:hover {
+.hero-column-track {
+  animation-name: scroll-y-half;
+}
+
+/* Mobile: columns become rows that scroll sideways. */
+.hero-row-track {
+  animation-name: scroll-x-half;
+}
+
+.hero-row-track--reverse {
+  animation-direction: reverse;
+}
+
+.hero-column-track:hover,
+[data-hero-offscreen] .hero-column-track,
+[data-hero-offscreen] .hero-row-track {
   animation-play-state: paused;
 }
 
@@ -174,6 +198,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero-column-track,
+  .hero-row-track,
   .hero-card-enter {
     animation: none;
   }
