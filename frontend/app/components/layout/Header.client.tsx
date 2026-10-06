@@ -43,8 +43,8 @@ export default function HeaderClient({items, ctaLabel}: HeaderClientProps) {
       </div>
       <div
         className={cn(
-          'fixed z-50 top-0 py-5 lg:py-10 px-10 right-0 flex items-center gap-2 bottom-0',
-          'flex flex-col items-center gap-6 transition-colors justify-between',
+          'fixed z-50 top-0 py-5 lg:py-10 px-10 right-0 flex items-center gap-2 md:bottom-0',
+          'flex md:flex-col items-center gap-6 transition-colors justify-between',
           onBrandFooter && 'text-black',
         )}
       >

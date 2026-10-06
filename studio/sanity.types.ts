@@ -270,99 +270,11 @@ export type Link = {
   phone?: string
 }
 
-export type FeaturedProjects = {
-  _type: 'featuredProjects'
-  items: Array<
-    {
-      _key: string
-    } & ProjectReference
-  >
-  cta?: Button
-}
-
-export type FeaturedProducts = {
-  _type: 'featuredProducts'
-  heading?: InternationalizedArrayString
-  product: Array<
-    {
-      _key: string
-    } & ProductReference
-  >
-}
-
-export type TestimonialReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'testimonial'
-}
-
-export type FeaturedClients = {
-  _type: 'featuredClients'
-  heading?: InternationalizedArrayString
-  rows: Array<
-    {
-      _key: string
-    } & FeaturedClientsRow
-  >
-  testimonials?: Array<
-    {
-      _key: string
-    } & TestimonialReference
-  >
-}
-
-export type ClientReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'client'
-}
-
-export type FeaturedClientsRow = {
-  _type: 'featuredClientsRow'
-  heading?: InternationalizedArrayString
-  clients: Array<
-    {
-      _key: string
-    } & ClientReference
-  >
-}
-
-export type FeaturedBlog = {
-  _type: 'featuredBlog'
-  heading?: InternationalizedArrayString
-  cta?: Button
-}
-
 export type Cta = {
   _type: 'cta'
   headline: InternationalizedArrayString
   tagline?: InternationalizedArrayText
   button?: Button
-}
-
-export type CallToAction = {
-  _type: 'callToAction'
-  tagline?: InternationalizedArrayText
-  button?: Button
-  mediaType?: 'video' | 'images' | 'gif'
-  video?: MuxVideo
-  images?: Array<{
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    _type: 'image'
-    _key: string
-  }>
-  gif?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    _type: 'image'
-  }
 }
 
 export type BlockContentTextOnly = Array<{
@@ -477,107 +389,6 @@ export type SanityImageHotspot = {
   width: number
 }
 
-export type Project = {
-  _id: string
-  _type: 'project'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: InternationalizedArrayText
-  description: InternationalizedArrayBlockContentTextOnly
-  blocks?: Array<
-    | ({
-        _key: string
-      } & BlockCopy)
-    | ({
-        _key: string
-      } & BlockMedia)
-  >
-  output?: Array<
-    {
-      _key: string
-    } & BlockImage
-  >
-  mainImage?: BlockImage
-  heroVideo?: MuxVideo
-  gallery?: Array<
-    {
-      _key: string
-    } & BlockImage
-  >
-  product?: ProductReference
-  slug: Slug
-  legacySlugs?: Array<string>
-  seo?: Seo
-}
-
-export type Slug = {
-  _type: 'slug'
-  current: string
-  source?: string
-}
-
-export type MuxVideoAssetReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'mux.videoAsset'
-}
-
-export type MuxVideo = {
-  _type: 'mux.video'
-  asset?: MuxVideoAssetReference
-}
-
-export type InternationalizedArrayBlockContentTextOnly = Array<
-  {
-    _key: string
-  } & InternationalizedArrayBlockContentTextOnlyValue
->
-
-export type Product = {
-  _id: string
-  _type: 'product'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: InternationalizedArrayString
-  category: ProductCategoryReference
-  excerpt?: InternationalizedArrayText
-  description: InternationalizedArrayBlockContentTextOnly
-  specs?: ProductSpecs
-  copy?: BlockCopy
-  featuredProjects?: Array<
-    {
-      _key: string
-    } & ProjectReference
-  >
-  slug: Slug
-  mainImage: BlockImage
-  heroVideo?: MuxVideo
-  seo?: Seo
-}
-
-export type ProductCategory = {
-  _id: string
-  _type: 'productCategory'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: InternationalizedArrayString
-  tagline?: InternationalizedArrayString
-  description: InternationalizedArrayBlockContentTextOnly
-  slug: Slug
-  featuredProjects?: Array<
-    {
-      _key: string
-    } & ProjectReference
-  >
-  mainImage: BlockImage
-  heroVideo?: MuxVideo
-  seo?: Seo
-}
-
 export type Client = {
   _id: string
   _type: 'client'
@@ -636,6 +447,12 @@ export type Post = {
       _type: 'image'
     }
   }
+}
+
+export type Slug = {
+  _type: 'slug'
+  current: string
+  source?: string
 }
 
 export type InternationalizedArrayBlockContent = Array<
@@ -760,6 +577,13 @@ export type Blog = {
   seo?: Seo
 }
 
+export type ClientReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'client'
+}
+
 export type Home = {
   _id: string
   _type: 'home'
@@ -767,26 +591,134 @@ export type Home = {
   _updatedAt: string
   _rev: string
   hero?: {
-    headline: InternationalizedArrayText
-    subheadline?: InternationalizedArrayText
-    video?: MuxVideo
-    taglineWithVideo?: InternationalizedArrayText
+    columns: Array<{
+      items: Array<
+        | ({
+            _key: string
+          } & BlockMedia)
+        | ({
+            _key: string
+          } & BlockText)
+      >
+      _type: 'heroColumn'
+      _key: string
+    }>
   }
-  pageBuilder?: Array<
-    | ({
+  featuredProducts?: {
+    headline?: InternationalizedArrayString
+    description?: InternationalizedArrayText
+    categories?: Array<
+      {
         _key: string
-      } & CallToAction)
-    | ({
-        _key: string
-      } & FeaturedProducts)
-    | ({
-        _key: string
-      } & FeaturedClients)
-    | ({
-        _key: string
-      } & FeaturedBlog)
+      } & ProductCategoryReference
+    >
+  }
+  clients?: Array<
+    {
+      _key: string
+    } & ClientReference
   >
-  featuredProjects?: FeaturedProjects
+  featuredProject?: ProjectReference
+  featuredPosts?: Array<
+    {
+      _key: string
+    } & PostReference
+  >
+  seo?: Seo
+}
+
+export type Project = {
+  _id: string
+  _type: 'project'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: InternationalizedArrayText
+  description: InternationalizedArrayBlockContentTextOnly
+  blocks?: Array<
+    | ({
+        _key: string
+      } & BlockCopy)
+    | ({
+        _key: string
+      } & BlockMedia)
+  >
+  output?: Array<
+    {
+      _key: string
+    } & BlockImage
+  >
+  mainImage?: BlockImage
+  heroVideo?: MuxVideo
+  gallery?: Array<
+    {
+      _key: string
+    } & BlockImage
+  >
+  product?: ProductReference
+  slug: Slug
+  legacySlugs?: Array<string>
+  seo?: Seo
+}
+
+export type Product = {
+  _id: string
+  _type: 'product'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: InternationalizedArrayString
+  category: ProductCategoryReference
+  excerpt?: InternationalizedArrayText
+  description: InternationalizedArrayBlockContentTextOnly
+  specs?: ProductSpecs
+  copy?: BlockCopy
+  featuredProjects?: Array<
+    {
+      _key: string
+    } & ProjectReference
+  >
+  slug: Slug
+  mainImage: BlockImage
+  heroVideo?: MuxVideo
+  seo?: Seo
+}
+
+export type MuxVideoAssetReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'mux.videoAsset'
+}
+
+export type MuxVideo = {
+  _type: 'mux.video'
+  asset?: MuxVideoAssetReference
+}
+
+export type InternationalizedArrayBlockContentTextOnly = Array<
+  {
+    _key: string
+  } & InternationalizedArrayBlockContentTextOnlyValue
+>
+
+export type ProductCategory = {
+  _id: string
+  _type: 'productCategory'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: InternationalizedArrayString
+  tagline?: InternationalizedArrayString
+  description: InternationalizedArrayBlockContentTextOnly
+  slug: Slug
+  featuredProjects?: Array<
+    {
+      _key: string
+    } & ProjectReference
+  >
+  mainImage: BlockImage
+  heroVideo?: MuxVideo
   seo?: Seo
 }
 
@@ -1132,15 +1064,7 @@ export type AllSanitySchemaTypes =
   | ProductReference
   | ProjectReference
   | Link
-  | FeaturedProjects
-  | FeaturedProducts
-  | TestimonialReference
-  | FeaturedClients
-  | ClientReference
-  | FeaturedClientsRow
-  | FeaturedBlog
   | Cta
-  | CallToAction
   | BlockContentTextOnly
   | BlockContent
   | Button
@@ -1150,15 +1074,9 @@ export type AllSanitySchemaTypes =
   | TeamMember
   | SanityImageCrop
   | SanityImageHotspot
-  | Project
-  | Slug
-  | MuxVideoAssetReference
-  | MuxVideo
-  | InternationalizedArrayBlockContentTextOnly
-  | Product
-  | ProductCategory
   | Client
   | Post
+  | Slug
   | InternationalizedArrayBlockContent
   | FormConfigReference
   | Contact
@@ -1167,7 +1085,14 @@ export type AllSanitySchemaTypes =
   | About
   | Projects
   | Blog
+  | ClientReference
   | Home
+  | Project
+  | Product
+  | MuxVideoAssetReference
+  | MuxVideo
+  | InternationalizedArrayBlockContentTextOnly
+  | ProductCategory
   | MenuReference
   | Settings
   | Menu

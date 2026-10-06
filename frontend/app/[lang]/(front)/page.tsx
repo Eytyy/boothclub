@@ -71,21 +71,21 @@ export default async function Page({params}: Props) {
     <div className="">
       <JsonLd data={buildHomeStructuredData(process.env.NEXT_PUBLIC_SITE_URL, lang)} />
       <div className="container">
-        <div className="mx-10  border-x-site">
+        <div className="md:mx-10 border-x-site pt-12 md:pt-0">
           {heroColumns.length > 0 && <HomeHero columns={heroColumns} />}
           {featuredProducts && (
             <div className="border-t-site">
               {featuredProducts.headline && (
-                <div className="p-10 pb-0">
+                <div className="p-5 md:p-10 md:pb-0">
                   <TextReveal
-                    className="pointer-events-none  text-reveal-default "
+                    className="pointer-events-none text-reveal-default"
                     text={stegaClean(featuredProducts.headline)}
                   />
                 </div>
               )}
-              <div className="px-10">
+              <div className="px-5 md:px-10">
                 {featuredProducts.description && (
-                  <div className="max-w-[1000px] ">
+                  <div className="max-w-250 ">
                     <TextReveal
                       className="body-text font-normal"
                       text={stegaClean(featuredProducts.description)}
@@ -93,7 +93,7 @@ export default async function Page({params}: Props) {
                   </div>
                 )}
                 {categories.length > 0 && (
-                  <div className="grid grid-cols-3 gap-10 py-10">
+                  <div className="grid lg:grid-cols-3 gap-10 py-10">
                     {categories.map((category) => (
                       <ProductCategoryCard key={category._id} category={category} />
                     ))}

@@ -153,7 +153,7 @@ function ScrollingColumn({
               >
                 <EnteringCard index={index} trackIndex={trackIndex}>
                   {item._type === 'block.text' ? (
-                    <div className="w-full bg-black text-white">
+                    <div className="w-full text-black dark:text-white">
                       <HeroText content={item.content} />
                     </div>
                   ) : (
@@ -248,9 +248,7 @@ function EnteringCard({
 
 function SquareTile({children}: {children: ReactNode}) {
   return (
-    <div className="relative aspect-square w-full overflow-hidden bg-black text-white">
-      {children}
-    </div>
+    <div className="relative aspect-square lg:aspect-3/4 w-full overflow-hidden ">{children}</div>
   )
 }
 
@@ -260,8 +258,8 @@ function HeroText({content, compact}: {content: HeroTextItem['content']; compact
   return (
     <div
       className={cn(
-        'font-semibold',
-        compact ? 'flex h-full items-end p-4 text-xl' : 'p-6 text-2xl lg:text-3xl',
+        'font-bold uppercase',
+        compact ? 'flex h-full items-end text-xl' : ' text-2xl lg:text-3xl xl:text-4xl',
       )}
     >
       <CustomPortableText value={content as PortableTextBlock[]} invert={false} />
