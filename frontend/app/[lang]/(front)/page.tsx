@@ -1,10 +1,16 @@
 import type {Metadata} from 'next'
+import {stegaClean} from '@sanity/client/stega'
+import {format} from 'date-fns'
+import {ar} from 'date-fns/locale'
 
 import type {Locale} from '@/app/lib/i18n/config'
+import {getDictionary} from '@/app/lib/i18n/dictionary'
+import {productCategoryPath, productPath} from '@/app/lib/product/paths'
 import {localeAlternates} from '@/app/lib/seo/alternates'
 import {sanityFetch} from '@/sanity/lib/live'
 import {homePageQuery} from '@/sanity/lib/queries'
-import {resolveMetaTitle, resolveOpenGraphImage} from '@/sanity/lib/utils'
+import {dataAttr, resolveMetaTitle, resolveOpenGraphImage} from '@/sanity/lib/utils'
+import type {HomePageQueryResult} from '@/sanity.types'
 import JsonLd from '@/app/components/seo/JsonLd'
 import {buildHomeStructuredData} from '@/app/lib/seo/structuredData'
 import TextReveal from '@/app/components/ui/TextReveal.client'
@@ -14,27 +20,17 @@ import {GridContainer} from '@/app/components/ui/GridSystem'
 import PageTitle from '@/app/components/ui/PageTitle'
 import LocalizedLink from '@/app/components/ui/LocalizedLink'
 import PostMarqueeRow from '@/app/components/blog/PostMarqueeRow'
+import ClientLogo from '@/app/components/ui/ClientLogo'
+import Image from '@/app/components/ui/SanityImage.client'
 
-const FEATURED_POSTS = [
-  {label: '12 Mar', title: 'Glambot at a Chanel store opening'},
-  {label: '4 Feb', title: 'AI portraits for Formula 1 hospitality'},
-  {label: '18 Jan', title: 'A permanent booth built for Dior'},
-]
+type HomePage = NonNullable<HomePageQueryResult>
+type ProductCategoryItem = NonNullable<
+  NonNullable<HomePage['featuredProducts']>['categories']
+>[number]
+type FeaturedProjectItem = NonNullable<HomePage['featuredProject']>
 
-const CLIENTS = [
-  'Prada',
-  'Adidas',
-  'Chanel',
-  'Formula 1',
-  'Dior',
-  'Aston Martin',
-  'Louis Vuitton',
-  'Gucci',
-  'Ferrari',
-  'Hermès',
-  'Cartier',
-  'Balenciaga',
-]
+/** Short date shown before each post title, e.g. "12 Mar". */
+const POST_LABEL_FORMAT = 'd MMM'
 
 type Props = {
   params: Promise<{lang: Locale}>
@@ -62,104 +58,127 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
 export default async function Page({params}: Props) {
   const {lang} = await params
   const {data: page} = await sanityFetch({query: homePageQuery, params: {lang}})
+  const t = getDictionary(lang)
+
+  const heroColumns = page?.hero?.columns ?? []
+  const featuredProducts = page?.featuredProducts
+  const categories = featuredProducts?.categories ?? []
+  const clients = (page?.clients ?? []).filter(Boolean)
+  const featuredProject = page?.featuredProject
+  const posts = (page?.featuredPosts ?? []).filter((post) => Boolean(post.title && post.slug))
 
   return (
     <div className="">
       <JsonLd data={buildHomeStructuredData(process.env.NEXT_PUBLIC_SITE_URL, lang)} />
       <div className="container">
         <div className="mx-10  border-x-site">
-          <HomeHero />
-          <div className="px-10">
-            <div className="max-w-[1000px] ">
-              <TextReveal
-                className="body-text font-normal"
-                text="Glambot, AI portraits and custom-built booths for store openings, activations and celebrations. Designed around your brand, run by our crew, measured after."
-              />
-            </div>
-            <div className="grid grid-cols-3 gap-10 py-10">
-              <ProductCard
-                title="Local rentals"
-                description="Local rentals for your brand. From AI portraits to custom-built booths, we have you covered."
-              />
-              <ProductCard
-                title="Permenant Installations"
-                description="Permenant installations for your brand. From AI portraits to custom-built booths, we have you covered."
-              />
-              <ProductCard
-                title="Interactive Experiences"
-                description="Interactive experiences for your brand. From AI portraits to custom-built booths, we have you covered."
-              />
-            </div>
-          </div>
-          <div className="border-y-site">
-            <Marquee
-              speed={70}
-              runClassName="mx-0"
-              className="h-auto py-8"
-              accessibleText={CLIENTS.join(', ')}
-            >
-              <div className="flex items-center text-2xl font-semibold tracking-tight md:text-4xl">
-                {CLIENTS.map((name) => (
-                  <span key={name} className="px-8">
-                    {name}
-                  </span>
-                ))}
+          {heroColumns.length > 0 && <HomeHero columns={heroColumns} />}
+          {featuredProducts && (
+            <div className="border-t-site">
+              {featuredProducts.headline && (
+                <div className="p-10 pb-0">
+                  <TextReveal
+                    className="pointer-events-none  text-reveal-default "
+                    text={stegaClean(featuredProducts.headline)}
+                  />
+                </div>
+              )}
+              <div className="px-10">
+                {featuredProducts.description && (
+                  <div className="max-w-[1000px] ">
+                    <TextReveal
+                      className="body-text font-normal"
+                      text={stegaClean(featuredProducts.description)}
+                    />
+                  </div>
+                )}
+                {categories.length > 0 && (
+                  <div className="grid grid-cols-3 gap-10 py-10">
+                    {categories.map((category) => (
+                      <ProductCategoryCard key={category._id} category={category} />
+                    ))}
+                  </div>
+                )}
               </div>
-            </Marquee>
-          </div>
-          <GridContainer
-            columns={[6, 6]}
-            className="grid grid-cols-2 gap-10 border-x-0 mx-0 p-0 lg:p-0 lg:mx-0 border-b-site border-black dark:border-white"
-          >
-            <div className="p-10">
-              <div className="bg-black aspect-square w-full" />
             </div>
-            <div className="p-10">
-              <div className="space-y-5 flex flex-col">
-                <header className="space-y-2">
-                  <LocalizedLink
-                    href={'/'}
-                    className="inline-block text-sm font-semibold uppercase tracking-wide hover:underline"
-                  >
-                    AI BOOTH
-                  </LocalizedLink>
-                  <PageTitle as="h2">Saudia x Formula E</PageTitle>
-                </header>
-                <TextReveal
-                  className="body-text font-normal text-black"
-                  text={`An experience that blends aviation and motorsport branding with collectible design aesthetics, delivering highly shareable digital outputs and optional prints that feel like personalised retail products.`}
+          )}
+          {clients.length > 0 && (
+            <div className="border-y-site">
+              <Marquee
+                speed={70}
+                runClassName="mx-0"
+                className="h-auto py-8"
+                accessibleText={clients
+                  .map((client) => client.name)
+                  .filter(Boolean)
+                  .join(', ')}
+              >
+                <div className="flex items-center text-2xl font-semibold tracking-tight md:text-4xl">
+                  {clients.map((client) => (
+                    <div key={client._id} className="px-8">
+                      <ClientLogo {...client} />
+                    </div>
+                  ))}
+                </div>
+              </Marquee>
+            </div>
+          )}
+          {featuredProject && <FeaturedProject project={featuredProject} />}
+          {posts.length > 0 && (
+            <div className="border-b-site border-black dark:border-white">
+              <h2 className="flex items-center gap-5 p-5 pb-0 text-lg font-semibold uppercase lg:p-10 lg:pb-0">
+                <span className="block h-4 w-4 bg-black dark:bg-white" />
+                {t['sections.journal']}
+              </h2>
+              {posts.map((post, index) => (
+                <PostMarqueeRow
+                  key={post._id}
+                  href={`/blog/${post.slug}`}
+                  label={format(
+                    new Date(post.date),
+                    POST_LABEL_FORMAT,
+                    lang === 'ar' ? {locale: ar} : undefined,
+                  )}
+                  title={post.title ?? ''}
+                  index={index}
+                  sanity={dataAttr({id: post._id, type: 'post', path: 'title'}).toString()}
                 />
-              </div>
+              ))}
             </div>
-          </GridContainer>
-          <div className="border-b-site border-black dark:border-white">
-            <h2 className="flex items-center gap-5 p-5 pb-0 text-lg font-semibold uppercase lg:p-10 lg:pb-0">
-              <span className="block h-4 w-4 bg-black dark:bg-white" />
-              Journal
-            </h2>
-            {FEATURED_POSTS.map((post, index) => (
-              <PostMarqueeRow
-                key={post.title}
-                href="/blog"
-                label={post.label}
-                title={post.title}
-                index={index}
-              />
-            ))}
-          </div>
-          <div className="p-10">Contact Form + Statement "maybe steps of how it works"</div>
+          )}
+          <div className="p-10">{'Contact Form + Statement "maybe steps of how it works"'}</div>
         </div>
       </div>
     </div>
   )
 }
 
-const ProductCard = ({title, description}: {title: string; description: string}) => {
+const ProductCategoryCard = ({category}: {category: ProductCategoryItem}) => {
+  const {title, tagline, description, slug, mainImage} = category
+  const summary = tagline || description
+
   return (
     <div className="space-y-5">
-      <div className="overflow-hidden relative group cursor-pointer">
+      <div className="overflow-hidden relative group">
+        <LocalizedLink href={productCategoryPath(slug)} aria-label={title ?? undefined}>
+          <span className="absolute inset-0 z-10" />
+        </LocalizedLink>
         <div className="overflow-hidden">
-          <div className="aspect-square w-full bg-black dark:bg-white" />
+          {mainImage?.asset?._ref ? (
+            <Image
+              id={mainImage.asset._ref}
+              alt={mainImage.alt ?? ''}
+              width={800}
+              height={800}
+              mode="cover"
+              hotspot={mainImage.hotspot}
+              crop={mainImage.crop}
+              preview={mainImage.lqip ?? undefined}
+              className="aspect-square w-full object-cover"
+            />
+          ) : (
+            <div className="aspect-square w-full bg-black dark:bg-white" />
+          )}
         </div>
         <header className="absolute bottom-0 left-0  pt-7 pr-8 bg-white dark:bg-black">
           <h3 className="text-3xl font-semibold">{title}</h3>
@@ -168,7 +187,64 @@ const ProductCard = ({title, description}: {title: string; description: string})
           &rarr;
         </div>
       </div>
-      <p>{description}</p>
+      {summary && <p>{summary}</p>}
     </div>
+  )
+}
+
+const FeaturedProject = ({project}: {project: FeaturedProjectItem}) => {
+  const {title, slug, mainImage, product, description} = project
+  const categorySlug = product?.category?.slug
+
+  return (
+    <GridContainer
+      columns={[6, 6]}
+      className="grid grid-cols-2 gap-10 border-x-0 mx-0 p-0 lg:p-0 lg:mx-0 border-b-site border-black dark:border-white"
+    >
+      <div className="p-10">
+        <LocalizedLink href={`/projects/${slug}`} className="block">
+          {mainImage?.asset?._ref ? (
+            <Image
+              id={mainImage.asset._ref}
+              alt={mainImage.alt ?? title ?? ''}
+              width={1200}
+              height={1200}
+              mode="cover"
+              hotspot={mainImage.hotspot}
+              crop={mainImage.crop}
+              preview={mainImage.lqip ?? undefined}
+              className="aspect-square w-full object-cover"
+            />
+          ) : (
+            <div className="bg-black aspect-square w-full" />
+          )}
+        </LocalizedLink>
+      </div>
+      <div className="p-10">
+        <div className="space-y-5 flex flex-col">
+          <header className="space-y-2">
+            {product?.title && product.slug && categorySlug && (
+              <LocalizedLink
+                href={productPath(categorySlug, product.slug)}
+                className="inline-block text-sm font-semibold uppercase tracking-wide hover:underline"
+              >
+                {product.title}
+              </LocalizedLink>
+            )}
+            <PageTitle as="h2">
+              <LocalizedLink href={`/projects/${slug}`} className="hover:underline">
+                {title}
+              </LocalizedLink>
+            </PageTitle>
+          </header>
+          {description && (
+            <TextReveal
+              className="body-text font-normal text-black"
+              text={stegaClean(description)}
+            />
+          )}
+        </div>
+      </div>
+    </GridContainer>
   )
 }

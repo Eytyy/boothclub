@@ -1,8 +1,4 @@
-import {AboutPageQueryResult, HomePageQueryResult, SettingsQueryResult} from '@/sanity.types'
-
-type HomeBlocks = NonNullable<HomePageQueryResult> extends {pageBuilder: Array<infer T> | null}
-  ? T
-  : never
+import {AboutPageQueryResult, SettingsQueryResult} from '@/sanity.types'
 
 type AboutBlocks = NonNullable<NonNullable<AboutPageQueryResult>['pageBuilder']>[number]
 
@@ -18,11 +14,7 @@ type PageBuilderBlockImage = NonNullable<AboutMediaBlock['image']> & {_key: stri
 
 type PageBuilderBlockVideo = NonNullable<AboutMediaBlock['video']> & {_key: string}
 
-export type PageBuilderSection =
-  | HomeBlocks
-  | AboutBlocks
-  | PageBuilderBlockImage
-  | PageBuilderBlockVideo
+export type PageBuilderSection = AboutBlocks | PageBuilderBlockImage | PageBuilderBlockVideo
 export type ExtractPageBuilderType<T extends PageBuilderSection['_type']> = Extract<
   PageBuilderSection,
   {_type: T}
@@ -53,7 +45,15 @@ export type DereferencedProject = {
 // Represents a Link after GROQ dereferencing (page becomes an object with _type and slug, post becomes a slug string)
 export type DereferencedLink = {
   _type: 'link'
-  linkType?: 'href' | 'page' | 'post' | 'product' | 'productCategory' | 'project' | 'email' | 'phone'
+  linkType?:
+    | 'href'
+    | 'page'
+    | 'post'
+    | 'product'
+    | 'productCategory'
+    | 'project'
+    | 'email'
+    | 'phone'
   href?: string
   page?: {_type: string; _ref?: string; slug?: string | null} | null
   post?: string | null

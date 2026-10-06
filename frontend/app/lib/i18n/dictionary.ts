@@ -22,6 +22,7 @@ const en = {
   'language.switchToEnglish': 'Switch to English',
 
   'sections.otherWork': 'Other Work',
+  'sections.journal': 'Journal',
 
   'form.label.fullName': 'Full Name',
   'form.label.email': 'Email',
@@ -73,6 +74,7 @@ const ar: Dictionary = {
   'language.switchToEnglish': 'التبديل إلى الإنجليزية',
 
   'sections.otherWork': 'أعمال أخرى',
+  'sections.journal': 'المدونة',
 
   'form.label.fullName': 'الاسم الكامل',
   'form.label.email': 'البريد الإلكتروني',

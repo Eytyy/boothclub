@@ -74,13 +74,6 @@ const postFields = /* groq */ `
   "date": coalesce(publishedAt, date, _updatedAt),
 `
 
-/** Latest posts for featuredBlog blocks (not stored on the document). */
-const featuredBlogPostsProjection = /* groq */ `
-  "posts": *[_type == "post" && defined(slug.current)] | order(publishedAt desc, _updatedAt desc) [0...4] {
-    ${postFields}
-  }
-`
-
 const linkFields = /* groq */ `
   link {
       ...,
@@ -92,99 +85,6 @@ const buttonProjection = /* groq */ `
   ...,
   "buttonText": buttonText${localizedValue},
   ${linkFields}
-`
-
-const pageBuilderFields = /* groq */ `
-  "pageBuilder": pageBuilder[]{
-    _key,
-    _type,
-    _type == "callToAction" => {
-      ...,
-      "tagline": tagline${localizedValue},
-      "video": video.asset-> {
-        playbackId,
-        assetId,
-        filename,
-      },
-      images[] {
-        ...,
-        "url": asset->url,
-        "dimensions": asset->metadata.dimensions,
-        "lqip": asset->metadata.lqip
-      },
-      gif {
-        ...,
-        "url": asset->url
-      },
-      button {
-        ${buttonProjection}
-      }
-    },
-    _type == "block.text" => {
-      layout,
-      "content": content${localizedPortableTextWithImages}
-    },
-    _type == "block.image" => {
-      ${imageProjection}
-    },
-    _type == "block.video" => {
-      ...,
-      "muxVideo": muxVideo.asset-> {
-        playbackId,
-        assetId,
-        filename,
-      }
-    },
-    _type == "featuredClients" => {
-      ...,
-      "heading": heading${localizedValue},
-      rows[]{
-        _key,
-        "heading": heading${localizedValue},
-        clients[]->{
-          _id,
-          "name": name${localizedValue},
-          darkLogo,
-          lightLogo,
-          shape,
-          displaySize,
-        }
-      },
-      testimonials[]->{
-        _id,
-        "quote": quote${localizedValue},
-        "name": name${localizedValue},
-        "company": company${localizedValue}
-      }
-    },
-    _type == "featuredProducts" => {
-      _key,
-      _type,
-      "heading": heading${localizedValue},
-      "products": product[]->{
-        _id,
-        "title": title${localizedValue},
-        "excerpt": excerpt${localizedValue},
-        "slug": slug.current,
-        "categorySlug": category->slug.current,
-        "description": description${localizedPortableText},
-        mainImage { ${imageProjection} },
-        "featuredProjects": featuredProjects[]->{
-          _id,
-          "title": title${localizedValue},
-          mainImage { ${imageProjection} }
-        }
-      }
-    },
-    _type == "featuredBlog" => {
-      ...,
-      "heading": heading${localizedValue},
-      cta {
-        ${buttonProjection}
-      },
-      ${featuredBlogPostsProjection}
-    },
-  }
 `
 
 /** Nested video fields for `block.video` inside `block.media` (project detail). */
@@ -314,31 +214,56 @@ const projectCardFields = /* groq */ `
   }
 `
 
+/** `block.text` content inside the home hero, flattened to the active locale. */
+const homeHeroItemProjection = /* groq */ `
+  _key,
+  _type,
+  _type == "block.media" => {
+    ${projectMediaProjection}
+  },
+  _type == "block.text" => {
+    "content": content${localizedPortableText}
+  }
+`
+
 export const homePageQuery = defineQuery(`
   *[_type == "home" && _id == "homePage"][0]{
     _id,
     _type,
     hero {
-      "headline": headline${localizedValue},
-      "subheadline": subheadline${localizedValue},
-      "taglineWithVideo": taglineWithVideo${localizedValue},
-      video {
-        ...asset -> {
-          playbackId,
-          assetId,
-          filename,
+      columns[]{
+        _key,
+        items[]{
+          ${homeHeroItemProjection}
         }
       }
     },
-    ${pageBuilderFields},
-    featuredProjects{
-      ...,
-      items[]->{
-        ${projectCardFields}
-      },
-      cta {
-        ${buttonProjection}
+    featuredProducts {
+      "headline": headline${localizedValue},
+      "description": description${localizedValue},
+      "categories": categories[]->[defined(slug.current)]{
+        _id,
+        "title": title${localizedValue},
+        "tagline": tagline${localizedValue},
+        "description": pt::text(description${localizedValue}),
+        "slug": slug.current,
+        mainImage { ${imageProjection} }
       }
+    },
+    "clients": clients[]->{
+      _id,
+      "name": name${localizedValue},
+      darkLogo,
+      lightLogo,
+      shape,
+      displaySize
+    },
+    "featuredProject": featuredProject->{
+      ${projectCardFields},
+      "description": pt::text(description${localizedValue})
+    },
+    "featuredPosts": featuredPosts[]->[defined(slug.current)]{
+      ${postFields}
     },
     seo {
       ${seoFields}
