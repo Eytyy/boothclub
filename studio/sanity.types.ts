@@ -208,13 +208,6 @@ export type ContactReference = {
   [internalGroqTypeReferenceTo]?: 'contact'
 }
 
-export type CareersReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'careers'
-}
-
 export type PrivacyPolicyReference = {
   _ref: string
   _type: 'reference'
@@ -268,7 +261,6 @@ export type Link = {
     | ProjectsReference
     | AboutReference
     | ContactReference
-    | CareersReference
     | PrivacyPolicyReference
   post?: PostReference
   productCategory?: ProductCategoryReference
@@ -427,30 +419,6 @@ export type Button = {
   link?: Link
 }
 
-export type JobOpening = {
-  _id: string
-  _type: 'jobOpening'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: InternationalizedArrayString
-  location: InternationalizedArrayString
-  employmentType: 'full-time' | 'part-time'
-  description?: InternationalizedArrayBlockContentTextOnly
-}
-
-export type InternationalizedArrayBlockContentTextOnly = Array<
-  {
-    _key: string
-  } & InternationalizedArrayBlockContentTextOnlyValue
->
-
-export type InternationalizedArrayString = Array<
-  {
-    _key: string
-  } & InternationalizedArrayStringValue
->
-
 export type Testimonial = {
   _id: string
   _type: 'testimonial'
@@ -461,6 +429,12 @@ export type Testimonial = {
   name: InternationalizedArrayString
   company?: InternationalizedArrayString
 }
+
+export type InternationalizedArrayString = Array<
+  {
+    _key: string
+  } & InternationalizedArrayStringValue
+>
 
 export type InternationalizedArrayText = Array<
   {
@@ -554,6 +528,12 @@ export type MuxVideo = {
   _type: 'mux.video'
   asset?: MuxVideoAssetReference
 }
+
+export type InternationalizedArrayBlockContentTextOnly = Array<
+  {
+    _key: string
+  } & InternationalizedArrayBlockContentTextOnlyValue
+>
 
 export type Product = {
   _id: string
@@ -663,36 +643,6 @@ export type InternationalizedArrayBlockContent = Array<
     _key: string
   } & InternationalizedArrayBlockContentValue
 >
-
-export type JobOpeningReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'jobOpening'
-}
-
-export type Careers = {
-  _id: string
-  _type: 'careers'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: InternationalizedArrayString
-  intro?: InternationalizedArrayText
-  mainImage?: BlockImage
-  benefits?: Array<{
-    headline: InternationalizedArrayString
-    description?: InternationalizedArrayText
-    _key: string
-  }>
-  jobOpenings?: Array<
-    {
-      _key: string
-    } & JobOpeningReference
-  >
-  applyEmail: string
-  seo?: Seo
-}
 
 export type FormConfigReference = {
   _ref: string
@@ -1176,7 +1126,6 @@ export type AllSanitySchemaTypes =
   | ProjectsReference
   | AboutReference
   | ContactReference
-  | CareersReference
   | PrivacyPolicyReference
   | PostReference
   | ProductCategoryReference
@@ -1195,10 +1144,8 @@ export type AllSanitySchemaTypes =
   | BlockContentTextOnly
   | BlockContent
   | Button
-  | JobOpening
-  | InternationalizedArrayBlockContentTextOnly
-  | InternationalizedArrayString
   | Testimonial
+  | InternationalizedArrayString
   | InternationalizedArrayText
   | TeamMember
   | SanityImageCrop
@@ -1207,13 +1154,12 @@ export type AllSanitySchemaTypes =
   | Slug
   | MuxVideoAssetReference
   | MuxVideo
+  | InternationalizedArrayBlockContentTextOnly
   | Product
   | ProductCategory
   | Client
   | Post
   | InternationalizedArrayBlockContent
-  | JobOpeningReference
-  | Careers
   | FormConfigReference
   | Contact
   | FormConfig

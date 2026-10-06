@@ -208,13 +208,6 @@ export type ContactReference = {
   [internalGroqTypeReferenceTo]?: 'contact'
 }
 
-export type CareersReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'careers'
-}
-
 export type PrivacyPolicyReference = {
   _ref: string
   _type: 'reference'
@@ -268,7 +261,6 @@ export type Link = {
     | ProjectsReference
     | AboutReference
     | ContactReference
-    | CareersReference
     | PrivacyPolicyReference
   post?: PostReference
   productCategory?: ProductCategoryReference
@@ -427,30 +419,6 @@ export type Button = {
   link?: Link
 }
 
-export type JobOpening = {
-  _id: string
-  _type: 'jobOpening'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: InternationalizedArrayString
-  location: InternationalizedArrayString
-  employmentType: 'full-time' | 'part-time'
-  description?: InternationalizedArrayBlockContentTextOnly
-}
-
-export type InternationalizedArrayBlockContentTextOnly = Array<
-  {
-    _key: string
-  } & InternationalizedArrayBlockContentTextOnlyValue
->
-
-export type InternationalizedArrayString = Array<
-  {
-    _key: string
-  } & InternationalizedArrayStringValue
->
-
 export type Testimonial = {
   _id: string
   _type: 'testimonial'
@@ -461,6 +429,12 @@ export type Testimonial = {
   name: InternationalizedArrayString
   company?: InternationalizedArrayString
 }
+
+export type InternationalizedArrayString = Array<
+  {
+    _key: string
+  } & InternationalizedArrayStringValue
+>
 
 export type InternationalizedArrayText = Array<
   {
@@ -554,6 +528,12 @@ export type MuxVideo = {
   _type: 'mux.video'
   asset?: MuxVideoAssetReference
 }
+
+export type InternationalizedArrayBlockContentTextOnly = Array<
+  {
+    _key: string
+  } & InternationalizedArrayBlockContentTextOnlyValue
+>
 
 export type Product = {
   _id: string
@@ -663,36 +643,6 @@ export type InternationalizedArrayBlockContent = Array<
     _key: string
   } & InternationalizedArrayBlockContentValue
 >
-
-export type JobOpeningReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'jobOpening'
-}
-
-export type Careers = {
-  _id: string
-  _type: 'careers'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: InternationalizedArrayString
-  intro?: InternationalizedArrayText
-  mainImage?: BlockImage
-  benefits?: Array<{
-    headline: InternationalizedArrayString
-    description?: InternationalizedArrayText
-    _key: string
-  }>
-  jobOpenings?: Array<
-    {
-      _key: string
-    } & JobOpeningReference
-  >
-  applyEmail: string
-  seo?: Seo
-}
 
 export type FormConfigReference = {
   _ref: string
@@ -1176,7 +1126,6 @@ export type AllSanitySchemaTypes =
   | ProjectsReference
   | AboutReference
   | ContactReference
-  | CareersReference
   | PrivacyPolicyReference
   | PostReference
   | ProductCategoryReference
@@ -1195,10 +1144,8 @@ export type AllSanitySchemaTypes =
   | BlockContentTextOnly
   | BlockContent
   | Button
-  | JobOpening
-  | InternationalizedArrayBlockContentTextOnly
-  | InternationalizedArrayString
   | Testimonial
+  | InternationalizedArrayString
   | InternationalizedArrayText
   | TeamMember
   | SanityImageCrop
@@ -1207,13 +1154,12 @@ export type AllSanitySchemaTypes =
   | Slug
   | MuxVideoAssetReference
   | MuxVideo
+  | InternationalizedArrayBlockContentTextOnly
   | Product
   | ProductCategory
   | Client
   | Post
   | InternationalizedArrayBlockContent
-  | JobOpeningReference
-  | Careers
   | FormConfigReference
   | Contact
   | FormConfig
@@ -1294,10 +1240,6 @@ export type HomePageQueryResult = {
                 }
               | {
                   _type: 'blog'
-                  slug: null
-                }
-              | {
-                  _type: 'careers'
                   slug: null
                 }
               | {
@@ -1390,10 +1332,6 @@ export type HomePageQueryResult = {
                 }
               | {
                   _type: 'blog'
-                  slug: null
-                }
-              | {
-                  _type: 'careers'
                   slug: null
                 }
               | {
@@ -1541,10 +1479,6 @@ export type HomePageQueryResult = {
                     slug: null
                   }
                 | {
-                    _type: 'careers'
-                    slug: null
-                  }
-                | {
                     _type: 'contact'
                     slug: null
                   }
@@ -1664,10 +1598,6 @@ export type HomePageQueryResult = {
               slug: null
             }
           | {
-              _type: 'careers'
-              slug: null
-            }
-          | {
               _type: 'contact'
               slug: null
             }
@@ -1756,10 +1686,6 @@ export type BlogPageQueryResult = {
               }
             | {
                 _type: 'blog'
-                slug: null
-              }
-            | {
-                _type: 'careers'
                 slug: null
               }
             | {
@@ -1904,10 +1830,6 @@ export type AboutPageQueryResult = {
                       slug: null
                     }
                   | {
-                      _type: 'careers'
-                      slug: null
-                    }
-                  | {
                       _type: 'contact'
                       slug: null
                     }
@@ -1989,10 +1911,6 @@ export type AboutPageQueryResult = {
                 }
               | {
                   _type: 'blog'
-                  slug: null
-                }
-              | {
-                  _type: 'careers'
                   slug: null
                 }
               | {
@@ -2117,10 +2035,6 @@ export type PrivacyPolicyPageQueryResult = {
               }
             | {
                 _type: 'blog'
-                slug: null
-              }
-            | {
-                _type: 'careers'
                 slug: null
               }
             | {
@@ -2306,10 +2220,6 @@ export type ProjectDetailQueryResult = {
           }
         | {
             _type: 'blog'
-            slug: null
-          }
-        | {
-            _type: 'careers'
             slug: null
           }
         | {
@@ -2632,10 +2542,6 @@ export type PostQueryResult = {
                         slug: null
                       }
                     | {
-                        _type: 'careers'
-                        slug: null
-                      }
-                    | {
                         _type: 'contact'
                         slug: null
                       }
@@ -2748,10 +2654,6 @@ export type PostQueryResult = {
               }
             | {
                 _type: 'blog'
-                slug: null
-              }
-            | {
-                _type: 'careers'
                 slug: null
               }
             | {
@@ -2899,10 +2801,6 @@ export type SettingsQueryResult = {
             slug: null
           }
         | {
-            _type: 'careers'
-            slug: null
-          }
-        | {
             _type: 'contact'
             slug: null
           }
@@ -2971,10 +2869,6 @@ export type SettingsQueryResult = {
             }
           | {
               _type: 'blog'
-              slug: null
-            }
-          | {
-              _type: 'careers'
               slug: null
             }
           | {
@@ -3054,10 +2948,6 @@ export type SettingsQueryResult = {
                   slug: null
                 }
               | {
-                  _type: 'careers'
-                  slug: null
-                }
-              | {
                   _type: 'contact'
                   slug: null
                 }
@@ -3125,10 +3015,6 @@ export type SettingsQueryResult = {
                     slug: null
                   }
                 | {
-                    _type: 'careers'
-                    slug: null
-                  }
-                | {
                     _type: 'contact'
                     slug: null
                   }
@@ -3192,10 +3078,6 @@ export type SettingsQueryResult = {
           }
         | {
             _type: 'blog'
-            slug: null
-          }
-        | {
-            _type: 'careers'
             slug: null
           }
         | {
@@ -3286,120 +3168,7 @@ export type ContactPageQueryResult = {
 // Source: sanity/lib/queries.ts
 // Variable: careersPageQuery
 // Query: *[_type == "careers"][0]{    _id,    _type,    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,    "intro": intro[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,    applyEmail,    mainImage {   ...,  "lqip": asset->metadata.lqip,  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value },    benefits[]{      "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "description": description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value    },    "jobOpenings": jobOpenings[]->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "location": location[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      employmentType,      "description": description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value[]{  ...,  markDefs[]{    ...,      _type == "link" => {    "page": page->{ _type, "slug": slug.current },    "post": post->slug.current,    "product": product->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current,      "categorySlug": category->slug.current    },    "productCategory": productCategory->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current    },    "project": project->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current    }  }  }}    },    seo {        "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  metaImage    }  }
-export type CareersPageQueryResult = {
-  _id: string
-  _type: 'careers'
-  title: string | null
-  intro: string | null
-  applyEmail: string
-  mainImage: {
-    _type: 'block.image'
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt: string | null
-    credits: string | null
-    lqip: string | null
-  } | null
-  benefits: Array<{
-    headline: string | null
-    description: string | null
-  }> | null
-  jobOpenings: Array<{
-    _id: string
-    title: string | null
-    location: string | null
-    employmentType: 'full-time' | 'part-time'
-    description: Array<{
-      children?: Array<{
-        marks?: Array<string>
-        text?: string
-        _type: 'span'
-        _key: string
-      }>
-      style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
-      listItem?: 'bullet' | 'number'
-      markDefs: Array<{
-        _key: string
-        _type: 'link'
-        linkType?:
-          | 'email'
-          | 'href'
-          | 'page'
-          | 'phone'
-          | 'post'
-          | 'product'
-          | 'productCategory'
-          | 'project'
-        href?: string
-        page:
-          | {
-              _type: 'about'
-              slug: null
-            }
-          | {
-              _type: 'blog'
-              slug: null
-            }
-          | {
-              _type: 'careers'
-              slug: null
-            }
-          | {
-              _type: 'contact'
-              slug: null
-            }
-          | {
-              _type: 'home'
-              slug: null
-            }
-          | {
-              _type: 'privacyPolicy'
-              slug: null
-            }
-          | {
-              _type: 'projects'
-              slug: null
-            }
-          | null
-        post: string | null
-        productCategory: {
-          _id: string
-          title: string | null
-          slug: string
-        } | null
-        product: {
-          _id: string
-          title: string | null
-          slug: string
-          categorySlug: string
-        } | null
-        project: {
-          _id: string
-          title: string | null
-          slug: string
-        } | null
-        email?: string
-        phone?: string
-      }> | null
-      level?: number
-      _type: 'block'
-      _key: string
-    }> | null
-  }> | null
-  seo: {
-    metaTitle: string | null
-    metaDescription: string | null
-    metaImage: {
-      asset?: SanityImageAssetReference
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      _type: 'image'
-    } | null
-  } | null
-} | null
+export type CareersPageQueryResult = null
 
 // Source: sanity/lib/queries.ts
 // Variable: getProductCategoryQuery
@@ -3438,10 +3207,6 @@ export type GetProductCategoryQueryResult = {
           }
         | {
             _type: 'blog'
-            slug: null
-          }
-        | {
-            _type: 'careers'
             slug: null
           }
         | {
@@ -3602,10 +3367,6 @@ export type GetProductQueryResult = {
           }
         | {
             _type: 'blog'
-            slug: null
-          }
-        | {
-            _type: 'careers'
             slug: null
           }
         | {
