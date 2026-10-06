@@ -11,7 +11,6 @@ type PageHeroTextProps = {
   eyebrow?: string | null
   eyebrowHref?: string | null
   meta?: ReactNode
-  tagline?: string | null
   description?: PortableTextBlock[] | null
   className?: string
 }
@@ -21,7 +20,6 @@ export default function PageHeroText({
   eyebrow,
   eyebrowHref,
   meta,
-  tagline,
   description,
   className,
 }: PageHeroTextProps) {
@@ -39,7 +37,6 @@ export default function PageHeroText({
         <PageTitle as="h1">{title}</PageTitle>
         {meta ? <p className="text-sm text-black/50 dark:text-white/50">{meta}</p> : null}
       </header>
-      {tagline ? <p className="text-6xl font-bold  2xl:max-w-[36ch]">{tagline}</p> : null}
       {description && description.length > 0 ? (
         <PortableText className="body-text" value={description} />
       ) : null}

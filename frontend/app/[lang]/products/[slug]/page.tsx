@@ -105,7 +105,7 @@ export default async function ProductCategoryPage(props: Props) {
       _id: otherCategory._id,
       title: otherCategory.title,
       href: productCategoryPath(otherCategory.slug),
-      subtitle: otherCategory.tagline,
+      subtitle: otherCategory.excerpt,
       image: otherCategory.mainImage,
     }))
 
@@ -129,7 +129,6 @@ export default async function ProductCategoryPage(props: Props) {
           <GridBlock className="pb-0 lg:pb-0">
             <PageHeroText
               title={categoryTitle}
-              tagline={category.tagline}
               description={description ? toPortableTextBlocks(description) : null}
             />
           </GridBlock>

@@ -154,8 +154,7 @@ export default async function Page({params}: Props) {
 }
 
 const ProductCategoryCard = ({category}: {category: ProductCategoryItem}) => {
-  const {title, tagline, description, slug, mainImage} = category
-  const summary = tagline || description
+  const {title, excerpt, slug, mainImage} = category
 
   return (
     <div className="space-y-5">
@@ -187,13 +186,13 @@ const ProductCategoryCard = ({category}: {category: ProductCategoryItem}) => {
           &rarr;
         </div>
       </div>
-      {summary && <p>{summary}</p>}
+      {excerpt && <p>{excerpt}</p>}
     </div>
   )
 }
 
 const FeaturedProject = ({project}: {project: FeaturedProjectItem}) => {
-  const {title, slug, mainImage, product, description} = project
+  const {title, slug, mainImage, product, excerpt} = project
   const categorySlug = product?.category?.slug
 
   return (
@@ -237,11 +236,8 @@ const FeaturedProject = ({project}: {project: FeaturedProjectItem}) => {
               </LocalizedLink>
             </PageTitle>
           </header>
-          {description && (
-            <TextReveal
-              className="body-text font-normal text-black"
-              text={stegaClean(description)}
-            />
+          {excerpt && (
+            <TextReveal className="body-text font-normal text-black" text={stegaClean(excerpt)} />
           )}
         </div>
       </div>

@@ -13,14 +13,14 @@ type HeroItem = HeroColumn['items'][number]
 
 /**
  * Motion presets, applied to the columns in order.
- * `secondsPerItem` is how long one tile takes to travel its own height. Lower is faster.
+ * `secondsPerItem` is roughly how long one tile takes to travel its own height. Lower is faster.
  * `offset` is how far up the column sits, as a fraction of one tile, so the columns
  * don't share an edge before the loop starts.
  */
 const COLUMN_MOTION = [
-  {secondsPerItem: 14, offset: 0.22},
-  {secondsPerItem: 22, offset: 0.7},
-  {secondsPerItem: 9, offset: 0.41},
+  {secondsPerItem: 10, offset: 0.22},
+  {secondsPerItem: 16, offset: 0.7},
+  {secondsPerItem: 7, offset: 0.41},
 ]
 
 const VISIBLE_ROWS = 2
@@ -68,7 +68,10 @@ function ScrollingColumn({
   if (!items.length) return <div className="p-10" />
 
   // Repeat short columns so the window never shows a gap, then double for the seamless loop.
-  const repeats = Math.ceil(ENTER_ROWS / items.length)
+  // Text tiles size to their content and can be shorter than a square, so ask for more of them.
+  const hasText = items.some((item) => item._type === 'block.text')
+  const minItems = hasText ? ENTER_ROWS * 2 : ENTER_ROWS
+  const repeats = Math.ceil(minItems / items.length)
   const base = Array.from({length: repeats}, () => items).flat()
   const loop = [...base, ...base]
 
@@ -120,13 +123,17 @@ function ScrollingColumn({
 }
 
 function HeroTile({item}: {item: HeroItem}) {
+  if (item._type === 'block.text') {
+    return (
+      <div className="w-full bg-black text-white">
+        <HeroText content={item.content} />
+      </div>
+    )
+  }
+
   return (
     <div className="relative aspect-square w-full overflow-hidden bg-black text-white">
-      {item._type === 'block.text' ? (
-        <HeroText content={item.content} />
-      ) : (
-        <HeroMedia item={item} />
-      )}
+      <HeroMedia item={item} />
     </div>
   )
 }
@@ -135,7 +142,7 @@ function HeroText({content}: {content: Extract<HeroItem, {_type: 'block.text'}>[
   if (!content?.length) return null
 
   return (
-    <div className="flex h-full w-full items-end p-6 text-xl font-semibold lg:text-2xl">
+    <div className="p-6 text-2xl font-semibold lg:text-3xl">
       <CustomPortableText value={content as PortableTextBlock[]} invert={false} />
     </div>
   )

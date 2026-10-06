@@ -244,8 +244,7 @@ export const homePageQuery = defineQuery(`
       "categories": (categories[]->)[defined(slug.current)]{
         _id,
         "title": title${localizedValue},
-        "tagline": tagline${localizedValue},
-        "description": pt::text(description${localizedValue}),
+        "excerpt": excerpt${localizedValue},
         "slug": slug.current,
         mainImage { ${imageProjection} }
       }
@@ -260,7 +259,7 @@ export const homePageQuery = defineQuery(`
     },
     "featuredProject": featuredProject->{
       ${projectCardFields},
-      "description": pt::text(description${localizedValue})
+      "excerpt": excerpt${localizedValue}
     },
     "featuredPosts": (featuredPosts[]->)[defined(slug.current)]{
       ${postFields}
@@ -557,7 +556,6 @@ export const getProductCategoryQuery = defineQuery(`
     _id,
     _type,
     "title": title${localizedValue},
-    "tagline": tagline${localizedValue},
     "description": description${localizedPortableText},
     "slug": slug.current,
     mainImage { ${imageProjection} },
@@ -628,7 +626,7 @@ export const otherProductsCategoryQuery = defineQuery(`
   *[_type == "productCategory" && _id != $currentId && defined(slug.current)] | order(title${localizedValue} asc) {
     _id,
     "title": title${localizedValue},
-    "tagline": tagline${localizedValue},
+    "excerpt": excerpt${localizedValue},
     "slug": slug.current,
     mainImage { ${imageProjection} },
   }
