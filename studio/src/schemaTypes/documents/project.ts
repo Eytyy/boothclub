@@ -31,6 +31,13 @@ export const project = defineType({
       group: 'contents',
     }),
     defineField({
+      name: 'excerpt',
+      title: 'Excerpt',
+      type: 'internationalizedArrayText',
+      description: 'Short summary used where the project is featured, such as the home page.',
+      group: 'contents',
+    }),
+    defineField({
       name: 'blocks',
       title: 'Project blocks',
       type: 'array',

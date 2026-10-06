@@ -22,16 +22,17 @@ export const productCategory = defineType({
       group: 'contents',
     }),
     defineField({
-      name: 'tagline',
-      title: 'Tagline',
-      type: 'internationalizedArrayString',
-      group: 'contents',
-    }),
-    defineField({
       name: 'description',
       title: 'Description',
       type: 'internationalizedArrayBlockContentTextOnly',
       validation: (rule) => rule.required(),
+      group: 'contents',
+    }),
+    defineField({
+      name: 'excerpt',
+      title: 'Excerpt',
+      type: 'internationalizedArrayText',
+      description: 'Short summary used on category cards and listings.',
       group: 'contents',
     }),
     defineField({

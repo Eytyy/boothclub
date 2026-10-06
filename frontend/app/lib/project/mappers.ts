@@ -2,14 +2,14 @@ import type {
   AllProjectsQueryResult,
   GetProductCategoryQueryResult,
   GetProductQueryResult,
-  HomePageQueryResult,
 } from '@/sanity.types'
 
-import type {ProjectCardData, ProjectCardImage, ProjectCardRelatedEntity} from '@/app/components/project/types'
+import type {
+  ProjectCardData,
+  ProjectCardImage,
+  ProjectCardRelatedEntity,
+} from '@/app/components/project/types'
 
-type HomeFeaturedProjectItem = NonNullable<
-  NonNullable<HomePageQueryResult>['featuredProjects']
->['items'][number]
 type ProductFeaturedProjectItem = NonNullable<
   NonNullable<GetProductQueryResult | GetProductCategoryQueryResult>['featuredProjects']
 >[number]
@@ -98,12 +98,6 @@ function toProjectCardData(item: {
     gallery: toProjectGallery(item.gallery),
     product: mapProductField(item.product),
   }
-}
-
-export function mapHomeFeaturedProjectItemToProjectCardData(
-  item: HomeFeaturedProjectItem,
-): ProjectCardData {
-  return toProjectCardData(item)
 }
 
 export function applyFeaturedOrder(

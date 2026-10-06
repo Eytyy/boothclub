@@ -1,20 +1,16 @@
 import React from 'react'
 
-import Cta from './blocks/Cta.client'
 import CtaBlock from './blocks/CtaBlock'
 import Info from './blocks/InfoSection'
 import ImageBlock from './blocks/ImageBlock'
 import VideoBlock from './blocks/VideoBlock.client'
 import Stats from './blocks/Stats.client'
-import FeaturedProducts from './blocks/FeaturedProducts'
-import FeaturedBlogPosts from './blocks/FeaturedBlogPosts'
 import FullMediaBlock from './blocks/FullMediaBlock'
 import ContentSectionBlock from './blocks/ContentSectionBlock'
 import Team from './blocks/Team'
 
 import {dataAttr} from '@/sanity/lib/utils'
 import {ExtractPageBuilderType, PageBuilderSection} from '@/sanity/lib/types'
-import FeaturedClients from './blocks/FeaturedClients.client'
 
 type BlockProps = {
   index: number
@@ -37,7 +33,6 @@ function PageBuilderContentSection({block}: BlockProps) {
 }
 
 const Blocks = {
-  callToAction: Cta,
   cta: CtaBlock,
   ['block.text']: Info,
   ['block.image']: ImageBlock,
@@ -45,9 +40,6 @@ const Blocks = {
   ['block.media']: PageBuilderFullMedia,
   ['block.contentSection']: PageBuilderContentSection,
   stats: Stats,
-  featuredProducts: FeaturedProducts,
-  featuredClients: FeaturedClients,
-  featuredBlog: FeaturedBlogPosts,
   team: Team,
 } as BlocksType
 
