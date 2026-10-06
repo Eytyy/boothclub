@@ -241,7 +241,7 @@ export const homePageQuery = defineQuery(`
     featuredProducts {
       "headline": headline${localizedValue},
       "description": description${localizedValue},
-      "categories": categories[]->[defined(slug.current)]{
+      "categories": (categories[]->)[defined(slug.current)]{
         _id,
         "title": title${localizedValue},
         "tagline": tagline${localizedValue},
@@ -250,7 +250,7 @@ export const homePageQuery = defineQuery(`
         mainImage { ${imageProjection} }
       }
     },
-    "clients": clients[]->{
+    "clients": (clients[]->)[defined(_id)]{
       _id,
       "name": name${localizedValue},
       darkLogo,
@@ -262,7 +262,7 @@ export const homePageQuery = defineQuery(`
       ${projectCardFields},
       "description": pt::text(description${localizedValue})
     },
-    "featuredPosts": featuredPosts[]->[defined(slug.current)]{
+    "featuredPosts": (featuredPosts[]->)[defined(slug.current)]{
       ${postFields}
     },
     seo {
