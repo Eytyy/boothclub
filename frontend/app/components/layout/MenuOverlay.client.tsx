@@ -63,7 +63,7 @@ export default function MenuOverlay({items, onNavigate}: MenuOverlayProps) {
       initial="hidden"
       animate="visible"
       exit="hidden"
-      className="fixed p-10 pt-(--header-height) space-y-10 right-0 top-0 h-svh z-40 w-full lg:menu-overlay-width bg-white text-black dark:bg-black dark:text-white"
+      className="fixed p-10 pt-(--header-height) space-y-10 right-0 top-0 h-svh z-40 w-full lg:menu-overlay-width lg:border-l-site border-black dark:border-white bg-white text-black dark:bg-black dark:text-white"
     >
       {menuItems.map((item) => (
         <motion.div className=" border-black" key={item._key} variants={itemVariants}>
