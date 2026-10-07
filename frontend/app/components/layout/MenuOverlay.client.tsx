@@ -7,7 +7,7 @@ import {usePathname} from 'next/navigation'
 import NavMenuItem from './NavMenuItem'
 import NavMenuItemGroup from './NavMenuItemGroup.client'
 import type {SiteMenuGroup, SiteMenuItem} from '@/sanity/lib/types'
-import {GridContainer, GridBlock} from '@/app/components/ui/GridSystem'
+import {useMediaQuery} from '@/app/hooks/useMediaQuery'
 
 interface MenuOverlayProps {
   items: SiteMenuItem[] | undefined
@@ -15,30 +15,40 @@ interface MenuOverlayProps {
   onNavigate: () => void
 }
 
-const overlayVariants: Variants = {
+const staggerOut = {when: 'afterChildren', staggerChildren: 0.04, staggerDirection: -1} as const
+const staggerIn = {when: 'beforeChildren', staggerChildren: 0.06, delayChildren: 0.08} as const
+
+/** Over the content the panel slides in from the right, so it reads as the grid's edge moving in. */
+const slideVariants: Variants = {
+  hidden: {
+    x: '100%',
+    transition: {...staggerOut, duration: 0.35, ease: [0.4, 0, 1, 1]},
+  },
+  visible: {
+    x: 0,
+    transition: {...staggerIn, duration: 0.45, ease: [0.22, 1, 0.36, 1]},
+  },
+}
+
+/** Inside the right gutter there's no content edge to move, so the panel just fades in. */
+const fadeVariants: Variants = {
   hidden: {
     opacity: 0,
     y: -8,
-    transition: {
-      when: 'afterChildren',
-      staggerChildren: 0.04,
-      staggerDirection: -1,
-      duration: 0.25,
-      ease: 'easeIn',
-    },
+    transition: {...staggerOut, duration: 0.25, ease: 'easeIn'},
   },
   visible: {
     opacity: 1,
     y: 0,
-    transition: {
-      when: 'beforeChildren',
-      staggerChildren: 0.06,
-      delayChildren: 0.08,
-      duration: 0.25,
-      ease: 'easeOut',
-    },
+    transition: {...staggerIn, duration: 0.25, ease: 'easeOut'},
   },
 }
+
+/**
+ * Viewport width from which `menu-overlay-width` fits entirely in the right gutter:
+ * (width - 1920) / 2 + 112 + 4 >= 425.
+ */
+const FITS_IN_GUTTER_QUERY = '(min-width: 2538px)'
 
 const itemVariants: Variants = {
   hidden: {
@@ -56,10 +66,11 @@ const itemVariants: Variants = {
 export default function MenuOverlay({items, onNavigate}: MenuOverlayProps) {
   const pathname = usePathname()
   const menuItems = items ?? []
+  const fitsInGutter = useMediaQuery(FITS_IN_GUTTER_QUERY)
 
   return (
     <motion.div
-      variants={overlayVariants}
+      variants={fitsInGutter ? fadeVariants : slideVariants}
       initial="hidden"
       animate="visible"
       exit="hidden"
