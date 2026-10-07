@@ -58,6 +58,18 @@
   max-width: 1920px;
 }
 
+/*
+ * Menu panel: never narrower than 425px, and on wide screens it grows to fill
+ * the gutter right of the page grid — half of what's left past the container's
+ * 1920px max-width, plus its 72px (xl:pr-18) padding and the grid's 40px (mx-10) margin.
+ * The extra border width lets the panel's left border sit on top of the grid's
+ * right border instead of beside it.
+ * On a fixed element `100%` is the viewport width without the scrollbar.
+ */
+@utility menu-overlay-width {
+  width: max(425px, calc((100% - 1920px) / 2 + 112px + var(--border-width-site)));
+}
+
 @utility body-text {
   @apply text-base md:text-[clamp(1.125rem,1vw,1.5rem)] leading-relaxed;
 }

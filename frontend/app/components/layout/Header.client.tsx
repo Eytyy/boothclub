@@ -36,7 +36,7 @@ export default function HeaderClient({items, ctaLabel}: HeaderClientProps) {
       <div
         className={cn(
           'fixed z-50 top-5 lg:top-10 px-10 transition-colors left-0 ',
-          onBrandFooter && 'text-black',
+          onBrandFooter && !menuOpen && 'text-black',
         )}
       >
         <HeaderLogo forceVisible={true} />
@@ -45,7 +45,7 @@ export default function HeaderClient({items, ctaLabel}: HeaderClientProps) {
         className={cn(
           'fixed z-50 top-0 py-5 lg:py-10 px-10 right-0 flex items-center gap-2 md:bottom-0',
           'flex md:flex-col items-center gap-6 transition-colors justify-between',
-          onBrandFooter && 'text-black',
+          onBrandFooter && !menuOpen && 'text-black',
         )}
       >
         <MenuToggle isOpen={menuOpen} onClick={() => setMenuOpen((prev) => !prev)} />
@@ -57,7 +57,7 @@ export default function HeaderClient({items, ctaLabel}: HeaderClientProps) {
         className={cn(
           'fixed z-50 bottom-0 py-5 lg:py-10 px-10 left-0 flex items-center gap-2',
           'flex flex-col items-center gap-6 transition-colors justify-between',
-          onBrandFooter && 'text-black',
+          onBrandFooter && !menuOpen && 'text-black',
         )}
       >
         <DarkModeToggle />

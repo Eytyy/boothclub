@@ -75,7 +75,7 @@ export default async function PostPage(props: Props) {
 
   return (
     <div className="container">
-      <article className="border-x-site border-black dark:border-white mx-10">
+      <article data-page-grid className="border-x-site border-black dark:border-white mx-10">
         <div className="p-10 space-y-15">
           <PostHero title={post.title} date={post.date} coverImage={post.coverImage} />
           <PostBody sections={post.sections ?? []} />

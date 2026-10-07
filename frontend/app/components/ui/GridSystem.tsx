@@ -41,6 +41,7 @@ export const GridContainer = ({
 
   return (
     <div
+      data-page-grid
       className={cn('pt-13 lg:pt-0 grid grid-cols-12 border-x-site lg:mx-10 relative', className)}
     >
       {children}

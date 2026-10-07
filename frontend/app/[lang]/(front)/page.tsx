@@ -71,7 +71,7 @@ export default async function Page({params}: Props) {
     <div className="">
       <JsonLd data={buildHomeStructuredData(process.env.NEXT_PUBLIC_SITE_URL, lang)} />
       <div className="container">
-        <div className="md:mx-10 border-x-site pt-12 md:pt-0">
+        <div data-page-grid className="md:mx-10 border-x-site pt-12 md:pt-0">
           {heroColumns.length > 0 && <HomeHero columns={heroColumns} />}
           {featuredProducts && (
             <div className="border-t-site">
