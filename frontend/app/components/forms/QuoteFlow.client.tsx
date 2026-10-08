@@ -98,7 +98,7 @@ export default function QuoteFlow({className}: {className?: string}) {
         </h2>
         <TextReveal
           className="text-reveal-default"
-          text="Get an instant quotation within 48 hours."
+          text="Tell us the vision, we bring the setup, the tech, the vibe and the results."
         />
         <p className="body-text max-w-150">
           Tell us about your event in four quick steps. Every project is priced case by case, so a
