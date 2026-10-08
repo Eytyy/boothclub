@@ -68,18 +68,18 @@ export default async function Page({params}: Props) {
     <div className="">
       <JsonLd data={buildHomeStructuredData(process.env.NEXT_PUBLIC_SITE_URL, lang)} />
       <div className="container">
-        <div data-page-grid className="md:mx-10 border-x-site pt-12 md:pt-0">
+        <div data-page-grid className="md:mx-10 border-x-site ">
           {(hero?.headline || hero?.description) && (
-            <div className="grid gap-5 border-b-site border-black p-5 md:grid-cols-2 md:gap-10 lg:p-10 dark:border-white">
+            <div className="grid gap-5 border-b-site border-black p-5 md:grid-cols-[7fr_5fr] md:gap-10 lg:p-10 dark:border-white">
               {hero.headline && (
                 <TextReveal
-                  className="pointer-events-none text-reveal-default"
+                  className="pointer-events-none text-reveal-default text-[clamp(2rem,4vw,4.5rem)]"
                   text={stegaClean(hero.headline)}
                 />
               )}
               {hero.description && (
                 <TextReveal
-                  className="body-text font-normal md:max-w-140"
+                  className="text-xl leading-relaxed font-normal md:max-w-140"
                   text={stegaClean(hero.description)}
                 />
               )}

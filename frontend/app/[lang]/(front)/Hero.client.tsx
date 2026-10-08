@@ -67,10 +67,7 @@ export default function HomeHero({categories}: {categories: HeroCategory[]}) {
   if (!categories.length) return null
 
   return (
-    <div
-      ref={rootRef}
-      className="[--hero-gap:calc(var(--spacing)*5)] lg:[--hero-gap:calc(var(--spacing)*10)]"
-    >
+    <div ref={rootRef} className="[--hero-gap:calc(var(--spacing)*5)] ">
       <div className="md:hidden">
         {categories.map((category, index) => (
           <div
@@ -251,9 +248,7 @@ function EnteringCard({
 }
 
 function SquareTile({children}: {children: ReactNode}) {
-  return (
-    <div className="relative aspect-square lg:aspect-3/4 w-full overflow-hidden ">{children}</div>
-  )
+  return <div className="relative  w-full overflow-hidden ">{children}</div>
 }
 
 function CategoryLabel({category}: {category: HeroCategory}) {
@@ -262,7 +257,7 @@ function CategoryLabel({category}: {category: HeroCategory}) {
   return (
     <LocalizedLink
       href={productCategoryPath(category.slug)}
-      className="block border-t-site border-black dark:border-white px-5 py-4 lg:px-10 lg:py-5 text-lg lg:text-xl font-semibold transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+      className="sticky bottom-0block border-t-site border-black dark:border-white px-5 py-4 lg:px-10 lg:py-5 text-lg lg:text-xl font-semibold transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
     >
       {category.title}
     </LocalizedLink>
