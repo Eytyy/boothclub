@@ -214,39 +214,21 @@ const projectCardFields = /* groq */ `
   }
 `
 
-/** `block.text` content inside the home hero, flattened to the active locale. */
-const homeHeroItemProjection = /* groq */ `
-  _key,
-  _type,
-  _type == "block.media" => {
-    ${projectMediaProjection}
-  },
-  _type == "block.text" => {
-    "content": content${localizedPortableText}
-  }
-`
-
 export const homePageQuery = defineQuery(`
   *[_type == "home" && _id == "homePage"][0]{
     _id,
     _type,
     hero {
-      columns[]{
-        _key,
-        items[]{
-          ${homeHeroItemProjection}
-        }
-      }
-    },
-    featuredProducts {
       "headline": headline${localizedValue},
       "description": description${localizedValue},
       "categories": (categories[]->)[defined(slug.current)]{
         _id,
         "title": title${localizedValue},
-        "excerpt": excerpt${localizedValue},
         "slug": slug.current,
-        mainImage { ${imageProjection} }
+        "media": homeMedia[]{
+          _key,
+          ${projectMediaProjection}
+        }
       }
     },
     "clients": (clients[]->)[defined(_id)]{

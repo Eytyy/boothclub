@@ -2,19 +2,18 @@
 import {useEffect, useRef, type CSSProperties, type ReactNode, type RefObject} from 'react'
 import MuxPlayer, {type MuxCSSProperties} from '@mux/mux-player-react'
 import {stegaClean} from '@sanity/client/stega'
-import type {PortableTextBlock} from 'next-sanity'
 
-import {GridContainer} from '@/app/components/ui/GridSystem'
-import CustomPortableText from '@/app/components/ui/PortableText'
 import Image from '@/app/components/ui/SanityImage.client'
+import LocalizedLink from '@/app/components/ui/LocalizedLink'
 import {useMediaQuery} from '@/app/hooks/useMediaQuery'
+import {productCategoryPath} from '@/app/lib/product/paths'
 import {cn} from '@/app/lib/utils'
 import type {HomePageQueryResult} from '@/sanity.types'
 
-type HeroColumn = NonNullable<NonNullable<HomePageQueryResult>['hero']>['columns'][number]
-type HeroItem = HeroColumn['items'][number]
-type HeroMediaItem = Extract<HeroItem, {_type: 'block.media'}>
-type HeroTextItem = Extract<HeroItem, {_type: 'block.text'}>
+type HeroCategory = NonNullable<
+  NonNullable<NonNullable<HomePageQueryResult>['hero']>['categories']
+>[number]
+type HeroItem = NonNullable<HeroCategory['media']>[number]
 
 /**
  * Motion presets, applied to the columns (rows on mobile) in order.
@@ -44,50 +43,68 @@ const ROW_TILE = '60cqw'
 /** Matches Tailwind's `md` breakpoint, where the hero switches from rows to columns. */
 const COLUMNS_QUERY = '(min-width: 48rem)'
 
+/** Fixed classes so Tailwind sees them; one per supported column count. */
+const GRID_COLS: Record<number, string> = {
+  1: 'md:grid-cols-1',
+  2: 'md:grid-cols-2',
+  3: 'md:grid-cols-3',
+}
+
 /**
+ * One column per featured product category, each scrolling through the category's
+ * home page media, with the category name linking through underneath.
  * Below `md` the columns become horizontal rows; from `md` up they scroll vertically.
  * Both layouts are rendered and CSS picks one, so the server HTML never flashes the
  * wrong layout. `--hero-gap` drives the padding and the loop maths at each size.
  */
-export default function HomeHero({columns}: {columns: HeroColumn[]}) {
+export default function HomeHero({categories}: {categories: HeroCategory[]}) {
   const rootRef = useRef<HTMLDivElement>(null)
   // Real video players only start once we know the column layout is the one on screen.
   const showColumns = useMediaQuery(COLUMNS_QUERY)
 
   usePauseWhenOffscreen(rootRef)
 
-  if (!columns.length) return null
+  if (!categories.length) return null
 
   return (
     <div
       ref={rootRef}
       className="[--hero-gap:calc(var(--spacing)*5)] lg:[--hero-gap:calc(var(--spacing)*10)]"
     >
-      <div className="@container space-y-(--hero-gap) py-(--hero-gap) md:hidden" dir="ltr">
-        {columns.map((column, index) => (
-          <ScrollingRow
-            key={column._key}
-            trackIndex={index}
-            items={column.items ?? []}
-            reverse={index % 2 === 1}
-            {...MOTION[index % MOTION.length]}
-          />
+      <div className="md:hidden">
+        {categories.map((category, index) => (
+          <div
+            key={category._id}
+            className="border-b-site border-black last:border-b-0 dark:border-white"
+          >
+            <div className="@container py-(--hero-gap)" dir="ltr">
+              <ScrollingRow
+                trackIndex={index}
+                items={category.media ?? []}
+                reverse={index % 2 === 1}
+                {...MOTION[index % MOTION.length]}
+              />
+            </div>
+            <CategoryLabel category={category} />
+          </div>
         ))}
       </div>
-      <GridContainer
-        columns={[4, 4, 4]}
-        className="hidden md:grid grid-cols-3 border-x-0 p-0 lg:p-0 mx-0 lg:mx-0"
-      >
-        {columns.map((column, index) => (
-          <ScrollingColumn
-            key={column._key}
-            trackIndex={index}
-            items={column.items ?? []}
-            playVideo={showColumns}
-            {...MOTION[index % MOTION.length]}
-          />
+      <div className={cn('hidden md:grid', GRID_COLS[categories.length] ?? 'md:grid-cols-3')}>
+        {categories.map((category, index) => (
+          <div
+            key={category._id}
+            className="flex flex-col border-s-site border-black dark:border-white first:border-s-0"
+          >
+            <ScrollingColumn
+              trackIndex={index}
+              items={category.media ?? []}
+              playVideo={showColumns}
+              {...MOTION[index % MOTION.length]}
+            />
+            <CategoryLabel category={category} />
+          </div>
         ))}
-      </GridContainer>
+      </div>
     </div>
   )
 }
@@ -126,14 +143,12 @@ function ScrollingColumn({
   items,
   playVideo,
 }: TrackProps & {playVideo: boolean}) {
-  if (!items.length) return <div className="p-(--hero-gap)" />
+  if (!items.length) return <div className="grow p-(--hero-gap)" />
 
-  // Text tiles size to their content and can be shorter than a square, so ask for more of them.
-  const hasText = items.some((item) => item._type === 'block.text')
-  const {base, loop} = buildLoop(items, hasText ? ENTER_TILES * 2 : ENTER_TILES)
+  const {base, loop} = buildLoop(items, ENTER_TILES)
 
   return (
-    <div className="@container p-(--hero-gap)">
+    <div className="@container grow p-(--hero-gap)">
       {/* Two tiles plus the gap between them. Extra tiles scroll through this window. */}
       <div className="overflow-hidden" style={{height: 'calc(200cqw + var(--hero-gap))'}}>
         <div
@@ -152,15 +167,9 @@ function ScrollingColumn({
                 aria-hidden={index >= items.length}
               >
                 <EnteringCard index={index} trackIndex={trackIndex}>
-                  {item._type === 'block.text' ? (
-                    <div className="w-full text-black dark:text-white">
-                      <HeroText content={item.content} />
-                    </div>
-                  ) : (
-                    <SquareTile>
-                      <HeroMedia item={item} playVideo={playVideo} />
-                    </SquareTile>
-                  )}
+                  <SquareTile>
+                    <HeroMedia item={item} playVideo={playVideo} />
+                  </SquareTile>
                 </EnteringCard>
               </div>
             ))}
@@ -198,13 +207,8 @@ function ScrollingRow({
               aria-hidden={index >= items.length}
             >
               <EnteringCard index={index} trackIndex={trackIndex}>
-                {/* Rows need even heights, so text tiles stay square here. */}
                 <SquareTile>
-                  {item._type === 'block.text' ? (
-                    <HeroText content={item.content} compact />
-                  ) : (
-                    <HeroMedia item={item} playVideo={false} />
-                  )}
+                  <HeroMedia item={item} playVideo={false} />
                 </SquareTile>
               </EnteringCard>
             </div>
@@ -252,22 +256,20 @@ function SquareTile({children}: {children: ReactNode}) {
   )
 }
 
-function HeroText({content, compact}: {content: HeroTextItem['content']; compact?: boolean}) {
-  if (!content?.length) return null
+function CategoryLabel({category}: {category: HeroCategory}) {
+  if (!category.slug) return null
 
   return (
-    <div
-      className={cn(
-        'font-bold uppercase',
-        compact ? 'flex h-full items-end text-xl' : ' text-2xl lg:text-3xl xl:text-4xl',
-      )}
+    <LocalizedLink
+      href={productCategoryPath(category.slug)}
+      className="block border-t-site border-black dark:border-white px-5 py-4 lg:px-10 lg:py-5 text-lg lg:text-xl font-semibold transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
     >
-      <CustomPortableText value={content as PortableTextBlock[]} invert={false} />
-    </div>
+      {category.title}
+    </LocalizedLink>
   )
 }
 
-function HeroMedia({item, playVideo}: {item: HeroMediaItem; playVideo: boolean}) {
+function HeroMedia({item, playVideo}: {item: HeroItem; playVideo: boolean}) {
   if (stegaClean(item.type) === 'video') {
     const playbackId = item.video?.muxVideo?.playbackId
     if (!playbackId) return null

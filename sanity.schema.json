@@ -3282,87 +3282,6 @@
         "value": {
           "type": "object",
           "attributes": {
-            "columns": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "array",
-                "of": {
-                  "type": "object",
-                  "attributes": {
-                    "items": {
-                      "type": "objectAttribute",
-                      "value": {
-                        "type": "array",
-                        "of": {
-                          "type": "union",
-                          "of": [
-                            {
-                              "type": "object",
-                              "attributes": {
-                                "_key": {
-                                  "type": "objectAttribute",
-                                  "value": {
-                                    "type": "string"
-                                  }
-                                }
-                              },
-                              "rest": {
-                                "type": "inline",
-                                "name": "block.media"
-                              }
-                            },
-                            {
-                              "type": "object",
-                              "attributes": {
-                                "_key": {
-                                  "type": "objectAttribute",
-                                  "value": {
-                                    "type": "string"
-                                  }
-                                }
-                              },
-                              "rest": {
-                                "type": "inline",
-                                "name": "block.text"
-                              }
-                            }
-                          ]
-                        }
-                      },
-                      "optional": false
-                    },
-                    "_type": {
-                      "type": "objectAttribute",
-                      "value": {
-                        "type": "string",
-                        "value": "heroColumn"
-                      }
-                    }
-                  },
-                  "rest": {
-                    "type": "object",
-                    "attributes": {
-                      "_key": {
-                        "type": "objectAttribute",
-                        "value": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "optional": false
-            }
-          }
-        },
-        "optional": true
-      },
-      "featuredProducts": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "object",
-          "attributes": {
             "headline": {
               "type": "objectAttribute",
               "value": {
@@ -3399,7 +3318,7 @@
                   }
                 }
               },
-              "optional": true
+              "optional": false
             }
           }
         },
@@ -3981,6 +3900,28 @@
         "value": {
           "type": "inline",
           "name": "mux.video"
+        },
+        "optional": true
+      },
+      "homeMedia": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "block.media"
+            }
+          }
         },
         "optional": true
       },

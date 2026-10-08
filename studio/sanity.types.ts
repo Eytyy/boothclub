@@ -591,23 +591,9 @@ export type Home = {
   _updatedAt: string
   _rev: string
   hero?: {
-    columns: Array<{
-      items: Array<
-        | ({
-            _key: string
-          } & BlockMedia)
-        | ({
-            _key: string
-          } & BlockText)
-      >
-      _type: 'heroColumn'
-      _key: string
-    }>
-  }
-  featuredProducts?: {
     headline?: InternationalizedArrayString
     description?: InternationalizedArrayText
-    categories?: Array<
+    categories: Array<
       {
         _key: string
       } & ProductCategoryReference
@@ -720,6 +706,11 @@ export type ProductCategory = {
   >
   mainImage: BlockImage
   heroVideo?: MuxVideo
+  homeMedia?: Array<
+    {
+      _key: string
+    } & BlockMedia
+  >
   seo?: Seo
 }
 

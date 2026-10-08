@@ -1,5 +1,5 @@
 import {ComposeSparklesIcon, ImageIcon, SearchIcon, TagIcon} from '@sanity/icons'
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 import {localizedString, slugFromLocalized} from '../../lib/i18n'
 
@@ -91,6 +91,15 @@ export const productCategory = defineType({
       type: 'mux.video',
       description:
         'Optional Mux video shown at the top of the category page in place of the main image. Falls back to the main image if not set.',
+      group: 'media',
+    }),
+    defineField({
+      name: 'homeMedia',
+      title: 'Home Page Media',
+      type: 'array',
+      description:
+        'Images and videos that scroll in this category’s column of the home page hero, when the category is featured there.',
+      of: [defineArrayMember({type: 'block.media'})],
       group: 'media',
     }),
     defineField({
