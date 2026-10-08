@@ -147,7 +147,7 @@ export default async function Page({params}: Props) {
               ))}
             </div>
           )}
-          <QuoteFlow className="border-t-site" />
+          <QuoteFlow />
         </div>
       </div>
     </div>
