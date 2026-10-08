@@ -15,6 +15,7 @@ import JsonLd from '@/app/components/seo/JsonLd'
 import {buildHomeStructuredData} from '@/app/lib/seo/structuredData'
 import TextReveal from '@/app/components/ui/TextReveal.client'
 import {Marquee} from '@/app/components/ui/Marquee.client'
+import QuoteFlow from '@/app/components/forms/QuoteFlow.client'
 import HomeHero from './Hero.client'
 import {GridContainer} from '@/app/components/ui/GridSystem'
 import PageTitle from '@/app/components/ui/PageTitle'
@@ -146,7 +147,7 @@ export default async function Page({params}: Props) {
               ))}
             </div>
           )}
-          <div className="p-10">{'Contact Form + Statement "maybe steps of how it works"'}</div>
+          <QuoteFlow className="border-t-site" />
         </div>
       </div>
     </div>
