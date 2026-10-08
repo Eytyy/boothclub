@@ -6,7 +6,8 @@ import TextReveal from '@/app/components/ui/TextReveal.client'
 
 /**
  * Mock-up of the multi-step "Get a quote" flow. Answers are kept in local state
- * only; nothing is submitted and the estimate is a placeholder.
+ * only; nothing is submitted. Pricing is case by case (B2B), so the flow ends on
+ * a confirmation — no estimate is shown on the site.
  */
 
 const EVENT_TYPES = ['Brand activation', 'Retail launch', 'Corporate', 'Wedding', 'Private party']
@@ -29,7 +30,7 @@ const EXTRAS = [
   {label: 'Extra hours', note: 'Beyond the standard package'},
 ]
 const CONTACT_METHODS = ['WhatsApp', 'Email', 'Phone call']
-const STEPS = ['Event basics', 'Booths', 'Extras', 'Your details', 'Your estimate']
+const STEPS = ['Event basics', 'Booths', 'Extras', 'Your details']
 
 type Answers = {
   eventType: string
@@ -68,6 +69,7 @@ const toggle = (list: string[], value: string) =>
 
 export default function QuoteFlow({className}: {className?: string}) {
   const [step, setStep] = React.useState(0)
+  const [sent, setSent] = React.useState(false)
   const [a, setA] = React.useState<Answers>(INITIAL)
   const panelRef = React.useRef<HTMLDivElement>(null)
 
@@ -81,16 +83,26 @@ export default function QuoteFlow({className}: {className?: string}) {
 
   const last = STEPS.length - 1
 
+  const reset = () => {
+    setA(INITIAL)
+    setSent(false)
+    go(0)
+  }
+
   return (
     <section className={cn('grid lg:grid-cols-2', className)} aria-labelledby="quote-title">
       <div className="p-5 lg:p-10 space-y-5">
         <p className="text-sm font-semibold uppercase tracking-wide">Get a quote</p>
         <h2 id="quote-title" className="sr-only">
-          A price range in two minutes
+          Get an instant quotation within 48 hours
         </h2>
-        <TextReveal className="text-reveal-default" text="A price range in two minutes." />
+        <TextReveal
+          className="text-reveal-default"
+          text="Get an instant quotation within 48 hours."
+        />
         <p className="body-text max-w-150">
-          Five quick questions. We reply with a firm quote within two working hours. Prefer to talk?
+          Tell us about your event in four quick steps. Every project is priced case by case, so a
+          producer prepares a tailored quotation and sends it within 48 hours. Prefer to talk?
           WhatsApp us or call +971 4 313 5196.
         </p>
       </div>
@@ -102,58 +114,64 @@ export default function QuoteFlow({className}: {className?: string}) {
           className="p-5 lg:p-10 space-y-10 focus:outline-none"
           aria-live="polite"
         >
-          <div className="space-y-3">
-            <div className="flex justify-between text-sm font-semibold uppercase tracking-wide">
-              <span>
-                Step {step + 1} of {STEPS.length}
-              </span>
-              <span>{STEPS[step]}</span>
-            </div>
-            <div
-              role="progressbar"
-              aria-valuemin={1}
-              aria-valuemax={STEPS.length}
-              aria-valuenow={step + 1}
-              aria-label="Quote progress"
-              className="h-1 bg-black/20 dark:bg-white/20"
-            >
-              <div
-                className="h-full bg-black dark:bg-white transition-[width]"
-                style={{width: `${((step + 1) / STEPS.length) * 100}%`}}
-              />
-            </div>
-          </div>
-
-          {step === 0 && <StepBasics a={a} set={set} />}
-          {step === 1 && <StepBooths a={a} set={set} />}
-          {step === 2 && <StepExtras a={a} set={set} />}
-          {step === 3 && <StepDetails a={a} set={set} />}
-          {step === 4 && <StepEstimate a={a} onEdit={() => go(0)} />}
-
-          {step < last && (
-            <div className="flex items-center justify-between gap-5">
-              {step > 0 ? (
-                <button
-                  type="button"
-                  onClick={() => go(step - 1)}
-                  className="text-lg font-medium hover:underline"
-                >
-                  ← Back
-                </button>
-              ) : (
-                <span className="text-sm hidden sm:block">Next: {STEPS[1].toLowerCase()}</span>
-              )}
-              <div className="flex items-center gap-5">
-                {step === 1 && (
-                  <span className="text-sm">
-                    {a.booths.length === 0 ? 'Nothing selected' : `${a.booths.length} selected`}
+          {sent ? (
+            <StepConfirmation a={a} onReset={reset} />
+          ) : (
+            <>
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm font-semibold uppercase tracking-wide">
+                  <span>
+                    Step {step + 1} of {STEPS.length}
                   </span>
-                )}
-                <Button type="button" onClick={() => go(step + 1)}>
-                  {step === last - 1 ? 'See my estimate' : 'Continue'} <span aria-hidden>→</span>
-                </Button>
+                  <span>{STEPS[step]}</span>
+                </div>
+                <div
+                  role="progressbar"
+                  aria-valuemin={1}
+                  aria-valuemax={STEPS.length}
+                  aria-valuenow={step + 1}
+                  aria-label="Quote progress"
+                  className="h-1 bg-black/20 dark:bg-white/20"
+                >
+                  <div
+                    className="h-full bg-black dark:bg-white transition-[width]"
+                    style={{width: `${((step + 1) / STEPS.length) * 100}%`}}
+                  />
+                </div>
               </div>
-            </div>
+
+              {step === 0 && <StepBasics a={a} set={set} />}
+              {step === 1 && <StepBooths a={a} set={set} />}
+              {step === 2 && <StepExtras a={a} set={set} />}
+              {step === 3 && <StepDetails a={a} set={set} />}
+
+              <div className="flex items-center justify-between gap-5">
+                {step > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => go(step - 1)}
+                    className="text-lg font-medium hover:underline"
+                  >
+                    ← Back
+                  </button>
+                ) : (
+                  <span className="text-sm hidden sm:block">Next: {STEPS[1].toLowerCase()}</span>
+                )}
+                <div className="flex items-center gap-5">
+                  {step === 1 && (
+                    <span className="text-sm">
+                      {a.booths.length === 0 ? 'Nothing selected' : `${a.booths.length} selected`}
+                    </span>
+                  )}
+                  <Button
+                    type="button"
+                    onClick={() => (step === last ? setSent(true) : go(step + 1))}
+                  >
+                    {step === last ? 'Request my quotation' : 'Continue'} <span aria-hidden>→</span>
+                  </Button>
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -371,7 +389,7 @@ function StepDetails({a, set}: StepProps) {
     <div className="space-y-10">
       <StepHeading
         title="Where should we send it?"
-        hint="Your estimate shows on the next screen. A producer follows up to confirm."
+        hint="A producer reviews your request and sends a tailored quotation within 48 hours."
       />
       <div className="grid sm:grid-cols-2 gap-10">
         <TextField
@@ -428,7 +446,7 @@ function StepDetails({a, set}: StepProps) {
   )
 }
 
-function StepEstimate({a, onEdit}: {a: Answers; onEdit: () => void}) {
+function StepConfirmation({a, onReset}: {a: Answers; onReset: () => void}) {
   const rows: [string, string][] = [
     [
       'Event',
@@ -450,14 +468,14 @@ function StepEstimate({a, onEdit}: {a: Answers; onEdit: () => void}) {
         >
           ✓
         </span>
-        Request sent. A producer will confirm within 2 working hours.
+        Request received.
       </p>
 
       <div className="space-y-2">
-        <p className="text-sm font-semibold uppercase tracking-wide">Estimated range</p>
-        <p className="text-[clamp(2.25rem,4vw,4rem)] font-bold leading-[1.1]">AED [—] – [—]</p>
-        <p className="text-sm">
-          Based on similar events. Final price depends on venue access and design.
+        <h3 className="text-2xl font-semibold">Your quotation is on its way.</h3>
+        <p>
+          A producer will review your request and send a tailored quotation by{' '}
+          {a.contactMethod.toLowerCase()} within 48 hours.
         </p>
       </div>
 
@@ -474,9 +492,9 @@ function StepEstimate({a, onEdit}: {a: Answers; onEdit: () => void}) {
       </dl>
 
       <div className="flex flex-wrap items-center justify-between gap-5">
-        <Button href="/contact">Chat with a producer now</Button>
-        <button type="button" onClick={onEdit} className="text-lg font-medium hover:underline">
-          ← Edit my answers
+        <Button href="/contact">Need it sooner? Chat with a producer</Button>
+        <button type="button" onClick={onReset} className="text-lg font-medium hover:underline">
+          Start another request
         </button>
       </div>
     </div>
