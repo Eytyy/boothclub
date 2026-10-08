@@ -10,7 +10,7 @@ import {
 
 import {localizedString} from '../../lib/i18n'
 
-const HERO_COLUMN_COUNT = 3
+const HERO_VISIBLE_COLUMNS = 3
 
 export const home = defineType({
   name: 'home',
@@ -45,10 +45,10 @@ export const home = defineType({
         defineField({
           name: 'categories',
           title: 'Product Categories',
-          description: `Up to ${HERO_COLUMN_COUNT}. Each category becomes a column that scrolls through its “Home Page Media”.`,
+          description: `Each category becomes a column that scrolls through its “Home Page Media”. ${HERO_VISIBLE_COLUMNS} fit on screen; add more and the columns become a carousel.`,
           type: 'array',
           of: [defineArrayMember({type: 'reference', to: [{type: 'productCategory'}]})],
-          validation: (rule) => rule.required().min(1).max(HERO_COLUMN_COUNT).unique(),
+          validation: (rule) => rule.required().min(1).unique(),
         }),
       ],
     }),

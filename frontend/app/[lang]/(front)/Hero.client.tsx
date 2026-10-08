@@ -1,11 +1,20 @@
 'use client'
-import {useEffect, useRef, type CSSProperties, type ReactNode, type RefObject} from 'react'
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  type CSSProperties,
+  type ReactNode,
+  type RefObject,
+} from 'react'
 import MuxPlayer, {type MuxCSSProperties} from '@mux/mux-player-react'
 import {stegaClean} from '@sanity/client/stega'
+import useEmblaCarousel from 'embla-carousel-react'
 
 import Image from '@/app/components/ui/SanityImage.client'
 import LocalizedLink from '@/app/components/ui/LocalizedLink'
 import {useMediaQuery} from '@/app/hooks/useMediaQuery'
+import {useLocale} from '@/app/lib/i18n/LocaleProvider.client'
 import {productCategoryPath} from '@/app/lib/product/paths'
 import {cn} from '@/app/lib/utils'
 import type {HomePageQueryResult} from '@/sanity.types'
@@ -43,19 +52,16 @@ const ROW_TILE = '60cqw'
 /** Matches Tailwind's `md` breakpoint, where the hero switches from rows to columns. */
 const COLUMNS_QUERY = '(min-width: 48rem)'
 
-/** Fixed classes so Tailwind sees them; one per supported column count. */
-const GRID_COLS: Record<number, string> = {
-  1: 'md:grid-cols-1',
-  2: 'md:grid-cols-2',
-  3: 'md:grid-cols-3',
-}
+/** Columns on screen at once from `md` up. Any more and the columns become a carousel. */
+const VISIBLE_COLUMNS = 3
 
 /**
  * One column per featured product category, each scrolling through the category's
  * home page media, with the category name linking through underneath.
- * Below `md` the columns become horizontal rows; from `md` up they scroll vertically.
- * Both layouts are rendered and CSS picks one, so the server HTML never flashes the
- * wrong layout. `--hero-gap` drives the padding and the loop maths at each size.
+ * Below `md` the columns become horizontal rows; from `md` up they scroll vertically
+ * and fill whatever height the parent gives the hero (`flex-1`), so the labels stay
+ * pinned to its bottom edge. Both layouts are rendered and CSS picks one, so the server
+ * HTML never flashes the wrong layout. `--hero-gap` drives the padding and the loop maths.
  */
 export default function HomeHero({categories}: {categories: HeroCategory[]}) {
   const rootRef = useRef<HTMLDivElement>(null)
@@ -67,7 +73,10 @@ export default function HomeHero({categories}: {categories: HeroCategory[]}) {
   if (!categories.length) return null
 
   return (
-    <div ref={rootRef} className="[--hero-gap:calc(var(--spacing)*5)] ">
+    <div
+      ref={rootRef}
+      className="[--hero-gap:calc(var(--spacing)*5)] md:flex md:min-h-0 md:flex-1 md:flex-col"
+    >
       <div className="md:hidden">
         {categories.map((category, index) => (
           <div
@@ -86,23 +95,91 @@ export default function HomeHero({categories}: {categories: HeroCategory[]}) {
           </div>
         ))}
       </div>
-      <div className={cn('hidden md:grid', GRID_COLS[categories.length] ?? 'md:grid-cols-3')}>
-        {categories.map((category, index) => (
-          <div
-            key={category._id}
-            className="flex flex-col border-s-site border-black dark:border-white first:border-s-0"
-          >
-            <ScrollingColumn
-              trackIndex={index}
-              items={category.media ?? []}
-              playVideo={showColumns}
-              {...MOTION[index % MOTION.length]}
-            />
-            <CategoryLabel category={category} />
-          </div>
-        ))}
-      </div>
+      <ColumnsCarousel categories={categories} playVideo={showColumns} />
     </div>
+  )
+}
+
+/**
+ * Up to `VISIBLE_COLUMNS` categories share the width as a static row. Beyond that the
+ * row becomes a looping carousel, still showing `VISIBLE_COLUMNS` at a time.
+ */
+function ColumnsCarousel({
+  categories,
+  playVideo,
+}: {
+  categories: HeroCategory[]
+  playVideo: boolean
+}) {
+  const locale = useLocale()
+  const isCarousel = categories.length > VISIBLE_COLUMNS
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    active: isCarousel,
+    align: 'start',
+    loop: true,
+    direction: locale === 'ar' ? 'rtl' : 'ltr',
+  })
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi])
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi])
+
+  const columnWidth = `calc(100% / ${Math.min(categories.length, VISIBLE_COLUMNS)})`
+
+  return (
+    <div className="relative hidden md:flex md:min-h-0 md:flex-1 md:flex-col">
+      {/* Every column draws its own start rule, so looping never leaves a gap. The viewport
+          is pulled back by one rule so the leftmost one lands on the page border. */}
+      <div
+        ref={emblaRef}
+        className={cn(
+          '-ms-(--border-width-site) min-h-0 flex-1 overflow-hidden',
+          isCarousel && 'cursor-grab active:cursor-grabbing',
+        )}
+      >
+        <div className="flex h-full">
+          {categories.map((category, index) => (
+            <div
+              key={category._id}
+              className="flex h-full min-w-0 shrink-0 grow-0 flex-col border-s-site border-black dark:border-white"
+              style={{flexBasis: columnWidth}}
+            >
+              <ScrollingColumn
+                trackIndex={index}
+                items={category.media ?? []}
+                playVideo={playVideo}
+                {...MOTION[index % MOTION.length]}
+              />
+              <CategoryLabel category={category} />
+            </div>
+          ))}
+        </div>
+      </div>
+      {isCarousel && (
+        <>
+          <CarouselArrow direction="prev" onClick={scrollPrev} />
+          <CarouselArrow direction="next" onClick={scrollNext} />
+        </>
+      )}
+    </div>
+  )
+}
+
+/** Sits on the outer edge, vertically centred on the media area (above the labels). */
+function CarouselArrow({direction, onClick}: {direction: 'prev' | 'next'; onClick: () => void}) {
+  const isNext = direction === 'next'
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={isNext ? 'Next category' : 'Previous category'}
+      className={cn(
+        'absolute top-[calc(50%-1.5rem)] z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black text-xl font-bold text-white transition-colors hover:bg-white hover:text-black dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white',
+        isNext ? 'end-5' : 'start-5',
+      )}
+    >
+      <span aria-hidden className="rtl:-scale-x-100">
+        {isNext ? '→' : '←'}
+      </span>
+    </button>
   )
 }
 
@@ -140,14 +217,16 @@ function ScrollingColumn({
   items,
   playVideo,
 }: TrackProps & {playVideo: boolean}) {
-  if (!items.length) return <div className="grow p-(--hero-gap)" />
+  if (!items.length) return <div className="min-h-0 flex-1 p-(--hero-gap)" />
 
-  const {base, loop} = buildLoop(items, ENTER_TILES)
+  // The window is as tall as the space left above the label, which can be more than two
+  // tiles on tall screens, so keep one spare tile on top of the entering ones.
+  const {base, loop} = buildLoop(items, ENTER_TILES + 1)
 
   return (
-    <div className="@container grow p-(--hero-gap)">
-      {/* Two tiles plus the gap between them. Extra tiles scroll through this window. */}
-      <div className="overflow-hidden" style={{height: 'calc(200cqw + var(--hero-gap))'}}>
+    <div className="@container flex min-h-0 flex-1 flex-col p-(--hero-gap)">
+      {/* Fills the column above the label. Tiles scroll through this window. */}
+      <div className="min-h-0 flex-1 overflow-hidden">
         <div
           style={{
             transform: `translate3d(0, calc((100cqw + var(--hero-gap)) * ${-offset}), 0)`,
@@ -257,7 +336,7 @@ function CategoryLabel({category}: {category: HeroCategory}) {
   return (
     <LocalizedLink
       href={productCategoryPath(category.slug)}
-      className="sticky bottom-0block border-t-site border-black dark:border-white px-5 py-4 lg:px-10 lg:py-5 text-lg lg:text-xl font-semibold transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+      className="block border-t-site border-black dark:border-white px-5 py-4 lg:px-10 lg:py-5 text-lg lg:text-xl font-semibold transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
     >
       {category.title}
     </LocalizedLink>
