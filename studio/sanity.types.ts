@@ -635,6 +635,7 @@ export type Project = {
   _rev: string
   title: InternationalizedArrayText
   description: InternationalizedArrayBlockContentTextOnly
+  excerpt?: InternationalizedArrayText
   blocks?: Array<
     | ({
         _key: string
@@ -709,8 +710,8 @@ export type ProductCategory = {
   _updatedAt: string
   _rev: string
   title: InternationalizedArrayString
-  tagline?: InternationalizedArrayString
   description: InternationalizedArrayBlockContentTextOnly
+  excerpt?: InternationalizedArrayText
   slug: Slug
   featuredProjects?: Array<
     {

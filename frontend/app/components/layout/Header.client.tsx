@@ -9,10 +9,8 @@ import DarkModeToggle from '../ui/DarkModeToggle.client'
 import MenuToggle from '../ui/MenuToggle.client'
 import HeaderLogo from '../ui/HeaderLogo.client'
 import MenuOverlay from './MenuOverlay.client'
-import {useFooterOverlap} from '@/app/hooks/useFooterOverlap'
 import {localizedPath, stripLocale, type Locale} from '@/app/lib/i18n/config'
 import {useDictionary, useLocale} from '@/app/lib/i18n/LocaleProvider.client'
-import {cn} from '@/app/lib/utils'
 import type {SiteMenuItem} from '@/sanity/lib/types'
 
 interface HeaderClientProps {
@@ -22,7 +20,6 @@ interface HeaderClientProps {
 
 export default function HeaderClient({items, ctaLabel}: HeaderClientProps) {
   const [menuOpen, setMenuOpen] = useState(false)
-  const onBrandFooter = useFooterOverlap()
 
   const closeMenu = useCallback(() => setMenuOpen(false), [])
 
@@ -32,40 +29,21 @@ export default function HeaderClient({items, ctaLabel}: HeaderClientProps) {
   }, [closeMenu])
 
   return (
-    <>
-      <div
-        className={cn(
-          'fixed z-50 top-5 lg:top-10 px-10 transition-colors left-0 ',
-          onBrandFooter && !menuOpen && 'text-black',
-        )}
-      >
-        <HeaderLogo forceVisible={true} />
-      </div>
-      <div
-        className={cn(
-          'fixed z-50 top-0 py-5 lg:py-10 px-10 right-0 flex items-center gap-2 md:bottom-0',
-          'flex md:flex-col items-center gap-6 transition-colors justify-between',
-          onBrandFooter && !menuOpen && 'text-black',
-        )}
-      >
-        <MenuToggle isOpen={menuOpen} onClick={() => setMenuOpen((prev) => !prev)} />
-        <div className="flex flex-col items-center gap-5">
-          <LanguageToggle onNavigate={closeMenu} />
+    <header className="container sticky top-0 z-100">
+      <div className="mx-6 lg:mx-10 bg-white dark:bg-black text-black dark:text-white border-x-site">
+        <div className="flex items-center justify-between lg:px-10 py-5 border-b-site ">
+          <HeaderLogo forceVisible={true} />
+          <div className="flex items-center gap-5 md:bottom-0 justify-between">
+            <DarkModeToggle />
+            <LanguageToggle onNavigate={closeMenu} />
+            <MenuToggle isOpen={menuOpen} onClick={() => setMenuOpen((prev) => !prev)} />
+          </div>
         </div>
+        <AnimatePresence>
+          {menuOpen && <MenuOverlay ctaLabel={ctaLabel} items={items} onNavigate={closeMenu} />}
+        </AnimatePresence>
       </div>
-      <div
-        className={cn(
-          'fixed z-50 bottom-0 py-5 lg:py-10 px-10 left-0 flex items-center gap-2',
-          'flex flex-col items-center gap-6 transition-colors justify-between',
-          onBrandFooter && !menuOpen && 'text-black',
-        )}
-      >
-        <DarkModeToggle />
-      </div>
-      <AnimatePresence>
-        {menuOpen && <MenuOverlay ctaLabel={ctaLabel} items={items} onNavigate={closeMenu} />}
-      </AnimatePresence>
-    </>
+    </header>
   )
 }
 
@@ -142,7 +120,7 @@ function LanguageSwitchLink({
         }
         onNavigate()
       }}
-      className="font-bold text-lg"
+      className="font-semibold text-sm border-2 rounded-full w-8 h-8 flex items-center justify-center"
     >
       {LOCALE_LABEL[target]}
     </Link>
