@@ -115,7 +115,7 @@ export default function HomeHero({categories}: {categories: HeroCategory[]}) {
                 {...MOTION[index % MOTION.length]}
               />
             </div>
-            <CategoryLabel category={category} trackIndex={index} />
+            <CategoryLabel category={category} revealAt={labelsRevealAt(categories.length)} />
           </div>
         ))}
       </div>
@@ -171,7 +171,7 @@ function ColumnsCarousel({
                 playVideo={playVideo}
                 {...MOTION[index % MOTION.length]}
               />
-              <CategoryLabel category={category} trackIndex={index} />
+              <CategoryLabel category={category} revealAt={labelsRevealAt(categories.length)} />
             </div>
           ))}
         </div>
@@ -411,8 +411,13 @@ function SquareTile({children}: {children: ReactNode}) {
   return <div className="relative  w-full overflow-hidden ">{children}</div>
 }
 
-/** The bar stays put; its text slides up into it as the column's reel lands. */
-function CategoryLabel({category, trackIndex}: {category: HeroCategory; trackIndex: number}) {
+/** Labels all arrive together once the last reel on screen has landed. */
+function labelsRevealAt(categoryCount: number) {
+  return reelTiming(Math.min(categoryCount, MOTION.length) - 1).landedAt
+}
+
+/** The bar stays put; its text slides up into it once the reels have landed. */
+function CategoryLabel({category, revealAt}: {category: HeroCategory; revealAt: number}) {
   if (!category.slug) return null
 
   return (
@@ -423,7 +428,7 @@ function CategoryLabel({category, trackIndex}: {category: HeroCategory; trackInd
       <span className="block overflow-hidden">
         <span
           className="hero-label-reveal block"
-          style={{['--hero-label-delay' as string]: `${reelTiming(trackIndex).landedAt}s`}}
+          style={{['--hero-label-delay' as string]: `${revealAt}s`}}
         >
           {category.title}
         </span>
