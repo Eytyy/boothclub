@@ -101,6 +101,9 @@ export default function HomeHero({categories}: {categories: HeroCategory[]}) {
       ref={rootRef}
       className="[--hero-gap:calc(var(--spacing)*5)] md:flex md:min-h-0 md:flex-1 md:flex-col"
     >
+      {/* TODO(mobile): this layout still needs a design pass. The stacked rows don't fit the
+          first fold like the md+ columns do, so with several categories the later labels end
+          up below it; consider one swipeable row matching the desktop carousel. */}
       <div className="md:hidden">
         {categories.map((category, index) => (
           <div
