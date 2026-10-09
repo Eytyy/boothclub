@@ -38,14 +38,36 @@ const MOTION = [
 ]
 
 const VISIBLE_TILES = 2
-/** First tiles that can sit in the window once a track is offset. */
-const ENTER_TILES = VISIBLE_TILES + 1
-const CARD_STAGGER = 0.1
-const CARD_ENTER = 0.55
-const SCROLL_HOLD = 0.25
+/** Fewest tiles a track repeats up to: what fits in the window once offset, plus one spare. */
+const MIN_TILES = VISIBLE_TILES + 1
 
-/** Scroll starts once the last entering card has landed, plus a short hold. */
-const scrollDelay = (ENTER_TILES * MOTION.length - 1) * CARD_STAGGER + CARD_ENTER + SCROLL_HOLD
+/**
+ * Slot-machine intro. Every reel spins through whole copies of its tiles at `REEL_SPIN`
+ * seconds a copy, then takes `REEL_LAND` seconds to slow down and land. Each reel along
+ * the row spins `REEL_EXTRA_SPINS` more times than the one before, so they stop in turn.
+ */
+const REEL_SPIN = 0.18
+const REEL_SPINS = 3
+const REEL_EXTRA_SPINS = 2
+const REEL_LAND = 1.1
+/** Pause between a reel landing and its slow scroll starting. */
+const SCROLL_HOLD = 0.4
+
+function reelTiming(trackIndex: number) {
+  const spins = REEL_SPINS + (trackIndex % MOTION.length) * REEL_EXTRA_SPINS
+  const spinTotal = spins * REEL_SPIN
+  return {
+    style: {
+      ['--hero-reel-spin' as string]: `${REEL_SPIN}s`,
+      ['--hero-reel-spins' as string]: spins,
+      ['--hero-reel-spin-total' as string]: `${spinTotal}s`,
+      ['--hero-reel-land' as string]: `${REEL_LAND}s`,
+      // Stays blurred through the spins and clears as the reel slows.
+      ['--hero-reel-blur' as string]: `${spinTotal + REEL_LAND * 0.5}s`,
+    } as CSSProperties,
+    scrollDelay: spinTotal + REEL_LAND + SCROLL_HOLD,
+  }
+}
 
 /** Row tile width on mobile, as a share of the hero width. Leaves the next tile peeking in. */
 const ROW_TILE = '60cqw'
@@ -300,8 +322,9 @@ function ScrollingColumn({
   if (!items.length) return <div className="min-h-0 flex-1 p-(--hero-gap)" />
 
   // The window is as tall as the space left above the label, which can be more than two
-  // tiles on tall screens, so keep one spare tile on top of the entering ones.
-  const {base, loop} = buildLoop(items, ENTER_TILES + 1)
+  // tiles on tall screens, so keep one more spare tile here.
+  const {base, loop} = buildLoop(items, MIN_TILES + 1)
+  const reel = reelTiming(trackIndex)
 
   return (
     <div className="@container flex min-h-0 flex-1 flex-col p-(--hero-gap)">
@@ -312,23 +335,23 @@ function ScrollingColumn({
             transform: `translate3d(0, calc((100cqw + var(--hero-gap)) * ${-offset}), 0)`,
           }}
         >
-          <div
-            className="hero-column-track flex flex-col"
-            style={trackTiming(base.length * secondsPerItem)}
-          >
-            {loop.map((item, index) => (
-              <div
-                key={`${item._key}-${index}`}
-                className="pb-(--hero-gap)"
-                aria-hidden={index >= items.length}
-              >
-                <EnteringCard index={index} trackIndex={trackIndex}>
+          <div className="hero-reel" style={reel.style}>
+            <div
+              className="hero-column-track flex flex-col"
+              style={trackTiming(base.length * secondsPerItem, reel.scrollDelay)}
+            >
+              {loop.map((item, index) => (
+                <div
+                  key={`${item._key}-${index}`}
+                  className="pb-(--hero-gap)"
+                  aria-hidden={index >= items.length}
+                >
                   <SquareTile>
                     <HeroMedia item={item} playVideo={playVideo} />
                   </SquareTile>
-                </EnteringCard>
-              </div>
-            ))}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -345,65 +368,42 @@ function ScrollingRow({
 }: TrackProps & {reverse: boolean}) {
   if (!items.length) return null
 
-  const {base, loop} = buildLoop(items, ENTER_TILES)
+  const {base, loop} = buildLoop(items, MIN_TILES)
   const step = `(${ROW_TILE} + var(--hero-gap))`
+  const reel = reelTiming(trackIndex)
 
   return (
     <div className="overflow-hidden">
       <div style={{transform: `translate3d(calc(${step} * ${-offset}), 0, 0)`}}>
-        <div
-          className={cn('hero-row-track flex w-max', reverse && 'hero-row-track--reverse')}
-          style={trackTiming(base.length * secondsPerItem)}
-        >
-          {loop.map((item, index) => (
-            <div
-              key={`${item._key}-${index}`}
-              className="shrink-0 pr-(--hero-gap)"
-              style={{width: `calc${step}`}}
-              aria-hidden={index >= items.length}
-            >
-              <EnteringCard index={index} trackIndex={trackIndex}>
+        <div className="hero-reel hero-reel--x w-max" style={reel.style}>
+          <div
+            className={cn('hero-row-track flex w-max', reverse && 'hero-row-track--reverse')}
+            style={trackTiming(base.length * secondsPerItem, reel.scrollDelay)}
+          >
+            {loop.map((item, index) => (
+              <div
+                key={`${item._key}-${index}`}
+                className="shrink-0 pr-(--hero-gap)"
+                style={{width: `calc${step}`}}
+                aria-hidden={index >= items.length}
+              >
                 <SquareTile>
                   <HeroMedia item={item} playVideo={false} />
                 </SquareTile>
-              </EnteringCard>
-            </div>
-          ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-function trackTiming(durationSeconds: number): CSSProperties {
+function trackTiming(durationSeconds: number, delaySeconds: number): CSSProperties {
   return {
     ['--hero-track-duration' as string]: `${durationSeconds}s`,
-    ['--hero-scroll-delay' as string]: `${scrollDelay}s`,
+    ['--hero-scroll-delay' as string]: `${delaySeconds}s`,
   }
-}
-
-function EnteringCard({
-  index,
-  trackIndex,
-  children,
-}: {
-  index: number
-  trackIndex: number
-  children: ReactNode
-}) {
-  if (index >= ENTER_TILES) return <>{children}</>
-
-  return (
-    <div
-      className="hero-card-enter"
-      style={{
-        ['--hero-card-duration' as string]: `${CARD_ENTER}s`,
-        ['--hero-card-delay' as string]: `${(index * MOTION.length + trackIndex) * CARD_STAGGER}s`,
-      }}
-    >
-      {children}
-    </div>
-  )
 }
 
 function SquareTile({children}: {children: ReactNode}) {
