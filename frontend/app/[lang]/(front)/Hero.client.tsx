@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useRef,
+  useState,
   type CSSProperties,
   type ReactNode,
   type RefObject,
@@ -112,12 +113,14 @@ function ColumnsCarousel({
   playVideo: boolean
 }) {
   const locale = useLocale()
+  const isRtl = locale === 'ar'
   const isCarousel = categories.length > VISIBLE_COLUMNS
+  const areaRef = useRef<HTMLDivElement>(null)
   const [emblaRef, emblaApi] = useEmblaCarousel({
     active: isCarousel,
     align: 'start',
     loop: true,
-    direction: locale === 'ar' ? 'rtl' : 'ltr',
+    direction: isRtl ? 'rtl' : 'ltr',
   })
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi])
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi])
@@ -125,14 +128,15 @@ function ColumnsCarousel({
   const columnWidth = `calc(100% / ${Math.min(categories.length, VISIBLE_COLUMNS)})`
 
   return (
-    <div className="relative hidden md:flex md:min-h-0 md:flex-1 md:flex-col">
+    <div ref={areaRef} className="relative hidden md:flex md:min-h-0 md:flex-1 md:flex-col">
       {/* Every column draws its own start rule, so looping never leaves a gap. The viewport
           is pulled back by one rule so the leftmost one lands on the page border. */}
       <div
         ref={emblaRef}
         className={cn(
           '-ms-(--border-width-site) min-h-0 flex-1 overflow-hidden',
-          isCarousel && 'cursor-grab active:cursor-grabbing',
+          // The cursor arrow stands in for the pointer over the media; links keep theirs.
+          isCarousel && 'cursor-none',
         )}
       >
         <div className="flex h-full">
@@ -155,31 +159,105 @@ function ColumnsCarousel({
       </div>
       {isCarousel && (
         <>
-          <CarouselArrow direction="prev" onClick={scrollPrev} />
-          <CarouselArrow direction="next" onClick={scrollNext} />
+          <CursorArrow
+            areaRef={areaRef}
+            // Physical sides: in RTL the next column sits to the left.
+            onLeft={isRtl ? scrollNext : scrollPrev}
+            onRight={isRtl ? scrollPrev : scrollNext}
+          />
+          {/* Keyboard and screen reader controls; the mouse uses the cursor arrow. */}
+          <button type="button" className="sr-only focus:not-sr-only" onClick={scrollPrev}>
+            Previous category
+          </button>
+          <button type="button" className="sr-only focus:not-sr-only" onClick={scrollNext}>
+            Next category
+          </button>
         </>
       )}
     </div>
   )
 }
 
-/** Sits on the outer edge, vertically centred on the media area (above the labels). */
-function CarouselArrow({direction, onClick}: {direction: 'prev' | 'next'; onClick: () => void}) {
-  const isNext = direction === 'next'
+/**
+ * A round arrow that follows the mouse over the columns, pointing toward whichever half
+ * of the area the cursor is in; a click scrolls that way. Hidden over the category labels
+ * (they're links) and for touch, where dragging does the job. It moves through a ref and
+ * listens on the area itself, so tracking the mouse never re-renders the columns.
+ */
+function CursorArrow({
+  areaRef,
+  onLeft,
+  onRight,
+}: {
+  areaRef: RefObject<HTMLElement | null>
+  onLeft: () => void
+  onRight: () => void
+}) {
+  const arrowRef = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+  const [side, setSide] = useState<'left' | 'right'>('right')
+  const sideRef = useRef(side)
+  const actionsRef = useRef({onLeft, onRight})
+
+  useEffect(() => {
+    actionsRef.current = {onLeft, onRight}
+  }, [onLeft, onRight])
+
+  useEffect(() => {
+    const area = areaRef.current
+    if (!area) return
+
+    const overMedia = (event: PointerEvent | MouseEvent) =>
+      !(event.target instanceof Element && event.target.closest('a, button'))
+
+    const move = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse' || !overMedia(event)) {
+        setVisible(false)
+        return
+      }
+      const rect = area.getBoundingClientRect()
+      const x = event.clientX - rect.left
+      const y = event.clientY - rect.top
+      arrowRef.current?.style.setProperty('transform', `translate3d(${x}px, ${y}px, 0)`)
+      const next = x < rect.width / 2 ? 'left' : 'right'
+      if (next !== sideRef.current) {
+        sideRef.current = next
+        setSide(next)
+      }
+      setVisible(true)
+    }
+    const leave = () => setVisible(false)
+    // Embla swallows the click that ends a drag, so this only fires on a real click.
+    const click = (event: MouseEvent) => {
+      if (!overMedia(event)) return
+      const {onLeft, onRight} = actionsRef.current
+      if (sideRef.current === 'left') onLeft()
+      else onRight()
+    }
+
+    area.addEventListener('pointermove', move)
+    area.addEventListener('pointerleave', leave)
+    area.addEventListener('click', click)
+    return () => {
+      area.removeEventListener('pointermove', move)
+      area.removeEventListener('pointerleave', leave)
+      area.removeEventListener('click', click)
+    }
+  }, [areaRef])
+
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={isNext ? 'Next category' : 'Previous category'}
-      className={cn(
-        'absolute top-[calc(50%-1.5rem)] z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black text-xl font-bold text-white transition-colors hover:bg-white hover:text-black dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white',
-        isNext ? 'end-5' : 'start-5',
-      )}
-    >
-      <span aria-hidden className="rtl:-scale-x-100">
-        {isNext ? '→' : '←'}
-      </span>
-    </button>
+    <div ref={arrowRef} aria-hidden className="pointer-events-none absolute top-0 left-0 z-10">
+      <div
+        className={cn(
+          '-translate-x-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-black text-xl font-bold text-white transition-[opacity,scale] duration-200 dark:bg-white dark:text-black',
+          visible ? 'scale-100 opacity-100' : 'scale-50 opacity-0',
+        )}
+      >
+        <span className={cn('transition-transform duration-300', side === 'left' && 'rotate-180')}>
+          →
+        </span>
+      </div>
+    </div>
   )
 }
 
