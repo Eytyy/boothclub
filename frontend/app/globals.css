@@ -108,13 +108,14 @@
   }
 }
 
+/* Matches the sticky header: `py-5` + the 32px (40px from lg) toggles + the bottom rule. */
 :root {
-  --header-height: 72px;
+  --header-height: 76px;
 }
 
 @media (min-width: 1024px) {
   :root {
-    --header-height: 100px;
+    --header-height: 84px;
   }
 }
 
