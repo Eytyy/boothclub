@@ -133,11 +133,7 @@ function ColumnsCarousel({
           is pulled back by one rule so the leftmost one lands on the page border. */}
       <div
         ref={emblaRef}
-        className={cn(
-          '-ms-(--border-width-site) min-h-0 flex-1 overflow-hidden',
-          // The cursor arrow stands in for the pointer over the media; links keep theirs.
-          isCarousel && 'cursor-none',
-        )}
+        className={cn('-ms-(--border-width-site) min-h-0 flex-1 overflow-hidden')}
       >
         <div className="flex h-full">
           {categories.map((category, index) => (
@@ -178,11 +174,15 @@ function ColumnsCarousel({
   )
 }
 
+/** Share of the width on each side where the cursor arrow shows. The middle stays a plain pointer. */
+const ARROW_EDGE_ZONE = 0.35
+
 /**
- * A round arrow that follows the mouse over the columns, pointing toward whichever half
- * of the area the cursor is in; a click scrolls that way. Hidden over the category labels
- * (they're links) and for touch, where dragging does the job. It moves through a ref and
- * listens on the area itself, so tracking the mouse never re-renders the columns.
+ * A round arrow that follows the mouse near either edge of the columns, pointing toward
+ * that edge; a click scrolls that way. It stands in for the pointer while shown, and hides
+ * around the middle, over the category labels (they're links) and for touch, where
+ * dragging does the job. It moves through a ref and listens on the area itself, so
+ * tracking the mouse never re-renders the columns.
  */
 function CursorArrow({
   areaRef,
@@ -195,8 +195,9 @@ function CursorArrow({
 }) {
   const arrowRef = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
+  // The last side stays put while hidden, so the arrow doesn't spin as it fades out.
   const [side, setSide] = useState<'left' | 'right'>('right')
-  const sideRef = useRef(side)
+  const activeSideRef = useRef<'left' | 'right' | null>(null)
   const actionsRef = useRef({onLeft, onRight})
 
   useEffect(() => {
@@ -210,35 +211,36 @@ function CursorArrow({
     const overMedia = (event: PointerEvent | MouseEvent) =>
       !(event.target instanceof Element && event.target.closest('a, button'))
 
+    const show = (next: 'left' | 'right' | null) => {
+      activeSideRef.current = next
+      area.style.cursor = next ? 'none' : ''
+      setVisible(next !== null)
+      if (next) setSide(next)
+    }
+
     const move = (event: PointerEvent) => {
-      if (event.pointerType !== 'mouse' || !overMedia(event)) {
-        setVisible(false)
-        return
-      }
+      if (event.pointerType !== 'mouse' || !overMedia(event)) return show(null)
       const rect = area.getBoundingClientRect()
       const x = event.clientX - rect.left
       const y = event.clientY - rect.top
       arrowRef.current?.style.setProperty('transform', `translate3d(${x}px, ${y}px, 0)`)
-      const next = x < rect.width / 2 ? 'left' : 'right'
-      if (next !== sideRef.current) {
-        sideRef.current = next
-        setSide(next)
-      }
-      setVisible(true)
+      const edge = rect.width * ARROW_EDGE_ZONE
+      show(x < edge ? 'left' : x > rect.width - edge ? 'right' : null)
     }
-    const leave = () => setVisible(false)
+    const leave = () => show(null)
     // Embla swallows the click that ends a drag, so this only fires on a real click.
     const click = (event: MouseEvent) => {
       if (!overMedia(event)) return
       const {onLeft, onRight} = actionsRef.current
-      if (sideRef.current === 'left') onLeft()
-      else onRight()
+      if (activeSideRef.current === 'left') onLeft()
+      else if (activeSideRef.current === 'right') onRight()
     }
 
     area.addEventListener('pointermove', move)
     area.addEventListener('pointerleave', leave)
     area.addEventListener('click', click)
     return () => {
+      area.style.cursor = ''
       area.removeEventListener('pointermove', move)
       area.removeEventListener('pointerleave', leave)
       area.removeEventListener('click', click)
