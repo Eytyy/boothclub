@@ -65,6 +65,7 @@ function reelTiming(trackIndex: number) {
       // Stays blurred through the spins and clears as the reel slows.
       ['--hero-reel-blur' as string]: `${spinTotal + REEL_LAND * 0.5}s`,
     } as CSSProperties,
+    landedAt: spinTotal + REEL_LAND,
     scrollDelay: spinTotal + REEL_LAND + SCROLL_HOLD,
   }
 }
@@ -114,7 +115,7 @@ export default function HomeHero({categories}: {categories: HeroCategory[]}) {
                 {...MOTION[index % MOTION.length]}
               />
             </div>
-            <CategoryLabel category={category} />
+            <CategoryLabel category={category} trackIndex={index} />
           </div>
         ))}
       </div>
@@ -170,7 +171,7 @@ function ColumnsCarousel({
                 playVideo={playVideo}
                 {...MOTION[index % MOTION.length]}
               />
-              <CategoryLabel category={category} />
+              <CategoryLabel category={category} trackIndex={index} />
             </div>
           ))}
         </div>
@@ -410,7 +411,8 @@ function SquareTile({children}: {children: ReactNode}) {
   return <div className="relative  w-full overflow-hidden ">{children}</div>
 }
 
-function CategoryLabel({category}: {category: HeroCategory}) {
+/** The bar stays put; its text slides up into it as the column's reel lands. */
+function CategoryLabel({category, trackIndex}: {category: HeroCategory; trackIndex: number}) {
   if (!category.slug) return null
 
   return (
@@ -418,7 +420,14 @@ function CategoryLabel({category}: {category: HeroCategory}) {
       href={productCategoryPath(category.slug)}
       className="block border-t-site border-black dark:border-white px-5 py-4 lg:px-10 lg:py-5 text-lg lg:text-xl font-semibold transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
     >
-      {category.title}
+      <span className="block overflow-hidden">
+        <span
+          className="hero-label-reveal block"
+          style={{['--hero-label-delay' as string]: `${reelTiming(trackIndex).landedAt}s`}}
+        >
+          {category.title}
+        </span>
+      </span>
     </LocalizedLink>
   )
 }
