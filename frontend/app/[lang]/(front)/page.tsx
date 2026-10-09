@@ -5,7 +5,7 @@ import {ar} from 'date-fns/locale'
 
 import type {Locale} from '@/app/lib/i18n/config'
 import {getDictionary} from '@/app/lib/i18n/dictionary'
-import {productCategoryPath, productPath} from '@/app/lib/product/paths'
+import {productPath} from '@/app/lib/product/paths'
 import {localeAlternates} from '@/app/lib/seo/alternates'
 import {sanityFetch} from '@/sanity/lib/live'
 import {homePageQuery} from '@/sanity/lib/queries'
@@ -25,9 +25,6 @@ import ClientLogo from '@/app/components/ui/ClientLogo'
 import Image from '@/app/components/ui/SanityImage.client'
 
 type HomePage = NonNullable<HomePageQueryResult>
-type ProductCategoryItem = NonNullable<
-  NonNullable<HomePage['featuredProducts']>['categories']
->[number]
 type FeaturedProjectItem = NonNullable<HomePage['featuredProject']>
 
 /** Short date shown before each post title, e.g. "12 Mar". */
@@ -61,9 +58,8 @@ export default async function Page({params}: Props) {
   const {data: page} = await sanityFetch({query: homePageQuery, params: {lang}})
   const t = getDictionary(lang)
 
-  const heroColumns = page?.hero?.columns ?? []
-  const featuredProducts = page?.featuredProducts
-  const categories = featuredProducts?.categories ?? []
+  const hero = page?.hero
+  const heroCategories = hero?.categories ?? []
   const clients = (page?.clients ?? []).filter(Boolean)
   const featuredProject = page?.featuredProject
   const posts = (page?.featuredPosts ?? []).filter((post) => Boolean(post.title && post.slug))
@@ -72,37 +68,28 @@ export default async function Page({params}: Props) {
     <div className="">
       <JsonLd data={buildHomeStructuredData(process.env.NEXT_PUBLIC_SITE_URL, lang)} />
       <div className="container">
-        <div data-page-grid className="md:mx-10 border-x-site pt-12 md:pt-0">
-          {heroColumns.length > 0 && <HomeHero columns={heroColumns} />}
-          {featuredProducts && (
-            <div className="border-t-site">
-              {featuredProducts.headline && (
-                <div className="p-5 md:p-10 md:pb-0">
+        <div data-page-grid className="md:mx-10 border-x-site ">
+          {/* From md up the intro and category columns share one screen below the sticky
+              header, so the category labels always land inside the first fold. */}
+          <div className="md:flex md:h-[calc(100svh-var(--header-height))] md:flex-col">
+            {(hero?.headline || hero?.description) && (
+              <div className="grid shrink-0 gap-5 border-b-site border-black p-5 md:grid-cols-[7fr_5fr] md:gap-10 lg:p-10 dark:border-white">
+                {hero.headline && (
                   <TextReveal
-                    className="pointer-events-none text-reveal-default"
-                    text={stegaClean(featuredProducts.headline)}
+                    className="pointer-events-none text-reveal-default text-[clamp(2rem,4vw,4.5rem)]"
+                    text={stegaClean(hero.headline)}
                   />
-                </div>
-              )}
-              <div className="px-5 md:px-10">
-                {featuredProducts.description && (
-                  <div className="max-w-250 ">
-                    <TextReveal
-                      className="body-text font-normal"
-                      text={stegaClean(featuredProducts.description)}
-                    />
-                  </div>
                 )}
-                {categories.length > 0 && (
-                  <div className="grid lg:grid-cols-3 gap-10 py-10">
-                    {categories.map((category) => (
-                      <ProductCategoryCard key={category._id} category={category} />
-                    ))}
-                  </div>
+                {hero.description && (
+                  <TextReveal
+                    className="text-xl leading-relaxed font-normal md:max-w-140"
+                    text={stegaClean(hero.description)}
+                  />
                 )}
               </div>
-            </div>
-          )}
+            )}
+            {heroCategories.length > 0 && <HomeHero categories={heroCategories} />}
+          </div>
           {clients.length > 0 && (
             <div className="border-y-site">
               <Marquee
@@ -150,44 +137,6 @@ export default async function Page({params}: Props) {
           <QuoteFlow />
         </div>
       </div>
-    </div>
-  )
-}
-
-const ProductCategoryCard = ({category}: {category: ProductCategoryItem}) => {
-  const {title, excerpt, slug, mainImage} = category
-
-  return (
-    <div className="space-y-5">
-      <div className="overflow-hidden relative group">
-        <LocalizedLink href={productCategoryPath(slug)} aria-label={title ?? undefined}>
-          <span className="absolute inset-0 z-10" />
-        </LocalizedLink>
-        <div className="overflow-hidden">
-          {mainImage?.asset?._ref ? (
-            <Image
-              id={mainImage.asset._ref}
-              alt={mainImage.alt ?? ''}
-              width={800}
-              height={800}
-              mode="cover"
-              hotspot={mainImage.hotspot}
-              crop={mainImage.crop}
-              preview={mainImage.lqip ?? undefined}
-              className="aspect-square w-full object-cover"
-            />
-          ) : (
-            <div className="aspect-square w-full bg-black dark:bg-white" />
-          )}
-        </div>
-        <header className="absolute bottom-0 left-0  pt-7 pr-8 bg-white dark:bg-black">
-          <h3 className="text-3xl font-semibold">{title}</h3>
-        </header>
-        <div className="absolute top-0 right-0 p-5 bg-white dark:bg-black font-bold text-2xl group-hover:opacity-100 opacity-0 ">
-          &rarr;
-        </div>
-      </div>
-      {excerpt && <p>{excerpt}</p>}
     </div>
   )
 }

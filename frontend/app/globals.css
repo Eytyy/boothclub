@@ -108,13 +108,14 @@
   }
 }
 
+/* Matches the sticky header: `py-5` + the 32px (40px from lg) toggles + the bottom rule. */
 :root {
-  --header-height: 72px;
+  --header-height: 76px;
 }
 
 @media (min-width: 1024px) {
   :root {
-    --header-height: 100px;
+    --header-height: 84px;
   }
 }
 
@@ -182,36 +183,101 @@
   animation-play-state: paused;
 }
 
-@keyframes hero-card-in {
+/*
+ * Slot-machine intro. A reel wraps each track (two copies of its tiles), so shifting it by
+ * -50% shows the same frame as 0: it spins through whole copies at full speed, then a
+ * final copy decelerates and lands with a small fixed overshoot. `land` is listed first so
+ * the running `spin` wins over its backwards fill until the spins are done.
+ */
+@keyframes hero-reel-spin-y {
   from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes hero-card-rise {
-  from {
-    transform: translate3d(0, 2.25rem, 0);
+    transform: translate3d(0, -50%, 0);
   }
   to {
     transform: translate3d(0, 0, 0);
   }
 }
 
-.hero-card-enter {
-  animation-name: hero-card-in, hero-card-rise;
-  animation-duration: 0s, var(--hero-card-duration, 0.55s);
-  animation-timing-function: linear, cubic-bezier(0.22, 1, 0.36, 1);
-  animation-fill-mode: both, both;
-  animation-delay: var(--hero-card-delay, 0s), var(--hero-card-delay, 0s);
+@keyframes hero-reel-land-y {
+  0% {
+    transform: translate3d(0, -50%, 0);
+    animation-timing-function: cubic-bezier(0.2, 0.6, 0.35, 1);
+  }
+  82% {
+    transform: translate3d(0, 12px, 0);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hero-reel-spin-x {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hero-reel-land-x {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+    animation-timing-function: cubic-bezier(0.2, 0.6, 0.35, 1);
+  }
+  82% {
+    transform: translate3d(12px, 0, 0);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hero-reel-blur {
+  from {
+    filter: blur(6px);
+  }
+  to {
+    filter: blur(0);
+  }
+}
+
+.hero-reel {
+  animation-name: hero-reel-land-y, hero-reel-spin-y, hero-reel-blur;
+  animation-duration: var(--hero-reel-land), var(--hero-reel-spin), var(--hero-reel-blur);
+  animation-timing-function: linear, linear, ease-in;
+  animation-iteration-count: 1, var(--hero-reel-spins), 1;
+  animation-delay: var(--hero-reel-spin-total), 0s, 0s;
+  animation-fill-mode: both, none, none;
+}
+
+.hero-reel--x {
+  animation-name: hero-reel-land-x, hero-reel-spin-x, hero-reel-blur;
+}
+
+@keyframes hero-label-in {
+  from {
+    transform: translate3d(0, 110%, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+/* Category labels arrive together once the last reel has landed. */
+.hero-label-reveal {
+  animation: hero-label-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--hero-label-delay, 0s) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-column-track,
   .hero-row-track,
-  .hero-card-enter {
+  .hero-reel,
+  .hero-label-reveal {
     animation: none;
   }
 }

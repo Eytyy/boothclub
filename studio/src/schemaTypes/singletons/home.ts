@@ -5,13 +5,12 @@ import {
   ProjectsIcon,
   SearchIcon,
   StarIcon,
-  TagsIcon,
   UsersIcon,
 } from '@sanity/icons'
 
 import {localizedString} from '../../lib/i18n'
 
-const HERO_COLUMN_COUNT = 3
+const HERO_VISIBLE_COLUMNS = 3
 
 export const home = defineType({
   name: 'home',
@@ -20,7 +19,6 @@ export const home = defineType({
   icon: HomeIcon,
   groups: [
     {name: 'hero', title: 'Hero', icon: StarIcon, default: true},
-    {name: 'products', title: 'Products', icon: TagsIcon},
     {name: 'clients', title: 'Clients', icon: UsersIcon},
     {name: 'project', title: 'Project', icon: ProjectsIcon},
     {name: 'blog', title: 'Blog', icon: DocumentTextIcon},
@@ -32,51 +30,6 @@ export const home = defineType({
       title: 'Hero',
       type: 'object',
       group: 'hero',
-      options: {collapsible: false},
-      fields: [
-        defineField({
-          name: 'columns',
-          title: 'Columns',
-          description: `Exactly ${HERO_COLUMN_COUNT} columns. Each column scrolls through its items on a loop.`,
-          type: 'array',
-          of: [
-            defineArrayMember({
-              name: 'heroColumn',
-              title: 'Column',
-              type: 'object',
-              fields: [
-                defineField({
-                  name: 'items',
-                  title: 'Items',
-                  type: 'array',
-                  of: [
-                    defineArrayMember({type: 'block.media'}),
-                    defineArrayMember({type: 'block.text'}),
-                  ],
-                  validation: (rule) => rule.required().min(1),
-                }),
-              ],
-              preview: {
-                select: {items: 'items'},
-                prepare({items}) {
-                  const count = items?.length ?? 0
-                  return {
-                    title: 'Column',
-                    subtitle: `${count} item${count === 1 ? '' : 's'}`,
-                  }
-                },
-              },
-            }),
-          ],
-          validation: (rule) => rule.required().length(HERO_COLUMN_COUNT),
-        }),
-      ],
-    }),
-    defineField({
-      name: 'featuredProducts',
-      title: 'Featured Products',
-      type: 'object',
-      group: 'products',
       options: {collapsible: false},
       fields: [
         defineField({
@@ -92,9 +45,10 @@ export const home = defineType({
         defineField({
           name: 'categories',
           title: 'Product Categories',
+          description: `Each category becomes a column that scrolls through its “Home Page Media”. ${HERO_VISIBLE_COLUMNS} fit on screen; add more and the columns become a carousel.`,
           type: 'array',
           of: [defineArrayMember({type: 'reference', to: [{type: 'productCategory'}]})],
-          validation: (rule) => rule.unique(),
+          validation: (rule) => rule.required().min(1).unique(),
         }),
       ],
     }),
@@ -129,7 +83,7 @@ export const home = defineType({
     }),
   ],
   preview: {
-    select: {headline: 'featuredProducts.headline'},
+    select: {headline: 'hero.headline'},
     prepare({headline}) {
       return {
         title: 'Home Page',
