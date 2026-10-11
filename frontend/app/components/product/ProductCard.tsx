@@ -7,13 +7,11 @@ import {GridBlock} from '../ui/GridSystem'
 const ProductCard = ({
   href,
   title,
-  excerpt,
   image,
   className,
 }: {
   href: string
   title: string
-  excerpt?: string | null
   image?: ProductCardImage
   className?: string
 }) => {

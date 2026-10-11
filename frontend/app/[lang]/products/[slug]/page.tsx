@@ -141,7 +141,6 @@ export default async function ProductCategoryPage(props: Props) {
                 key={product._id}
                 href={productPath(category.slug, product.slug)}
                 title={product.title}
-                excerpt={product.excerpt}
                 image={product.mainImage}
               />
             ))}

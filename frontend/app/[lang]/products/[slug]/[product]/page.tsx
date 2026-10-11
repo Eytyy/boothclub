@@ -27,6 +27,7 @@ import SpecsBlock from '@/app/components/product/SpecsBlock.client'
 import RelatedPosts from '@/app/components/blog/RelatedPosts'
 import SectionHeading from '@/app/components/ui/SectionHeading'
 import {mapRelatedPosts} from '@/app/components/blog/mapRelatedPosts'
+import ProductCard from '@/app/components/product/ProductCard'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string; product: string}>
@@ -135,7 +136,7 @@ export default async function ProductPage(props: Props) {
       <GridContainer>
         <GridColumn
           span={6}
-          className="self-start sticky top-0 grid grid-rows-[1fr_14svh] min-h-svh"
+          className="self-start sticky top-(--header-height) grid grid-rows-[1fr_14svh] min-h-[calc(100svh-var(--header-height))]"
         >
           <GridBlock borders="none" className="p-10 relative">
             <PageMainMedia
@@ -198,17 +199,21 @@ export default async function ProductPage(props: Props) {
           />
         </GridColumn>
         <GridColumn span={4} className="max-lg:contents">
-          {otherProducts.length > 0 ? (
-            <OtherProducts
-              items={otherProducts.map((otherProduct) => ({
-                _id: otherProduct._id,
-                title: otherProduct.title,
-                href: productPath(product.category.slug, otherProduct.slug),
-                subtitle: product.category.title,
-                image: otherProduct.mainImage,
-              }))}
-            />
-          ) : null}
+          <SectionHeading>Other Products</SectionHeading>
+
+          {otherProducts.length > 0 && (
+            <div>
+              {otherProducts.map((product) => (
+                <ProductCard
+                  className="last:border-b-0 "
+                  key={product._id}
+                  href={productPath(product.slug, product.slug)}
+                  title={product.title}
+                  image={product.mainImage}
+                />
+              ))}
+            </div>
+          )}
         </GridColumn>
       </GridContainer>
     </div>
