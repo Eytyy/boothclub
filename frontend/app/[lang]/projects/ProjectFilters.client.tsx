@@ -4,6 +4,7 @@ import {useSearchParams, useRouter} from 'next/navigation'
 import {useCallback, useTransition, type ReactNode} from 'react'
 
 import type {ProjectFilterOption} from '@/app/components/project/types'
+import RowSlider from '@/app/components/ui/RowSlider.client'
 import {localizedPath} from '@/app/lib/i18n/config'
 import {useLocale} from '@/app/lib/i18n/LocaleProvider.client'
 import {cn} from '@/app/lib/utils'
@@ -77,41 +78,43 @@ export default function ProjectFilters({filters, className}: ProjectFiltersProps
 
   return (
     <div className="col-span-full sticky top-0 bg-white dark:bg-black z-100 self-start">
-      <div className={cn('uppercase flex relative z-100', className)}>
-        <div
-          className={cn(
-            'flex flex-nowrap overflow-x-auto min-w-0 flex-1',
-            '[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden',
-          )}
-        >
-          {activeCategory ? (
-            <>
-              <FilterButton active={!activeProduct} onClick={clearProduct} keepEndBorder>
-                {activeCategoryOption?.title ?? activeCategory}
-              </FilterButton>
-              {products.map((product) => (
-                <FilterButton
-                  key={product._id}
-                  active={activeProduct === product.slug}
-                  onClick={() => handleProductClick(product.slug)}
-                  keepEndBorder
-                >
-                  {product.title}
+      {/* The bottom rule sits on the row, not the buttons, so the slider's arrows stop above it. */}
+      <div
+        className={cn(
+          'uppercase flex relative z-100 border-b-site border-black dark:border-white',
+          className,
+        )}
+      >
+        <RowSlider className="min-w-0 flex-1">
+          <div className="flex flex-nowrap">
+            {activeCategory ? (
+              <>
+                <FilterButton active={!activeProduct} onClick={clearProduct}>
+                  {activeCategoryOption?.title ?? activeCategory}
                 </FilterButton>
-              ))}
-            </>
-          ) : (
-            filters.map((category) => (
-              <FilterButton
-                key={category._id}
-                active={false}
-                onClick={() => category.slug && selectCategory(category.slug)}
-              >
-                {category.title}
-              </FilterButton>
-            ))
-          )}
-        </div>
+                {products.map((product) => (
+                  <FilterButton
+                    key={product._id}
+                    active={activeProduct === product.slug}
+                    onClick={() => handleProductClick(product.slug)}
+                  >
+                    {product.title}
+                  </FilterButton>
+                ))}
+              </>
+            ) : (
+              filters.map((category) => (
+                <FilterButton
+                  key={category._id}
+                  active={false}
+                  onClick={() => category.slug && selectCategory(category.slug)}
+                >
+                  {category.title}
+                </FilterButton>
+              ))
+            )}
+          </div>
+        </RowSlider>
         {activeCategory ? (
           <FilterButton active={false} onClick={clearFilters} aria-label="Clear filters" pinned>
             X
@@ -127,14 +130,12 @@ function FilterButton({
   onClick,
   children,
   'aria-label': ariaLabel,
-  keepEndBorder,
   pinned,
 }: {
   'active': boolean
   'onClick': () => void
   'children': ReactNode
   'aria-label'?: string
-  'keepEndBorder'?: boolean
   'pinned'?: boolean
 }) {
   return (
@@ -142,9 +143,10 @@ function FilterButton({
       onClick={onClick}
       aria-label={ariaLabel}
       className={cn(
-        'uppercase block p-10 lg:text-lg font-bold tracking-normal transition-colors border-e-site min-w-max whitespace-nowrap border-black dark:border-white border-b-site',
-        pinned ? 'shrink-0' : 'flex-1',
-        !keepEndBorder && 'last:border-e-0',
+        'uppercase block p-10 lg:text-lg font-bold tracking-normal transition-colors border-e-site min-w-max whitespace-nowrap border-black dark:border-white',
+        // The pinned button draws its own divider so the slider's end arrow can't cover it.
+        pinned ? 'shrink-0 border-s-site' : 'flex-1',
+        'last:border-e-0',
         active && 'bg-black text-white dark:bg-white dark:text-black',
       )}
     >
