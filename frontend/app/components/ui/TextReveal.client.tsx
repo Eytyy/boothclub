@@ -1,6 +1,6 @@
 'use client'
 
-import {Fragment, useRef} from 'react'
+import {Fragment, useEffect, useRef} from 'react'
 import {motion, useInView, useReducedMotion} from 'framer-motion'
 import {cn} from '@/app/lib/utils'
 
@@ -18,6 +18,8 @@ type TextRevealProps = {
    * is false. Defaults to true, so the reveal starts once the text is in view.
    */
   active?: boolean
+  /** Fires once, when the reveal starts (or right away when motion is reduced). */
+  onStart?: () => void
   /** Fires once, after the last character finishes entering. */
   onComplete?: () => void
 }
@@ -28,6 +30,7 @@ export default function TextReveal({
   className,
   variant = 'default',
   active = true,
+  onStart,
   onComplete,
 }: TextRevealProps) {
   const reduceMotion = useReducedMotion()
@@ -37,7 +40,16 @@ export default function TextReveal({
   const completed = useRef(false)
   const onCompleteRef = useRef(onComplete)
   onCompleteRef.current = onComplete
+  const started = useRef(false)
   const key = animationKey ?? text
+
+  // Reduced motion renders plain text with no ref, so it never comes into view; treat it as started.
+  const starting = active && (isInView || Boolean(reduceMotion))
+  useEffect(() => {
+    if (!starting || started.current) return
+    started.current = true
+    onStart?.()
+  }, [starting, onStart])
 
   const finish = () => {
     if (completed.current) return
