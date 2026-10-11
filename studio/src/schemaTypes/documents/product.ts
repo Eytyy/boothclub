@@ -97,6 +97,8 @@ export const product = defineType({
           },
         },
       ],
+      // The product page's carousel shows three across, so it needs at least a full row.
+      validation: (rule) => rule.required().min(3).unique(),
       group: 'contents',
     }),
     defineField({

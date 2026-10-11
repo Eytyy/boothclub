@@ -171,10 +171,11 @@ export default async function ProductPage(props: Props) {
       </GridContainer>
       <GridContainer columns={[4, 4, 4]} className="border-t-site border-black dark:border-white">
         <GridColumn span={'full'}>
-          <SectionHeading>Featured Projects</SectionHeading>
           {featuredProjectItems.length > 0 ? (
             <FeaturedProjects items={featuredProjectItems} lang={lang} />
-          ) : null}
+          ) : (
+            <SectionHeading>Featured Projects</SectionHeading>
+          )}
         </GridColumn>
       </GridContainer>
       {relatedPosts.length > 0 ? (
