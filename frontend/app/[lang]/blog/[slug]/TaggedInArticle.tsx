@@ -1,4 +1,5 @@
 import {GridColumn, GridContainer} from '@/app/components/ui/GridSystem'
+import SectionHeading from '@/app/components/ui/SectionHeading'
 
 import PostMarqueeRow from '@/app/components/blog/PostMarqueeRow'
 
@@ -24,10 +25,7 @@ export default function TaggedInArticle({items}: {items: TaggedLink[]}) {
 
   return (
     <div className="border-t-site border-black dark:border-white">
-      <h2 className="flex items-center gap-5 p-5 pb-0 text-lg font-semibold uppercase lg:p-10 lg:pb-0">
-        <span className="block h-4 w-4 bg-black dark:bg-white" />
-        Tagged in this article
-      </h2>
+      <SectionHeading>Tagged in this article</SectionHeading>
       {items.map((item, index) => (
         <PostMarqueeRow
           key={item.id}

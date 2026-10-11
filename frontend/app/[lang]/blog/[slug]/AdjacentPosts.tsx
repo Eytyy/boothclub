@@ -1,4 +1,5 @@
 import {GridColumn, GridContainer} from '@/app/components/ui/GridSystem'
+import SectionHeading from '@/app/components/ui/SectionHeading'
 import {dataAttr} from '@/sanity/lib/utils'
 
 import PostMarqueeRow from '@/app/components/blog/PostMarqueeRow'
@@ -22,10 +23,7 @@ export default function AdjacentPosts({
 
   return (
     <div className="border-t-site border-black dark:border-white">
-      <h2 className="flex items-center gap-5 p-5 pb-0 text-lg font-semibold uppercase lg:p-10 lg:pb-0">
-        <span className="block h-4 w-4 bg-black dark:bg-white" />
-        More articles
-      </h2>
+      <SectionHeading>More articles</SectionHeading>
       {previous ? (
         <PostMarqueeRow
           href={`/blog/${previous.slug}`}

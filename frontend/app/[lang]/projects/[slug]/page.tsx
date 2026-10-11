@@ -33,6 +33,7 @@ import RelatedPosts from '@/app/components/blog/RelatedPosts'
 import {mapRelatedPosts} from '@/app/components/blog/mapRelatedPosts'
 import {cn} from '@/app/lib/utils'
 import ScrollCue from '@/app/components/page/ScrollCue.client'
+import SectionHeading from '@/app/components/ui/SectionHeading'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string}>
@@ -217,10 +218,7 @@ export default async function ProjectDetailPage(props: Props) {
             )}
           >
             <GridColumn span="full">
-              <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
-                <span className="block w-4 h-4 bg-black dark:bg-white"></span>
-                Output
-              </h2>
+              <SectionHeading>Output</SectionHeading>
               <div className="grid grid-cols-12">
                 {outputItems.map((item) => (
                   <GridBlock
@@ -237,10 +235,7 @@ export default async function ProjectDetailPage(props: Props) {
         {relatedPosts.length > 0 ? (
           <GridContainer columns="none">
             <GridColumn span="full" className="border-t-site border-black dark:border-white">
-              <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
-                <span className="block w-4 h-4 bg-black dark:bg-white"></span>
-                Mentioned in
-              </h2>
+              <SectionHeading>Mentioned in</SectionHeading>
               <RelatedPosts posts={relatedPosts} />
             </GridColumn>
           </GridContainer>
@@ -250,10 +245,7 @@ export default async function ProjectDetailPage(props: Props) {
           className="max-lg:grid-cols-1 max-lg:[&_.grid-divider]:hidden border-t-site border-black dark:border-white"
         >
           <GridColumn span={8} className="min-w-0 max-lg:contents sticky top-0 self-start ">
-            <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
-              <span className="block w-4 h-4 bg-black dark:bg-white"></span>
-              Get an Instant Quote
-            </h2>
+            <SectionHeading>Get an Instant Quote</SectionHeading>
             <ContactFormSection
               className=" max-lg:order-4 h-full flex-col flex"
               form={formConfig}
@@ -262,10 +254,7 @@ export default async function ProjectDetailPage(props: Props) {
             />
           </GridColumn>
           <GridColumn span={4} className="max-lg:contents">
-            <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
-              <span className="block w-4 h-4 bg-black dark:bg-white"></span>
-              Other Projects
-            </h2>
+            <SectionHeading>Other Projects</SectionHeading>
             {otherProjects.length > 0 ? (
               <OtherProducts
                 items={otherProjects.map((p) => ({

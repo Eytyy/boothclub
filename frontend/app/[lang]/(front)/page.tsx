@@ -19,6 +19,7 @@ import QuoteFlow from '@/app/components/forms/QuoteFlow.client'
 import HomeHero from './Hero.client'
 import {GridContainer} from '@/app/components/ui/GridSystem'
 import PageTitle from '@/app/components/ui/PageTitle'
+import SectionHeading from '@/app/components/ui/SectionHeading'
 import LocalizedLink from '@/app/components/ui/LocalizedLink'
 import PostMarqueeRow from '@/app/components/blog/PostMarqueeRow'
 import ClientLogo from '@/app/components/ui/ClientLogo'
@@ -76,13 +77,13 @@ export default async function Page({params}: Props) {
               <div className="grid shrink-0 gap-5 border-b-site border-black p-5 md:grid-cols-[7fr_5fr] md:gap-10 lg:p-10 dark:border-white">
                 {hero.headline && (
                   <TextReveal
-                    className="pointer-events-none text-reveal-default text-[clamp(2rem,4vw,4.5rem)]"
+                    className="pointer-events-none text-reveal-default text-[clamp(2rem,3.5vw,4.5rem)]"
                     text={stegaClean(hero.headline)}
                   />
                 )}
                 {hero.description && (
                   <TextReveal
-                    className="text-xl leading-relaxed font-normal md:max-w-140"
+                    className="3xl:text-xl text-lg leading-relaxed font-normal md:max-w-140"
                     text={stegaClean(hero.description)}
                   />
                 )}
@@ -114,10 +115,7 @@ export default async function Page({params}: Props) {
           {featuredProject && <FeaturedProject project={featuredProject} />}
           {posts.length > 0 && (
             <div className="border-b-site border-black dark:border-white">
-              <h2 className="flex items-center gap-5 p-5 pb-0 text-lg font-semibold uppercase lg:p-10 lg:pb-0">
-                <span className="block h-4 w-4 bg-black dark:bg-white" />
-                {t['sections.journal']}
-              </h2>
+              <SectionHeading>{t['sections.journal']}</SectionHeading>
               {posts.map((post, index) => (
                 <PostMarqueeRow
                   key={post._id}

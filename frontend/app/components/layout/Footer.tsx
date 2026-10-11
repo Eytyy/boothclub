@@ -43,14 +43,14 @@ export default async function Footer({lang}: {lang: Locale}) {
           <div className="">
             <LogoStatic linkToHome={false} />
           </div>
-          {cta ? (
+          {/* {cta ? (
             <GetInTouchCTA
               heading={cta.heading}
               buttonLabel={cta.buttonLabel}
               link={ctaLink}
               lang={lang}
             />
-          ) : null}
+          ) : null} */}
         </div>
         <div className="col-span-full relative bg-white z-10 border-b-site border-black dark:border-white dark:bg-black dark:text-white">
           {locations.length > 0 ? (

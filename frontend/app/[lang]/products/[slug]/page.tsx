@@ -26,6 +26,7 @@ import {GridContainer, GridBlock, GridColumn} from '@/app/components/ui/GridSyst
 import ProductCard from '@/app/components/product/ProductCard'
 import OtherProducts from '@/app/components/product/OtherProducts.client'
 import TextReveal from '@/app/components/ui/TextReveal.client'
+import SectionHeading from '@/app/components/ui/SectionHeading'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string}>
@@ -151,10 +152,7 @@ export default async function ProductCategoryPage(props: Props) {
         className="max-lg:grid-cols-1 max-lg:[&_.grid-divider]:hidden border-t-site border-black dark:border-white"
       >
         <GridColumn span={8} className="min-w-0 max-lg:contents sticky top-0 self-start bg-">
-          <h2 className="text-lg font-semibold uppercase p-5 lg:p-10 pb-0 lg:pb-0 flex items-center gap-5">
-            <span className="block w-4 h-4 bg-black dark:bg-white"></span>
-            Get an Instant Quote
-          </h2>
+          <SectionHeading>Get an Instant Quote</SectionHeading>
           <ContactFormSection
             className="max-lg:order-4 h-full flex-col flex"
             form={formConfig}
