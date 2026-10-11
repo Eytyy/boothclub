@@ -1,5 +1,4 @@
 import type {Metadata} from 'next'
-import {Suspense} from 'react'
 
 import type {ProjectFilterOption} from '@/app/components/project/types'
 import type {Locale} from '@/app/lib/i18n/config'
@@ -59,9 +58,7 @@ export default async function ProjectsPage({params}: Props) {
 
   return (
     <div className="container">
-      <Suspense>
-        <ProjectPageContent items={projectItems} filters={filterOptions} />
-      </Suspense>
+      <ProjectPageContent items={projectItems} filters={filterOptions} />
     </div>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import {useMemo} from 'react'
+import {Suspense, useMemo} from 'react'
 import {useSearchParams} from 'next/navigation'
 
 import type {ProjectCardData, ProjectFilterOption} from '@/app/components/project/types'
@@ -15,11 +15,41 @@ type ProjectPageContentProps = {
   title?: React.ReactNode
 }
 
+/**
+ * The page is prerendered, and `useSearchParams()` makes everything up to the nearest
+ * Suspense boundary render only on the client. The fallback is the same grid with no
+ * filters active, so the prerendered HTML already holds the full grid instead of nothing.
+ */
 export default function ProjectPageContent({items, filters}: ProjectPageContentProps) {
-  const searchParams = useSearchParams()
-  const activeCategory = searchParams.get('category')
-  const activeProduct = searchParams.get('product')
+  return (
+    <Suspense
+      fallback={
+        <ProjectGrid items={items} filters={filters} activeCategory={null} activeProduct={null} />
+      }
+    >
+      <ProjectGridFromSearchParams items={items} filters={filters} />
+    </Suspense>
+  )
+}
 
+function ProjectGridFromSearchParams({items, filters}: ProjectPageContentProps) {
+  const searchParams = useSearchParams()
+  return (
+    <ProjectGrid
+      items={items}
+      filters={filters}
+      activeCategory={searchParams.get('category')}
+      activeProduct={searchParams.get('product')}
+    />
+  )
+}
+
+function ProjectGrid({
+  items,
+  filters,
+  activeCategory,
+  activeProduct,
+}: ProjectPageContentProps & {activeCategory: string | null; activeProduct: string | null}) {
   const filteredItems = useMemo(() => {
     if (!activeCategory && !activeProduct) return items
 
@@ -46,7 +76,11 @@ export default function ProjectPageContent({items, filters}: ProjectPageContentP
 
   return (
     <div>
-      <ProjectFilters filters={filters} />
+      <ProjectFilters
+        filters={filters}
+        activeCategory={activeCategory}
+        activeProduct={activeProduct}
+      />
       <GridContainer columns={[4, 4, 4]} className="z-90">
         {hasResults ? (
           filteredItems.map((item, index) => (
