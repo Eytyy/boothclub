@@ -1,18 +1,24 @@
 import type {Metadata} from 'next'
 import {stegaClean} from '@sanity/client/stega'
 
+import ContactFormSection from '@/app/components/forms/ContactFormSection'
 import PageBuilder from '@/app/components/page-builder/PageBuilder.client'
+import OtherProducts from '@/app/components/product/OtherProducts.client'
 import {PageMainMedia} from '@/app/components/page/PageMainMedia'
 import {GridBlock, GridColumn, GridContainer} from '@/app/components/ui/GridSystem'
 import {Marquee} from '@/app/components/ui/Marquee.client'
 import PageTitle from '@/app/components/ui/PageTitle'
 import PortableText from '@/app/components/ui/PortableText'
-import type {Locale} from '@/app/lib/i18n/config'
+import SectionHeading from '@/app/components/ui/SectionHeading'
+import {localizedPath, type Locale} from '@/app/lib/i18n/config'
 import {localeAlternates} from '@/app/lib/seo/alternates'
+import {fetchFormConfigByKey} from '@/sanity/lib/data'
 import {sanityFetch} from '@/sanity/lib/live'
-import {aboutPageQuery} from '@/sanity/lib/queries'
+import {aboutPageQuery, recentPostsQuery} from '@/sanity/lib/queries'
 import {resolveMetaTitle, toMetaDescription, toPortableTextBlocks} from '@/sanity/lib/utils'
 import TeamMembers from './TeamMembers.client'
+
+const RECENT_POSTS = 3
 
 type Props = {
   params: Promise<{lang: Locale}>
@@ -35,7 +41,11 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
 
 export default async function AboutPage({params}: Props) {
   const {lang} = await params
-  const {data: page} = await sanityFetch({query: aboutPageQuery, params: {lang}})
+  const [{data: page}, {data: recentPosts}, formConfig] = await Promise.all([
+    sanityFetch({query: aboutPageQuery, params: {lang}}),
+    sanityFetch({query: recentPostsQuery, params: {lang, limit: RECENT_POSTS}}),
+    fetchFormConfigByKey('contact-us', lang),
+  ])
 
   const body = toPortableTextBlocks(page?.body)
   const media = page?.mainMedia
@@ -43,6 +53,11 @@ export default async function AboutPage({params}: Props) {
     stegaClean(media?.type) === 'video' ? (media?.video?.muxVideo?.playbackId ?? null) : null
   const team = page?.teamSection
   const members = team?.members ?? []
+  const posts = (recentPosts ?? []).flatMap((post) =>
+    post.title && post.slug
+      ? [{_id: post._id, title: post.title, href: `/blog/${post.slug}`, image: post.coverImage}]
+      : [],
+  )
 
   return (
     <>
@@ -87,8 +102,29 @@ export default async function AboutPage({params}: Props) {
           </GridContainer>
         ) : null}
       </div>
-      {/* Its empty state would read as a broken page under the sections above. */}
+      {/* Its empty state would read as a broken page between the sections around it. */}
       {page?.pageBuilder?.length ? <PageBuilder page={page} /> : null}
+      <div className="container">
+        {/* Same quote form as the other inner pages, with the latest posts beside it. */}
+        <GridContainer
+          columns={[8, 4]}
+          className="max-lg:grid-cols-1 max-lg:[&_.grid-divider]:hidden border-t-site border-black dark:border-white"
+        >
+          <GridColumn span={8} className="min-w-0 max-lg:contents sticky top-0 self-start">
+            <SectionHeading>Get an Instant Quote</SectionHeading>
+            <ContactFormSection
+              className="max-lg:order-4 h-full flex-col flex"
+              form={formConfig}
+              context={{title: page?.title ?? undefined, url: localizedPath(lang, '/about')}}
+              title="Tell us the vision, we bring the setup, the tech, the vibe and the results."
+            />
+          </GridColumn>
+          <GridColumn span={4} className="max-lg:contents">
+            <SectionHeading>Recent Posts</SectionHeading>
+            {posts.length > 0 ? <OtherProducts items={posts} /> : null}
+          </GridColumn>
+        </GridContainer>
+      </div>
     </>
   )
 }
