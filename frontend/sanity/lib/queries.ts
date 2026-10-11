@@ -353,6 +353,13 @@ export const allPostsQuery = defineQuery(`
   }
 `)
 
+export const recentPostsQuery = defineQuery(`
+  *[_type == "post" && defined(slug.current)]
+    | order(coalesce(publishedAt, date, _updatedAt) desc) [0...$limit] {
+    ${postFields}
+  }
+`)
+
 export const relatedPostsQuery = defineQuery(`
   *[_type == "post" && defined(slug.current) && references($documentId)]
     | order(coalesce(publishedAt, date, _updatedAt) desc) {
