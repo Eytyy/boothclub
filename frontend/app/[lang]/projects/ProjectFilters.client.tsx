@@ -2,6 +2,7 @@
 
 import {useSearchParams, useRouter} from 'next/navigation'
 import {useCallback, useTransition, type ReactNode} from 'react'
+import {AnimatePresence, motion} from 'framer-motion'
 
 import type {ProjectFilterOption} from '@/app/components/project/types'
 import RowSlider from '@/app/components/ui/RowSlider.client'
@@ -48,28 +49,17 @@ export default function ProjectFilters({filters, className}: ProjectFiltersProps
     [searchParams, router, startTransition, lang],
   )
 
-  const selectCategory = useCallback(
+  // A category is a toggle: picking it opens its products, picking it again clears the filter.
+  const toggleCategory = useCallback(
     (slug: string) => {
-      updateParams('category', slug, ['product'])
+      updateParams('category', slug === activeCategory ? null : slug, ['product'])
     },
-    [updateParams],
+    [activeCategory, updateParams],
   )
 
-  const clearProduct = useCallback(() => {
-    updateParams('product', null)
-  }, [updateParams])
-
-  const clearFilters = useCallback(() => {
-    updateParams('category', null, ['category', 'product'])
-  }, [updateParams])
-
-  const handleProductClick = useCallback(
-    (slug: string | null) => {
-      if (!slug || slug === activeProduct) {
-        updateParams('product', null)
-      } else {
-        updateParams('product', slug)
-      }
+  const toggleProduct = useCallback(
+    (slug: string) => {
+      updateParams('product', slug === activeProduct ? null : slug)
     },
     [activeProduct, updateParams],
   )
@@ -78,79 +68,116 @@ export default function ProjectFilters({filters, className}: ProjectFiltersProps
 
   return (
     <div className="col-span-full sticky top-0 bg-white dark:bg-black z-100 self-start">
-      {/* The bottom rule sits on the row, not the buttons, so the slider's arrows stop above it. */}
-      <div
+      {/* Bottom rules sit on the rows, not the buttons, so the slider's arrows stop above them. */}
+      <RowSlider
         className={cn(
-          'uppercase flex relative z-100 border-b-site border-black dark:border-white',
+          'uppercase relative z-100 border-b-site border-black dark:border-white',
           className,
         )}
       >
-        <RowSlider className="min-w-0 flex-1">
-          <div className="flex flex-nowrap">
-            {activeCategory ? (
-              <>
-                <FilterButton active={!activeProduct} onClick={clearProduct}>
-                  {activeCategoryOption?.title ?? activeCategory}
-                </FilterButton>
+        <div className="flex flex-nowrap">
+          {filters.map((category) => {
+            const isActive = !!category.slug && category.slug === activeCategory
+            const hasProducts = !!category.products?.length
+            return (
+              <FilterButton
+                key={category._id}
+                active={isActive}
+                onClick={() => category.slug && toggleCategory(category.slug)}
+                aria-expanded={hasProducts ? isActive : undefined}
+                aria-controls={hasProducts ? productsPanelId : undefined}
+              >
+                {hasProducts && <ExpandIcon isOpen={isActive} />}
+                {category.title}
+              </FilterButton>
+            )
+          })}
+        </div>
+      </RowSlider>
+      <AnimatePresence initial={false} mode="wait">
+        {products.length > 0 && (
+          <motion.div
+            key={activeCategory}
+            id={productsPanelId}
+            className="overflow-hidden"
+            initial={{height: 0}}
+            animate={{height: 'auto'}}
+            exit={{height: 0}}
+            transition={{duration: 0.3, ease: [0.22, 1, 0.36, 1]}}
+          >
+            <RowSlider className="uppercase border-b-site border-black dark:border-white">
+              <div className="flex flex-nowrap">
                 {products.map((product) => (
                   <FilterButton
                     key={product._id}
-                    active={activeProduct === product.slug}
-                    onClick={() => handleProductClick(product.slug)}
+                    active={!!product.slug && product.slug === activeProduct}
+                    onClick={() => product.slug && toggleProduct(product.slug)}
                   >
                     {product.title}
                   </FilterButton>
                 ))}
-              </>
-            ) : (
-              filters.map((category) => (
-                <FilterButton
-                  key={category._id}
-                  active={false}
-                  onClick={() => category.slug && selectCategory(category.slug)}
-                >
-                  {category.title}
-                </FilterButton>
-              ))
-            )}
-          </div>
-        </RowSlider>
-        {activeCategory ? (
-          <FilterButton active={false} onClick={clearFilters} aria-label="Clear filters" pinned>
-            X
-          </FilterButton>
-        ) : null}
-      </div>
+              </div>
+            </RowSlider>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
+
+const productsPanelId = 'project-filter-products'
 
 function FilterButton({
   active,
   onClick,
   children,
-  'aria-label': ariaLabel,
-  pinned,
+  'aria-expanded': ariaExpanded,
+  'aria-controls': ariaControls,
 }: {
   'active': boolean
   'onClick': () => void
   'children': ReactNode
-  'aria-label'?: string
-  'pinned'?: boolean
+  'aria-expanded'?: boolean
+  'aria-controls'?: string
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      aria-label={ariaLabel}
+      aria-pressed={active}
+      aria-expanded={ariaExpanded}
+      aria-controls={ariaControls}
       className={cn(
-        'uppercase block p-10 lg:text-lg font-bold tracking-normal transition-colors border-e-site min-w-max whitespace-nowrap border-black dark:border-white',
-        // The pinned button draws its own divider so the slider's end arrow can't cover it.
-        pinned ? 'shrink-0 border-s-site' : 'flex-1',
-        'last:border-e-0',
-        active && 'bg-black text-white dark:bg-white dark:text-black',
+        'uppercase flex flex-1 items-center justify-center gap-3 p-10 lg:text-lg font-bold tracking-normal min-w-max whitespace-nowrap cursor-pointer transition-colors',
+        'border-e-site last:border-e-0 border-black dark:border-white',
+        active
+          ? 'bg-black text-white dark:bg-white dark:text-black'
+          : 'hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black',
       )}
     >
       {children}
     </button>
+  )
+}
+
+/** The menu group's circled toggle, with a chevron that flips up while the products show. */
+function ExpandIcon({isOpen}: {isOpen: boolean}) {
+  return (
+    <span
+      aria-hidden="true"
+      className="inline-flex items-center justify-center shrink-0 w-7 h-7 rounded-full border-2"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={cn('w-4 h-4 transition-transform duration-300', isOpen && 'rotate-180')}
+      >
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </span>
   )
 }
