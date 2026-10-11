@@ -45,16 +45,18 @@ interface NavMenuGroupItemsProps {
 }
 
 /** A group's links as a ruled row (stacked below `lg`). */
-export function NavMenuGroupItems({group, pathname, onNavigate, className}: NavMenuGroupItemsProps) {
+export function NavMenuGroupItems({
+  group,
+  pathname,
+  onNavigate,
+  className,
+}: NavMenuGroupItemsProps) {
   return (
     <ul
       id={groupPanelId(group)}
       role="list"
       aria-label={group.title ?? undefined}
-      className={cn(
-        'flex flex-col lg:flex-row lg:overflow-x-auto border-black dark:border-white',
-        className,
-      )}
+      className={cn('flex flex-col lg:flex-row border-black dark:border-white', className)}
     >
       {group.items?.map((child) => (
         <li

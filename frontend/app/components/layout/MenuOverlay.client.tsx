@@ -4,6 +4,7 @@ import {useState} from 'react'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {usePathname} from 'next/navigation'
 
+import MenuRowSlider from './MenuRowSlider.client'
 import NavMenuItem from './NavMenuItem'
 import NavMenuItemGroup, {NavMenuGroupItems} from './NavMenuItemGroup.client'
 import {cn} from '@/app/lib/utils'
@@ -47,6 +48,7 @@ const subRowTransition = {duration: 0.3, ease: [0.22, 1, 0.36, 1]} as const
 /**
  * Top-level links sit in one ruled row (stacked below `lg`). A group is a toggle:
  * opening it inverts its cell and drops its links into a second ruled row underneath.
+ * From `lg` both rows slide sideways when their items don't fit.
  */
 export default function MenuOverlay({items, onNavigate}: MenuOverlayProps) {
   const pathname = usePathname()
@@ -67,58 +69,60 @@ export default function MenuOverlay({items, onNavigate}: MenuOverlayProps) {
       exit="hidden"
       className="overflow-hidden"
     >
-      <ul role="list" className="flex flex-col lg:flex-row border-b-site">
-        {menuItems.map((item) => (
-          <motion.li
-            key={item._key}
-            variants={itemVariants}
-            className={cn(
-              'border-b-site last:border-b-0 lg:border-b-0 lg:border-e-site lg:last:border-e-0 border-black dark:border-white',
-              // Leaves share the row equally; a group keeps its natural width, as in the design.
-              item._type === 'menuItem' ? 'lg:flex-1' : 'lg:flex-none',
-            )}
-          >
-            {item._type === 'menuItem' ? (
-              <NavMenuItem
-                item={item}
-                pathname={pathname}
-                onNavigate={onNavigate}
-                className="px-5 py-3 lg:px-10 lg:py-5 lg:text-center leading-normal lg:leading-normal hover:no-underline hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors whitespace-nowrap"
-              />
-            ) : (
-              <>
-                <NavMenuItemGroup
-                  group={item}
-                  isOpen={openGroupKey === item._key}
-                  onToggle={() =>
-                    setOpenGroupKey((current) => (current === item._key ? null : item._key))
-                  }
+      <MenuRowSlider className="border-b-site">
+        <ul role="list" className="flex flex-col lg:flex-row">
+          {menuItems.map((item) => (
+            <motion.li
+              key={item._key}
+              variants={itemVariants}
+              className={cn(
+                'border-b-site last:border-b-0 lg:border-b-0 lg:border-e-site lg:last:border-e-0 border-black dark:border-white',
+                // Leaves share the row equally; a group keeps its natural width, as in the design.
+                item._type === 'menuItem' ? 'lg:flex-1' : 'lg:flex-none',
+              )}
+            >
+              {item._type === 'menuItem' ? (
+                <NavMenuItem
+                  item={item}
+                  pathname={pathname}
+                  onNavigate={onNavigate}
+                  className="px-5 py-3 lg:px-10 lg:py-5 lg:text-center leading-normal lg:leading-normal hover:no-underline hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors whitespace-nowrap"
                 />
-                {/* Below `lg` the group's links unfold in place under its toggle. */}
-                <AnimatePresence initial={false}>
-                  {openGroupKey === item._key && (
-                    <motion.div
-                      key="inline"
-                      className="overflow-hidden lg:hidden"
-                      initial={{height: 0}}
-                      animate={{height: 'auto'}}
-                      exit={{height: 0}}
-                      transition={subRowTransition}
-                    >
-                      <NavMenuGroupItems
-                        group={item}
-                        pathname={pathname}
-                        onNavigate={onNavigate}
-                        className="border-t-site"
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </>
-            )}
-          </motion.li>
-        ))}
-      </ul>
+              ) : (
+                <>
+                  <NavMenuItemGroup
+                    group={item}
+                    isOpen={openGroupKey === item._key}
+                    onToggle={() =>
+                      setOpenGroupKey((current) => (current === item._key ? null : item._key))
+                    }
+                  />
+                  {/* Below `lg` the group's links unfold in place under its toggle. */}
+                  <AnimatePresence initial={false}>
+                    {openGroupKey === item._key && (
+                      <motion.div
+                        key="inline"
+                        className="overflow-hidden lg:hidden"
+                        initial={{height: 0}}
+                        animate={{height: 'auto'}}
+                        exit={{height: 0}}
+                        transition={subRowTransition}
+                      >
+                        <NavMenuGroupItems
+                          group={item}
+                          pathname={pathname}
+                          onNavigate={onNavigate}
+                          className="border-t-site"
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </>
+              )}
+            </motion.li>
+          ))}
+        </ul>
+      </MenuRowSlider>
 
       {/* From `lg` the open group's links get their own row under the main one. */}
       <AnimatePresence initial={false} mode="wait">
@@ -131,12 +135,9 @@ export default function MenuOverlay({items, onNavigate}: MenuOverlayProps) {
             exit={{height: 0}}
             transition={subRowTransition}
           >
-            <NavMenuGroupItems
-              group={openGroup}
-              pathname={pathname}
-              onNavigate={onNavigate}
-              className="border-b-site"
-            />
+            <MenuRowSlider className="border-b-site">
+              <NavMenuGroupItems group={openGroup} pathname={pathname} onNavigate={onNavigate} />
+            </MenuRowSlider>
           </motion.div>
         )}
       </AnimatePresence>
