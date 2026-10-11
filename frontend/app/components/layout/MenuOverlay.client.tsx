@@ -4,9 +4,9 @@ import {useState} from 'react'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {usePathname} from 'next/navigation'
 
-import MenuRowSlider from './MenuRowSlider.client'
 import NavMenuItem from './NavMenuItem'
 import NavMenuItemGroup, {NavMenuGroupItems} from './NavMenuItemGroup.client'
+import RowSlider from '@/app/components/ui/RowSlider.client'
 import {cn} from '@/app/lib/utils'
 import type {SiteMenuGroup, SiteMenuItem} from '@/sanity/lib/types'
 
@@ -69,7 +69,7 @@ export default function MenuOverlay({items, onNavigate}: MenuOverlayProps) {
       exit="hidden"
       className="overflow-hidden"
     >
-      <MenuRowSlider className="border-b-site">
+      <RowSlider className="border-b-site">
         <ul role="list" className="flex flex-col lg:flex-row">
           {menuItems.map((item) => (
             <motion.li
@@ -122,7 +122,7 @@ export default function MenuOverlay({items, onNavigate}: MenuOverlayProps) {
             </motion.li>
           ))}
         </ul>
-      </MenuRowSlider>
+      </RowSlider>
 
       {/* From `lg` the open group's links get their own row under the main one. */}
       <AnimatePresence initial={false} mode="wait">
@@ -135,9 +135,9 @@ export default function MenuOverlay({items, onNavigate}: MenuOverlayProps) {
             exit={{height: 0}}
             transition={subRowTransition}
           >
-            <MenuRowSlider className="border-b-site">
+            <RowSlider className="border-b-site">
               <NavMenuGroupItems group={openGroup} pathname={pathname} onNavigate={onNavigate} />
-            </MenuRowSlider>
+            </RowSlider>
           </motion.div>
         )}
       </AnimatePresence>

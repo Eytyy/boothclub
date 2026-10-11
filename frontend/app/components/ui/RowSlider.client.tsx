@@ -8,13 +8,14 @@ import {cn} from '@/app/lib/utils'
 type Direction = 'prev' | 'next'
 
 /**
- * Lets a ruled menu row overflow from `lg` up. The row stays a native scroller (trackpad,
- * touch and tab-into-view keep working) with its scrollbar hidden; arrows sit over its ends,
- * so they don't shift the items when they come and go. An arrow only shows while there are
- * items hidden on its side, and a click brings the first item hidden under it flush against
- * the opposite arrow. Below `lg` the row stacks and this is inert.
+ * Lets a ruled row of items overflow sideways. Pass the row as the only child; its children are
+ * the items. The row stays a native scroller (trackpad, touch and tab-into-view keep working)
+ * with its scrollbar hidden. From `lg` up, arrows sit over its ends, so they don't shift the
+ * items when they come and go. An arrow only shows while there are items hidden on its side,
+ * and a click brings the nearest item hidden under it flush against the opposite arrow.
+ * Below `lg` it is swipe-only.
  */
-export default function MenuRowSlider({
+export default function RowSlider({
   children,
   className,
 }: {
@@ -31,19 +32,32 @@ export default function MenuRowSlider({
     const offset = Math.abs(scroller.scrollLeft)
     const max = scroller.scrollWidth - scroller.clientWidth
     // 1px of slack absorbs sub-pixel layout.
-    setCanScroll({prev: offset > 1, next: offset < max - 1})
+    const prev = offset > 1
+    const next = offset < max - 1
+    setCanScroll((current) =>
+      current.prev === prev && current.next === next ? current : {prev, next},
+    )
   }, [])
 
   useEffect(() => {
     const scroller = scrollerRef.current
     if (!scroller) return
-    update()
-    const observer = new ResizeObserver(update)
-    observer.observe(scroller)
-    if (scroller.firstElementChild) observer.observe(scroller.firstElementChild)
+    // Watch the items themselves: the row keeps the scroller's width while items are swapped
+    // out or reflow (a font loading, say), so only their sizes reveal the overflow changing.
+    const resizes = new ResizeObserver(update)
+    const observeAll = () => {
+      resizes.disconnect()
+      resizes.observe(scroller)
+      for (const item of scroller.firstElementChild?.children ?? []) resizes.observe(item)
+      update()
+    }
+    observeAll()
+    const mutations = new MutationObserver(observeAll)
+    mutations.observe(scroller, {childList: true, subtree: true})
     scroller.addEventListener('scroll', update, {passive: true})
     return () => {
-      observer.disconnect()
+      resizes.disconnect()
+      mutations.disconnect()
       scroller.removeEventListener('scroll', update)
     }
   }, [update])
@@ -80,7 +94,7 @@ export default function MenuRowSlider({
     <div className={cn('relative', className)}>
       <div
         ref={scrollerRef}
-        className="lg:overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {children}
       </div>
@@ -108,7 +122,7 @@ function SliderArrow({
   return (
     <motion.button
       type="button"
-      aria-label={isPrev ? 'Scroll menu back' : 'Scroll menu forward'}
+      aria-label={isPrev ? 'Scroll back' : 'Scroll forward'}
       // Pointer users have the arrows; keyboard users reach every item by tabbing.
       tabIndex={-1}
       onClick={(event) => onClick(event.currentTarget.offsetWidth)}
