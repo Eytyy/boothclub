@@ -21,6 +21,12 @@ export const about = defineType({
   ],
   fields: [
     defineField({
+      name: 'mainMedia',
+      title: 'Main Media',
+      type: 'block.media',
+      group: 'contents',
+    }),
+    defineField({
       name: 'title',
       title: 'Title',
       type: 'internationalizedArrayString',
@@ -28,9 +34,15 @@ export const about = defineType({
       group: 'contents',
     }),
     defineField({
-      name: 'headline',
-      title: 'Headline',
-      type: 'internationalizedArrayText',
+      name: 'body',
+      title: 'Body',
+      type: 'internationalizedArrayBlockContent',
+      group: 'contents',
+    }),
+    defineField({
+      name: 'teamSection',
+      title: 'Team Members Section',
+      type: 'team',
       group: 'contents',
     }),
     defineField({
@@ -42,7 +54,6 @@ export const about = defineType({
         {type: 'block.media'},
         {type: 'block.contentSection'},
         {type: 'stats'},
-        {type: 'team'},
         {type: 'cta'},
       ],
       options: {

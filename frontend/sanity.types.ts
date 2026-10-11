@@ -125,7 +125,7 @@ export type TeamMemberReference = {
 
 export type Team = {
   _type: 'team'
-  heading?: InternationalizedArrayString
+  headline?: InternationalizedArrayString
   members: Array<
     {
       _key: string
@@ -360,9 +360,9 @@ export type TeamMember = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  firstName: InternationalizedArrayString
-  lastName?: InternationalizedArrayString
-  picture: {
+  name: InternationalizedArrayString
+  role?: InternationalizedArrayString
+  image: {
     asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
@@ -370,7 +370,6 @@ export type TeamMember = {
     alt?: InternationalizedArrayString
     _type: 'image'
   }
-  bio?: InternationalizedArrayText
 }
 
 export type SanityImageCrop = {
@@ -526,8 +525,10 @@ export type About = {
   _createdAt: string
   _updatedAt: string
   _rev: string
+  mainMedia?: BlockMedia
   title: InternationalizedArrayString
-  headline?: InternationalizedArrayText
+  body?: InternationalizedArrayBlockContent
+  teamSection?: Team
   pageBuilder?: Array<
     | ({
         _key: string
@@ -541,9 +542,6 @@ export type About = {
     | ({
         _key: string
       } & Stats)
-    | ({
-        _key: string
-      } & Team)
     | ({
         _key: string
       } & Cta)
@@ -660,7 +658,7 @@ export type Product = {
   description: InternationalizedArrayBlockContentTextOnly
   specs?: ProductSpecs
   copy?: BlockCopy
-  featuredProjects?: Array<
+  featuredProjects: Array<
     {
       _key: string
     } & ProjectReference
@@ -1344,12 +1342,133 @@ export type BlogPageQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: aboutPageQuery
-// Query: *[_type == "about" && _id == "aboutPage"][0]{    _id,    _type,    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,    "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "pageBuilder": pageBuilder[]{    _key,    _type,    _type == "block.text" => {      layout,      "content": content[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value[]{  ...,  _type == "image" => {      ...,  "lqip": asset->metadata.lqip,  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value  },  markDefs[]{    ...,      _type == "link" => {    "page": page->{ _type, "slug": slug.current },    "post": post->slug.current,    "product": product->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current,      "categorySlug": category->slug.current    },    "productCategory": productCategory->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current    },    "project": project->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current    }  }  }}    },    _type == "block.media" => {        type,  image {   ...,  "lqip": asset->metadata.lqip,  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value },  video {      ...,  "muxVideo": muxVideo.asset-> {    playbackId,    assetId,    filename,  }  }    },    _type == "block.contentSection" => {      "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "text": text[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value    },    _type == "stats" => {      items[]{        ...,        "value": value[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,        "suffix": suffix[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,        "label": label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value      }    },    _type == "team" => {      "heading": heading[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      members[]->{        _id,        "firstName": firstName[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,        "lastName": lastName[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,        "bio": bio[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,        "picture": picture {   ...,  "lqip": asset->metadata.lqip,  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value }      }    },    _type == "cta" => {      "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "tagline": tagline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      button {          ...,  "buttonText": buttonText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,    link {      ...,        _type == "link" => {    "page": page->{ _type, "slug": slug.current },    "post": post->slug.current,    "product": product->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current,      "categorySlug": category->slug.current    },    "productCategory": productCategory->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current    },    "project": project->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current    }  }  }      }    }  },    seo {        "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  metaImage    }  }
+// Query: *[_type == "about" && _id == "aboutPage"][0]{    _id,    _type,    mainMedia {        type,  image {   ...,  "lqip": asset->metadata.lqip,  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value },  video {      ...,  "muxVideo": muxVideo.asset-> {    playbackId,    assetId,    filename,  }  }    },    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,    "body": body[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value[]{  ...,  markDefs[]{    ...,      _type == "link" => {    "page": page->{ _type, "slug": slug.current },    "post": post->slug.current,    "product": product->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current,      "categorySlug": category->slug.current    },    "productCategory": productCategory->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current    },    "project": project->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current    }  }  }},    teamSection {      "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "members": members[]->{        _id,        "name": name[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,        "role": role[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,        "image": image {   ...,  "lqip": asset->metadata.lqip,  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value }      }    },      "pageBuilder": pageBuilder[]{    _key,    _type,    _type == "block.text" => {      layout,      "content": content[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value[]{  ...,  _type == "image" => {      ...,  "lqip": asset->metadata.lqip,  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value  },  markDefs[]{    ...,      _type == "link" => {    "page": page->{ _type, "slug": slug.current },    "post": post->slug.current,    "product": product->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current,      "categorySlug": category->slug.current    },    "productCategory": productCategory->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current    },    "project": project->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current    }  }  }}    },    _type == "block.media" => {        type,  image {   ...,  "lqip": asset->metadata.lqip,  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value },  video {      ...,  "muxVideo": muxVideo.asset-> {    playbackId,    assetId,    filename,  }  }    },    _type == "block.contentSection" => {      "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "text": text[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value    },    _type == "stats" => {      items[]{        ...,        "value": value[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,        "suffix": suffix[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,        "label": label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value      }    },    _type == "cta" => {      "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "tagline": tagline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      button {          ...,  "buttonText": buttonText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,    link {      ...,        _type == "link" => {    "page": page->{ _type, "slug": slug.current },    "post": post->slug.current,    "product": product->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current,      "categorySlug": category->slug.current    },    "productCategory": productCategory->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current    },    "project": project->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current    }  }  }      }    }  },    seo {        "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  metaImage    }  }
 export type AboutPageQueryResult = {
   _id: 'aboutPage'
   _type: 'about'
+  mainMedia: {
+    type: 'image' | 'video'
+    image: {
+      _type: 'block.image'
+      asset?: SanityImageAssetReference
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      alt: string | null
+      credits: string | null
+      lqip: string | null
+    } | null
+    video: {
+      _type: 'block.video'
+      muxVideo: {
+        playbackId: string | null
+        assetId: string | null
+        filename: string | null
+      } | null
+    } | null
+  } | null
   title: string | null
-  headline: string | null
+  body: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: 'span'
+          _key: string
+        }>
+        style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+        listItem?: 'bullet' | 'number'
+        markDefs: Array<{
+          _key: string
+          _type: 'link'
+          linkType?:
+            | 'email'
+            | 'href'
+            | 'page'
+            | 'phone'
+            | 'post'
+            | 'product'
+            | 'productCategory'
+            | 'project'
+          href?: string
+          page:
+            | {
+                _type: 'about'
+                slug: null
+              }
+            | {
+                _type: 'blog'
+                slug: null
+              }
+            | {
+                _type: 'contact'
+                slug: null
+              }
+            | {
+                _type: 'home'
+                slug: null
+              }
+            | {
+                _type: 'privacyPolicy'
+                slug: null
+              }
+            | {
+                _type: 'projects'
+                slug: null
+              }
+            | null
+          post: string | null
+          productCategory: {
+            _id: string
+            title: string | null
+            slug: string
+          } | null
+          product: {
+            _id: string
+            title: string | null
+            slug: string
+            categorySlug: string
+          } | null
+          project: {
+            _id: string
+            title: string | null
+            slug: string
+          } | null
+          email?: string
+          phone?: string
+        }> | null
+        level?: number
+        _type: 'block'
+        _key: string
+      }
+    | {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        _type: 'image'
+        _key: string
+        markDefs: null
+      }
+  > | null
+  teamSection: {
+    headline: string | null
+    members: Array<{
+      _id: string
+      name: string | null
+      role: string | null
+      image: {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt: string | null
+        _type: 'image'
+        lqip: string | null
+        credits: null
+      }
+    }>
+  } | null
   pageBuilder: Array<
     | {
         _key: string
@@ -1548,27 +1667,6 @@ export type AboutPageQueryResult = {
           suffix: string | null
           label: string | null
           _key: string
-        }>
-      }
-    | {
-        _key: string
-        _type: 'team'
-        heading: string | null
-        members: Array<{
-          _id: string
-          firstName: string | null
-          lastName: string | null
-          bio: string | null
-          picture: {
-            asset?: SanityImageAssetReference
-            media?: unknown
-            hotspot?: SanityImageHotspot
-            crop?: SanityImageCrop
-            alt: string | null
-            _type: 'image'
-            lqip: string | null
-            credits: null
-          }
         }>
       }
   > | null
@@ -3072,7 +3170,7 @@ export type GetProductQueryResult = {
       credits: string | null
       lqip: string | null
     }> | null
-  }> | null
+  }>
 } | null
 
 // Source: sanity/lib/queries.ts
@@ -3192,7 +3290,7 @@ declare module '@sanity/client' {
   interface SanityQueries {
     '\n  *[_type == "home" && _id == "homePage"][0]{\n    _id,\n    _type,\n    hero {\n      "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "description": description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "categories": (categories[]->)[defined(slug.current)]{\n        _id,\n        "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n        "slug": slug.current,\n        "media": homeMedia[]{\n          _key,\n          \n  type,\n  image { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n },\n  video {\n    \n  ...,\n  "muxVideo": muxVideo.asset-> {\n    playbackId,\n    assetId,\n    filename,\n  }\n\n  }\n\n        }\n      }\n    },\n    "clients": (clients[]->)[defined(_id)]{\n      _id,\n      "name": name[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      darkLogo,\n      lightLogo,\n      shape,\n      displaySize\n    },\n    "featuredProject": featuredProject->{\n      \n  _id,\n  "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "slug": slug.current,\n  mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n },\n  "product": product->{\n    \n  _id,\n  "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "slug": slug.current,\n  "category": category->{\n    _id,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "slug": slug.current\n  }\n\n  }\n,\n      "excerpt": excerpt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n    },\n    "featuredPosts": (featuredPosts[]->)[defined(slug.current)]{\n      \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "slug": slug.current,\n  "excerpt": meta.description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  meta {\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "description": description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    image\n  },\n  "coverImage": coalesce(mainImage, coverImage) { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n },\n  "date": coalesce(publishedAt, date, _updatedAt),\n\n    },\n    seo {\n      \n  "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  metaImage\n\n    }\n  }\n': HomePageQueryResult
     '\n  *[_type == "blog" && _id == "blogPage"][0]{\n    _id,\n    _type,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "blogPostFooter": blogPostFooter[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value[]{\n  ...,\n  _type == "image" => {\n    \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n\n  },\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n  }\n},\n    seo {\n      \n  "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  metaImage\n\n    }\n  }\n': BlogPageQueryResult
-    '\n  *[_type == "about" && _id == "aboutPage"][0]{\n    _id,\n    _type,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    \n  "pageBuilder": pageBuilder[]{\n    _key,\n    _type,\n    _type == "block.text" => {\n      layout,\n      "content": content[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value[]{\n  ...,\n  _type == "image" => {\n    \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n\n  },\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n  }\n}\n    },\n    _type == "block.media" => {\n      \n  type,\n  image { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n },\n  video {\n    \n  ...,\n  "muxVideo": muxVideo.asset-> {\n    playbackId,\n    assetId,\n    filename,\n  }\n\n  }\n\n    },\n    _type == "block.contentSection" => {\n      "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "text": text[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n    },\n    _type == "stats" => {\n      items[]{\n        ...,\n        "value": value[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n        "suffix": suffix[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n        "label": label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n      }\n    },\n    _type == "team" => {\n      "heading": heading[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      members[]->{\n        _id,\n        "firstName": firstName[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n        "lastName": lastName[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n        "bio": bio[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n        "picture": picture { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n }\n      }\n    },\n    _type == "cta" => {\n      "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "tagline": tagline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      button {\n        \n  ...,\n  "buttonText": buttonText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n  }\n\n\n      }\n    }\n  }\n,\n    seo {\n      \n  "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  metaImage\n\n    }\n  }\n': AboutPageQueryResult
+    '\n  *[_type == "about" && _id == "aboutPage"][0]{\n    _id,\n    _type,\n    mainMedia {\n      \n  type,\n  image { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n },\n  video {\n    \n  ...,\n  "muxVideo": muxVideo.asset-> {\n    playbackId,\n    assetId,\n    filename,\n  }\n\n  }\n\n    },\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "body": body[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value[]{\n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n  }\n},\n    teamSection {\n      "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "members": members[]->{\n        _id,\n        "name": name[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n        "role": role[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n        "image": image { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n }\n      }\n    },\n    \n  "pageBuilder": pageBuilder[]{\n    _key,\n    _type,\n    _type == "block.text" => {\n      layout,\n      "content": content[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value[]{\n  ...,\n  _type == "image" => {\n    \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n\n  },\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n  }\n}\n    },\n    _type == "block.media" => {\n      \n  type,\n  image { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n },\n  video {\n    \n  ...,\n  "muxVideo": muxVideo.asset-> {\n    playbackId,\n    assetId,\n    filename,\n  }\n\n  }\n\n    },\n    _type == "block.contentSection" => {\n      "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "text": text[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n    },\n    _type == "stats" => {\n      items[]{\n        ...,\n        "value": value[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n        "suffix": suffix[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n        "label": label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n      }\n    },\n    _type == "cta" => {\n      "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "tagline": tagline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      button {\n        \n  ...,\n  "buttonText": buttonText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n  }\n\n\n      }\n    }\n  }\n,\n    seo {\n      \n  "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  metaImage\n\n    }\n  }\n': AboutPageQueryResult
     '\n  *[_type == "privacyPolicy" && _id == "privacyPolicyPage"][0]{\n    _id,\n    _type,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "body": body[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value[]{\n  ...,\n  _type == "image" => {\n    \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n\n  },\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n  }\n},\n    seo {\n      \n  "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  metaImage\n\n    }\n  }\n': PrivacyPolicyPageQueryResult
     '\n  *[_type == "projects" && _id == "projectsPage"][0]{\n    _id,\n    _type,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    seo {\n      \n  "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  metaImage\n\n    },\n    "featuredIds": featuredProjects[]->_id\n  }\n': ProjectsPageQueryResult
     '\n  *[_type == "project" && defined(slug.current)] | order(_createdAt desc) {\n    \n  _id,\n  "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "slug": slug.current,\n  mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n },\n  "product": product->{\n    \n  _id,\n  "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "slug": slug.current,\n  "category": category->{\n    _id,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "slug": slug.current\n  }\n\n  }\n\n  }\n': AllProjectsQueryResult

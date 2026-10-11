@@ -10,10 +10,9 @@ export const team = defineType({
   icon: UsersIcon,
   fields: [
     defineField({
-      name: 'heading',
-      title: 'Heading',
+      name: 'headline',
+      title: 'Headline',
       type: 'internationalizedArrayString',
-      description: 'Large section title (same style as Featured Products).',
     }),
     defineField({
       name: 'members',
@@ -30,13 +29,13 @@ export const team = defineType({
   ],
   preview: {
     select: {
-      heading: 'heading',
+      headline: 'headline',
       members: 'members',
     },
-    prepare({heading, members}) {
+    prepare({headline, members}) {
       const count = members?.length ?? 0
       return {
-        title: localizedString(heading) || 'Team',
+        title: localizedString(headline) || 'Team',
         subtitle: `${count} member${count === 1 ? '' : 's'}`,
       }
     },

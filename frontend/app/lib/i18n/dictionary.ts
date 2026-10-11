@@ -16,7 +16,6 @@ const en = {
   'actions.viewOurWork': 'View our work',
   'actions.backToHome': 'Back to home',
   'actions.allWork': 'All work',
-  'actions.joinTheTeam': 'Join the team',
 
   'language.switchToArabic': 'Switch to Arabic',
   'language.switchToEnglish': 'Switch to English',
@@ -68,7 +67,6 @@ const ar: Dictionary = {
   'actions.viewOurWork': 'شاهد أعمالنا',
   'actions.backToHome': 'العودة إلى الرئيسية',
   'actions.allWork': 'كل الأعمال',
-  'actions.joinTheTeam': 'انضم إلى الفريق',
 
   'language.switchToArabic': 'التبديل إلى العربية',
   'language.switchToEnglish': 'التبديل إلى الإنجليزية',
