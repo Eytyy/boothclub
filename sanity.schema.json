@@ -640,7 +640,7 @@
             "value": "team"
           }
         },
-        "heading": {
+        "headline": {
           "type": "objectAttribute",
           "value": {
             "type": "inline",
@@ -1942,7 +1942,7 @@
           "type": "string"
         }
       },
-      "firstName": {
+      "name": {
         "type": "objectAttribute",
         "value": {
           "type": "inline",
@@ -1950,7 +1950,7 @@
         },
         "optional": false
       },
-      "lastName": {
+      "role": {
         "type": "objectAttribute",
         "value": {
           "type": "inline",
@@ -1958,7 +1958,7 @@
         },
         "optional": true
       },
-      "picture": {
+      "image": {
         "type": "objectAttribute",
         "value": {
           "type": "object",
@@ -2012,14 +2012,6 @@
           }
         },
         "optional": false
-      },
-      "bio": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "inline",
-          "name": "internationalizedArrayText"
-        },
-        "optional": true
       }
     }
   },
@@ -2948,6 +2940,14 @@
           "type": "string"
         }
       },
+      "mainMedia": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "block.media"
+        },
+        "optional": true
+      },
       "title": {
         "type": "objectAttribute",
         "value": {
@@ -2956,11 +2956,19 @@
         },
         "optional": false
       },
-      "headline": {
+      "body": {
         "type": "objectAttribute",
         "value": {
           "type": "inline",
-          "name": "internationalizedArrayText"
+          "name": "internationalizedArrayBlockContent"
+        },
+        "optional": true
+      },
+      "teamSection": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "team"
         },
         "optional": true
       },
@@ -3029,21 +3037,6 @@
                 "rest": {
                   "type": "inline",
                   "name": "stats"
-                }
-              },
-              {
-                "type": "object",
-                "attributes": {
-                  "_key": {
-                    "type": "objectAttribute",
-                    "value": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "rest": {
-                  "type": "inline",
-                  "name": "team"
                 }
               },
               {
@@ -3686,7 +3679,7 @@
             }
           }
         },
-        "optional": true
+        "optional": false
       },
       "slug": {
         "type": "objectAttribute",

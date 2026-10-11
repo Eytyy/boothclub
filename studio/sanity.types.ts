@@ -125,7 +125,7 @@ export type TeamMemberReference = {
 
 export type Team = {
   _type: 'team'
-  heading?: InternationalizedArrayString
+  headline?: InternationalizedArrayString
   members: Array<
     {
       _key: string
@@ -360,9 +360,9 @@ export type TeamMember = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  firstName: InternationalizedArrayString
-  lastName?: InternationalizedArrayString
-  picture: {
+  name: InternationalizedArrayString
+  role?: InternationalizedArrayString
+  image: {
     asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
@@ -370,7 +370,6 @@ export type TeamMember = {
     alt?: InternationalizedArrayString
     _type: 'image'
   }
-  bio?: InternationalizedArrayText
 }
 
 export type SanityImageCrop = {
@@ -526,8 +525,10 @@ export type About = {
   _createdAt: string
   _updatedAt: string
   _rev: string
+  mainMedia?: BlockMedia
   title: InternationalizedArrayString
-  headline?: InternationalizedArrayText
+  body?: InternationalizedArrayBlockContent
+  teamSection?: Team
   pageBuilder?: Array<
     | ({
         _key: string
@@ -541,9 +542,6 @@ export type About = {
     | ({
         _key: string
       } & Stats)
-    | ({
-        _key: string
-      } & Team)
     | ({
         _key: string
       } & Cta)
@@ -660,7 +658,7 @@ export type Product = {
   description: InternationalizedArrayBlockContentTextOnly
   specs?: ProductSpecs
   copy?: BlockCopy
-  featuredProjects?: Array<
+  featuredProjects: Array<
     {
       _key: string
     } & ProjectReference

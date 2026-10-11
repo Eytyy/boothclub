@@ -131,7 +131,7 @@ const projectBlocksProjection = /* groq */ `
   }
 `
 
-/** About page `pageBuilder` — text, media, content section, stats, team, minimal CTA. */
+/** About page `pageBuilder` — text, media, content section, stats, minimal CTA. */
 const aboutBlocksProjection = /* groq */ `
   "pageBuilder": pageBuilder[]{
     _key,
@@ -153,16 +153,6 @@ const aboutBlocksProjection = /* groq */ `
         "value": value${localizedValue},
         "suffix": suffix${localizedValue},
         "label": label${localizedValue}
-      }
-    },
-    _type == "team" => {
-      "heading": heading${localizedValue},
-      members[]->{
-        _id,
-        "firstName": firstName${localizedValue},
-        "lastName": lastName${localizedValue},
-        "bio": bio${localizedValue},
-        "picture": picture { ${imageProjection} }
       }
     },
     _type == "cta" => {
@@ -268,8 +258,20 @@ export const aboutPageQuery = defineQuery(`
   *[_type == "about" && _id == "aboutPage"][0]{
     _id,
     _type,
+    mainMedia {
+      ${projectMediaProjection}
+    },
     "title": title${localizedValue},
-    "headline": headline${localizedValue},
+    "body": body${localizedPortableText},
+    teamSection {
+      "headline": headline${localizedValue},
+      "members": members[]->{
+        _id,
+        "name": name${localizedValue},
+        "role": role${localizedValue},
+        "image": image { ${imageProjection} }
+      }
+    },
     ${aboutBlocksProjection},
     seo {
       ${seoFields}

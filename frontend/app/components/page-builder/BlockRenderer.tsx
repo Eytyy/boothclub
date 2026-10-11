@@ -7,7 +7,6 @@ import VideoBlock from './blocks/VideoBlock.client'
 import Stats from './blocks/Stats.client'
 import FullMediaBlock from './blocks/FullMediaBlock'
 import ContentSectionBlock from './blocks/ContentSectionBlock'
-import Team from './blocks/Team'
 
 import {dataAttr} from '@/sanity/lib/utils'
 import {ExtractPageBuilderType, PageBuilderSection} from '@/sanity/lib/types'
@@ -40,7 +39,6 @@ const Blocks = {
   ['block.media']: PageBuilderFullMedia,
   ['block.contentSection']: PageBuilderContentSection,
   stats: Stats,
-  team: Team,
 } as BlocksType
 
 /**

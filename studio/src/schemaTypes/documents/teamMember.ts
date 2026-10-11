@@ -10,19 +10,19 @@ export const teamMember = defineType({
   type: 'document',
   fields: [
     defineField({
-      name: 'firstName',
-      title: 'First Name',
+      name: 'name',
+      title: 'Name',
       type: 'internationalizedArrayString',
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'lastName',
-      title: 'Last Name',
+      name: 'role',
+      title: 'Role',
       type: 'internationalizedArrayString',
     }),
     defineField({
-      name: 'picture',
-      title: 'Picture',
+      name: 'image',
+      title: 'Image',
       type: 'image',
       fields: [
         defineField({
@@ -37,26 +37,18 @@ export const teamMember = defineType({
       },
       validation: (rule) => rule.required(),
     }),
-    defineField({
-      name: 'bio',
-      title: 'Bio',
-      type: 'internationalizedArrayText',
-      description: 'Short bio shown when a visitor selects this team member.',
-    }),
   ],
   preview: {
     select: {
-      firstName: 'firstName',
-      lastName: 'lastName',
-      picture: 'picture',
+      name: 'name',
+      role: 'role',
+      image: 'image',
     },
     prepare(selection) {
-      const firstName = localizedString(selection.firstName)
-      const lastName = localizedString(selection.lastName)
       return {
-        title: [firstName, lastName].filter(Boolean).join(' ') || 'Untitled',
-        subtitle: 'Team Member',
-        media: selection.picture,
+        title: localizedString(selection.name) || 'Untitled',
+        subtitle: localizedString(selection.role) || 'Team Member',
+        media: selection.image,
       }
     },
   },
