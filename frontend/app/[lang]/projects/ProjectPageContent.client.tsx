@@ -45,25 +45,25 @@ export default function ProjectPageContent({items, filters}: ProjectPageContentP
   const lastRowSize = filteredItems.length % 2 === 0 ? 2 : 1
 
   return (
-    <GridContainer>
-      <ProjectFilters className="col-span-full self-start" filters={filters} />
-      {hasResults ? (
-        filteredItems.map((item, index) => (
-          <GridColumn span={6} key={item._id}>
-            <ProjectCard
-              item={item}
-              showBottomBorder={index < filteredItems.length - lastRowSize}
-            />
-          </GridColumn>
-        ))
-      ) : (
-        <div className="col-span-full p-10 border-t-site border-black dark:border-white bg-white text-black dark:bg-black dark:text-white relative z-100">
-          <p className="text-9xl leading-[1.2] font-bold ">
-            No projects match the selected filters.
-          </p>
-        </div>
-      )}
-    </GridContainer>
+    <div>
+      <ProjectFilters filters={filters} />
+      <GridContainer>
+        {hasResults ? (
+          filteredItems.map((item, index) => (
+            <GridColumn span={6} key={item._id}>
+              <ProjectCard
+                item={item}
+                showBottomBorder={index < filteredItems.length - lastRowSize}
+              />
+            </GridColumn>
+          ))
+        ) : (
+          <div className="col-span-full p-10  relative z-90 min-h-[min(100dvh-var(--header-height),1000px)]">
+            <p className="body-text">No projects match the selected filters.</p>
+          </div>
+        )}
+      </GridContainer>
+    </div>
   )
 }
 

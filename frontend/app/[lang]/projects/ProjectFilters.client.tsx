@@ -67,7 +67,7 @@ export default function ProjectFilters({filters, className}: ProjectFiltersProps
   if (filters.length === 0) return null
 
   return (
-    <div className="col-span-full sticky top-0 bg-white dark:bg-black z-100 self-start">
+    <div className="col-span-full sticky top-(--header-height) bg-white dark:bg-black z-100 self-start mx-10 border-x-site border-black dark:border-white">
       {/* Bottom rules sit on the rows, not the buttons, so the slider's arrows stop above them. */}
       <RowSlider
         className={cn(
@@ -148,7 +148,7 @@ function FilterButton({
       aria-expanded={ariaExpanded}
       aria-controls={ariaControls}
       className={cn(
-        'uppercase flex flex-1 items-center justify-center gap-3 p-10 lg:text-lg font-bold tracking-normal min-w-max whitespace-nowrap cursor-pointer transition-colors',
+        'uppercase flex flex-1 items-center justify-center gap-3 p-5 lg:text-lg font-bold tracking-normal min-w-max whitespace-nowrap cursor-pointer transition-colors',
         'border-e-site last:border-e-0 border-black dark:border-white',
         active
           ? 'bg-black text-white dark:bg-white dark:text-black'
