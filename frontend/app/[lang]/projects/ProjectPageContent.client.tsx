@@ -47,10 +47,10 @@ export default function ProjectPageContent({items, filters}: ProjectPageContentP
   return (
     <div>
       <ProjectFilters filters={filters} />
-      <GridContainer>
+      <GridContainer columns={[4, 4, 4]} className="z-90">
         {hasResults ? (
           filteredItems.map((item, index) => (
-            <GridColumn span={6} key={item._id}>
+            <GridColumn span={4} key={item._id}>
               <ProjectCard
                 item={item}
                 showBottomBorder={index < filteredItems.length - lastRowSize}
@@ -81,15 +81,7 @@ const ProjectCard = ({
       href={`/projects/${item.slug}`}
       borders={showBottomBorder ? 'bottom' : 'none'}
     >
-      <div className="mb-5">
-        <h3 className="text-3xl font-semibold leading-tight">{item.title}</h3>
-        {item.product?.title ? (
-          <span className="shrink-0 text-base text-black/60 dark:text-white/60">
-            {item.product.title}
-          </span>
-        ) : null}
-      </div>
-      <div className="aspect-square w-2/3 mx-auto overflow-hidden">
+      <div className="aspect-square mx-auto overflow-hidden">
         {item.mainImage?.asset?._ref ? (
           <Image
             className="h-full w-full  object-cover"
@@ -105,6 +97,14 @@ const ProjectCard = ({
         ) : (
           <div className="h-full w-full border-2 border-black dark:border-white" />
         )}
+      </div>
+      <div className="mt-5">
+        {item.product?.title ? (
+          <span className="shrink-0 text-base text-black/60 dark:text-white/60">
+            {item.product.title}
+          </span>
+        ) : null}
+        <h3 className="text-3xl font-semibold leading-tight">{item.title}</h3>
       </div>
     </GridBlock>
   )
