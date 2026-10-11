@@ -17,6 +17,7 @@ import TextReveal from '@/app/components/ui/TextReveal.client'
 import {Marquee} from '@/app/components/ui/Marquee.client'
 import QuoteFlow from '@/app/components/forms/QuoteFlow.client'
 import HomeHero from './Hero.client'
+import {HeroIntroProvider, HeroIntroText} from './HeroIntro.client'
 import {GridContainer} from '@/app/components/ui/GridSystem'
 import PageTitle from '@/app/components/ui/PageTitle'
 import SectionHeading from '@/app/components/ui/SectionHeading'
@@ -72,25 +73,27 @@ export default async function Page({params}: Props) {
         <div data-page-grid className="md:mx-10 border-x-site ">
           {/* From md up the intro and category columns share one screen below the sticky
               header, so the category labels always land inside the first fold. */}
-          <div className="md:flex md:h-[calc(100svh-var(--header-height))] md:flex-col">
-            {(hero?.headline || hero?.description) && (
-              <div className="grid shrink-0 gap-5 border-b-site border-black p-5 md:grid-cols-[7fr_5fr] md:gap-10 lg:p-10 dark:border-white">
-                {hero.headline && (
-                  <TextReveal
-                    className="pointer-events-none text-reveal-default text-[clamp(2rem,3.5vw,4.5rem)]"
-                    text={stegaClean(hero.headline)}
-                  />
-                )}
-                {hero.description && (
-                  <TextReveal
-                    className="3xl:text-xl text-lg leading-relaxed font-normal md:max-w-140"
-                    text={stegaClean(hero.description)}
-                  />
-                )}
-              </div>
-            )}
-            {heroCategories.length > 0 && <HomeHero categories={heroCategories} />}
-          </div>
+          <HeroIntroProvider hasIntroText={Boolean(hero?.headline || hero?.description)}>
+            <div className="md:flex md:h-[calc(100svh-var(--header-height))] md:flex-col">
+              {(hero?.headline || hero?.description) && (
+                <div className="grid shrink-0 gap-5 border-b-site border-black p-5 md:grid-cols-[7fr_5fr] md:gap-10 lg:p-10 dark:border-white">
+                  {hero.headline && (
+                    <HeroIntroText
+                      className="pointer-events-none text-reveal-default text-[clamp(2rem,3.5vw,4.5rem)]"
+                      text={stegaClean(hero.headline)}
+                    />
+                  )}
+                  {hero.description && (
+                    <HeroIntroText
+                      className="3xl:text-xl text-lg leading-relaxed font-normal md:max-w-140"
+                      text={stegaClean(hero.description)}
+                    />
+                  )}
+                </div>
+              )}
+              {heroCategories.length > 0 && <HomeHero categories={heroCategories} />}
+            </div>
+          </HeroIntroProvider>
           {clients.length > 0 && (
             <div className="border-y-site">
               <Marquee

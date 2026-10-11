@@ -178,12 +178,6 @@
   animation-direction: reverse;
 }
 
-.hero-column-track:hover,
-[data-hero-offscreen] .hero-column-track,
-[data-hero-offscreen] .hero-row-track {
-  animation-play-state: paused;
-}
-
 /*
  * Slot-machine intro. A reel wraps each track (two copies of its tiles), so shifting it by
  * -50% shows the same frame as 0: it spins through whole copies at full speed, then a
@@ -272,6 +266,31 @@
 /* Category labels arrive together once the last reel has landed. */
 .hero-label-reveal {
   animation: hero-label-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--hero-label-delay, 0s) both;
+}
+
+/*
+ * The hero's CSS would start on first paint, ahead of the intro text, which waits for
+ * hydration. Everything holds (delays included) until the hero gets `data-hero-ready`.
+ */
+.hero-reel,
+.hero-column-track,
+.hero-row-track,
+.hero-label-reveal {
+  animation-play-state: paused;
+}
+
+[data-hero-ready] .hero-reel,
+[data-hero-ready] .hero-column-track,
+[data-hero-ready] .hero-row-track,
+[data-hero-ready] .hero-label-reveal {
+  animation-play-state: running;
+}
+
+/* Kept after the ready rule so it still wins. */
+.hero-column-track:hover,
+[data-hero-offscreen] .hero-column-track,
+[data-hero-offscreen] .hero-row-track {
+  animation-play-state: paused;
 }
 
 @media (prefers-reduced-motion: reduce) {

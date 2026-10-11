@@ -19,6 +19,7 @@ import {useLocale} from '@/app/lib/i18n/LocaleProvider.client'
 import {productCategoryPath} from '@/app/lib/product/paths'
 import {cn} from '@/app/lib/utils'
 import type {HomePageQueryResult} from '@/sanity.types'
+import {useHeroIntroReady} from './HeroIntro.client'
 
 type HeroCategory = NonNullable<
   NonNullable<NonNullable<HomePageQueryResult>['hero']>['categories']
@@ -91,6 +92,8 @@ export default function HomeHero({categories}: {categories: HeroCategory[]}) {
   const rootRef = useRef<HTMLDivElement>(null)
   // Real video players only start once we know the column layout is the one on screen.
   const showColumns = useMediaQuery(COLUMNS_QUERY)
+  // The reels and labels stay paused (in CSS) until the intro text starts revealing.
+  const introReady = useHeroIntroReady()
 
   usePauseWhenOffscreen(rootRef)
 
@@ -99,6 +102,7 @@ export default function HomeHero({categories}: {categories: HeroCategory[]}) {
   return (
     <div
       ref={rootRef}
+      data-hero-ready={introReady || undefined}
       className="[--hero-gap:calc(var(--spacing)*5)] md:flex md:min-h-0 md:flex-1 md:flex-col"
     >
       {/* TODO(mobile): this layout still needs a design pass. The stacked rows don't fit the
