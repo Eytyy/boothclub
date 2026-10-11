@@ -1,6 +1,6 @@
 'use client'
 
-import {useSearchParams, useRouter} from 'next/navigation'
+import {useRouter} from 'next/navigation'
 import {useCallback, useTransition, type ReactNode} from 'react'
 import {AnimatePresence, motion} from 'framer-motion'
 
@@ -12,17 +12,20 @@ import {cn} from '@/app/lib/utils'
 
 type ProjectFiltersProps = {
   filters: ProjectFilterOption[]
+  activeCategory: string | null
+  activeProduct: string | null
   className?: string
 }
 
-export default function ProjectFilters({filters, className}: ProjectFiltersProps) {
-  const searchParams = useSearchParams()
+export default function ProjectFilters({
+  filters,
+  activeCategory,
+  activeProduct,
+  className,
+}: ProjectFiltersProps) {
   const router = useRouter()
   const lang = useLocale()
   const [, startTransition] = useTransition()
-
-  const activeCategory = searchParams.get('category')
-  const activeProduct = searchParams.get('product')
 
   const activeCategoryOption = activeCategory
     ? filters.find((f) => f.slug === activeCategory)
@@ -32,7 +35,9 @@ export default function ProjectFilters({filters, className}: ProjectFiltersProps
 
   const updateParams = useCallback(
     (key: string, value: string | null, clearKeys?: string[]) => {
-      const params = new URLSearchParams(searchParams.toString())
+      // Read the live URL at click time so this component never calls useSearchParams(),
+      // which would keep it out of the prerendered HTML.
+      const params = new URLSearchParams(window.location.search)
       if (clearKeys) {
         clearKeys.forEach((k) => params.delete(k))
       }
@@ -46,7 +51,7 @@ export default function ProjectFilters({filters, className}: ProjectFiltersProps
         router.replace(qs ? `?${qs}` : localizedPath(lang, '/projects'), {scroll: false})
       })
     },
-    [searchParams, router, startTransition, lang],
+    [router, startTransition, lang],
   )
 
   // A category is a toggle: picking it opens its products, picking it again clears the filter.
