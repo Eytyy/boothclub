@@ -67,7 +67,7 @@ export default function ProjectFilters({filters, className}: ProjectFiltersProps
   if (filters.length === 0) return null
 
   return (
-    <div className="col-span-full z-95 sticky top-(--header-height) bg-white dark:bg-black  self-start mx-10 border-x-site border-black dark:border-white">
+    <div className="col-span-full z-95 sticky top-(--header-height) bg-white dark:bg-black  self-start lg:mx-10 border-x-site border-black dark:border-white">
       {/* Bottom rules sit on the rows, not the buttons, so the slider's arrows stop above them. */}
       <RowSlider
         className={cn(

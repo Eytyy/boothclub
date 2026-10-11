@@ -30,8 +30,8 @@ export default function HeaderClient({items, ctaLabel}: HeaderClientProps) {
 
   return (
     <header className="container sticky top-0 z-100">
-      <div className="mx-6 lg:mx-10 bg-white dark:bg-black text-black dark:text-white border-x-site">
-        <div className="flex items-center justify-between lg:px-10 py-5 border-b-site ">
+      <div className="lg:mx-10 bg-white dark:bg-black text-black dark:text-white border-x-site">
+        <div className="flex items-center justify-between px-5 lg:px-10 py-5 border-b-site ">
           <HeaderLogo forceVisible={true} />
           <div className="flex items-center gap-5 md:bottom-0 justify-between">
             <DarkModeToggle />

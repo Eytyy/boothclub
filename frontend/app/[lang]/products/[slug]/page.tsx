@@ -115,7 +115,7 @@ export default async function ProductCategoryPage(props: Props) {
       <GridContainer>
         <GridColumn
           span={6}
-          className="lg:self-start lg:sticky lg:top-0 lg:grid lg:grid-rows-[1fr_14svh] lg:min-h-svh"
+          className="lg:self-start lg:sticky lg:top-(--header-height) lg:grid lg:grid-rows-[1fr_14svh] lg:min-h-[calc(100svh-var(--header-height))]"
         >
           <GridBlock borders="none" className="relative">
             <PageMainMedia
@@ -151,7 +151,10 @@ export default async function ProductCategoryPage(props: Props) {
         columns={[8, 4]}
         className="max-lg:grid-cols-1 max-lg:[&_.grid-divider]:hidden border-t-site border-black dark:border-white"
       >
-        <GridColumn span={8} className="min-w-0 max-lg:contents sticky top-0 self-start bg-">
+        <GridColumn
+          span={8}
+          className="min-w-0 max-lg:contents sticky top-(--header-height) self-start bg-white dark:bg-black"
+        >
           <SectionHeading>Get an Instant Quote</SectionHeading>
           <ContactFormSection
             className="max-lg:order-4 h-full flex-col flex"
