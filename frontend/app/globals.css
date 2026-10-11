@@ -263,9 +263,9 @@
   }
 }
 
-/* Category labels arrive together once the last reel has landed. */
+/* Category labels arrive with the rest of the hero intro. */
 .hero-label-reveal {
-  animation: hero-label-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--hero-label-delay, 0s) both;
+  animation: hero-label-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /*

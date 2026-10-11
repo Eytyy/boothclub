@@ -66,7 +66,6 @@ function reelTiming(trackIndex: number) {
       // Stays blurred through the spins and clears as the reel slows.
       ['--hero-reel-blur' as string]: `${spinTotal + REEL_LAND * 0.5}s`,
     } as CSSProperties,
-    landedAt: spinTotal + REEL_LAND,
     scrollDelay: spinTotal + REEL_LAND + SCROLL_HOLD,
   }
 }
@@ -122,7 +121,7 @@ export default function HomeHero({categories}: {categories: HeroCategory[]}) {
                 {...MOTION[index % MOTION.length]}
               />
             </div>
-            <CategoryLabel category={category} revealAt={labelsRevealAt(categories.length)} />
+            <CategoryLabel category={category} />
           </div>
         ))}
       </div>
@@ -178,7 +177,7 @@ function ColumnsCarousel({
                 playVideo={playVideo}
                 {...MOTION[index % MOTION.length]}
               />
-              <CategoryLabel category={category} revealAt={labelsRevealAt(categories.length)} />
+              <CategoryLabel category={category} />
             </div>
           ))}
         </div>
@@ -418,13 +417,8 @@ function SquareTile({children}: {children: ReactNode}) {
   return <div className="relative  w-full overflow-hidden ">{children}</div>
 }
 
-/** Labels all arrive together once the last reel on screen has landed. */
-function labelsRevealAt(categoryCount: number) {
-  return reelTiming(Math.min(categoryCount, MOTION.length) - 1).landedAt
-}
-
-/** The bar stays put; its text slides up into it once the reels have landed. */
-function CategoryLabel({category, revealAt}: {category: HeroCategory; revealAt: number}) {
+/** The bar stays put; its text slides up into it as the hero intro starts. */
+function CategoryLabel({category}: {category: HeroCategory}) {
   if (!category.slug) return null
 
   return (
@@ -433,12 +427,7 @@ function CategoryLabel({category, revealAt}: {category: HeroCategory; revealAt: 
       className="block border-t-site border-black dark:border-white px-5 py-4 lg:px-10 lg:py-5 text-lg lg:text-xl font-semibold transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
     >
       <span className="block overflow-hidden">
-        <span
-          className="hero-label-reveal block"
-          style={{['--hero-label-delay' as string]: `${revealAt}s`}}
-        >
-          {category.title}
-        </span>
+        <span className="hero-label-reveal block">{category.title}</span>
       </span>
     </LocalizedLink>
   )
