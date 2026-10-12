@@ -579,36 +579,6 @@ export const contactPageQuery = defineQuery(`
       "title": title${localizedValue},
       "body": body${localizedValue}
     },
-    "channelsHeading": channelsHeading${localizedValue},
-    whatsapp{
-      "title": title${localizedValue},
-      "body": body${localizedValue},
-      number,
-      "message": message${localizedValue},
-      "buttonLabel": buttonLabel${localizedValue}
-    },
-    "phonesHeading": phonesHeading${localizedValue},
-    phoneLines[]{
-      _key,
-      "city": city${localizedValue},
-      number,
-      "hours": hours${localizedValue},
-      timeZone
-    },
-    "departmentsHeading": departmentsHeading${localizedValue},
-    departmentLines[]{
-      _key,
-      "label": label${localizedValue},
-      "note": note${localizedValue},
-      email,
-      phone
-    },
-    showroom{
-      "title": title${localizedValue},
-      "body": body${localizedValue},
-      "buttonLabel": buttonLabel${localizedValue},
-      link
-    },
     "faqHeading": faqHeading${localizedValue},
     faq[]{
       _key,

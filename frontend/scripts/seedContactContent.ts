@@ -6,13 +6,17 @@
  *   cd frontend
  *   npx sanity exec scripts/seedContactContent.ts --with-user-token            # write
  *   npx sanity exec scripts/seedContactContent.ts --with-user-token -- --dry-run
+ *   npx sanity exec scripts/seedContactContent.ts --with-user-token -- --remove-legacy
  *
  * What it does:
  * - Forms › Contact Us: adds the Wording (labels, headings, product prefill).
  * - Forms › Quote Request: creates the document if missing (recipients copied from
  *   Contact Us) and adds its Wording and option lists. Booth options link to
  *   products whose English title matches.
- * - Contact Page: adds the process steps, direct channels, showroom and FAQ.
+ * - Contact Page: adds the process steps and FAQ.
+ * - With --remove-legacy: deletes values left in fields the schema no longer has
+ *   (the Contact page's old address, form and direct-channel fields, and the
+ *   forms' HubSpot and description fields), in published documents and drafts.
  */
 import {getCliClient} from 'sanity/cli'
 
@@ -30,6 +34,25 @@ import {
 
 const client = getCliClient({apiVersion: '2025-09-25'})
 const dryRun = process.argv.includes('--dry-run')
+const removeLegacy = process.argv.includes('--remove-legacy')
+
+/** Fields removed from the schema; their values otherwise show as "Unknown field" in the Studio. */
+const LEGACY_FIELDS = {
+  contact: [
+    'form',
+    'addressTitle',
+    'googleMapsUrl',
+    'mapImage',
+    'channelsHeading',
+    'whatsapp',
+    'phonesHeading',
+    'phoneLines',
+    'departmentsHeading',
+    'departmentLines',
+    'showroom',
+  ],
+  formConfig: ['description', 'hubspotFormId', 'notificationsSubscriptionTypeId'],
+}
 
 const CONTACT_PAGE_ID = 'contactPage'
 const QUOTE_FORM_ID = 'formConfig-quote-request'
@@ -103,8 +126,7 @@ async function boothOptions() {
   })
 }
 
-// Placeholders for the client to replace. Numbers come from the unconfirmed
-// contact points in app/lib/seo/structuredData.ts.
+// Placeholders for the client to replace.
 const CONTACT_PAGE_CONTENT = {
   processHeading: str('What happens next', 'ماذا يحدث بعد ذلك'),
   processSteps: [
@@ -137,69 +159,6 @@ const CONTACT_PAGE_CONTENT = {
       ),
     },
   ].map((step) => ({_type: 'processStep', _key: key(), ...step})),
-
-  channelsHeading: str('Talk to us directly', 'تواصل معنا مباشرة'),
-  whatsapp: {
-    title: str('Fastest: WhatsApp a producer', 'الأسرع: راسل أحد منتجينا عبر واتساب'),
-    body: txt(
-      'Send your date and city and we’ll reply during office hours, usually within the hour.',
-      'أرسل التاريخ والمدينة وسنرد عليك خلال ساعات العمل، عادةً خلال ساعة.',
-    ),
-    number: '+971 50 000 0000',
-    message: str(
-      'Hi Boothclub, I’d like a quote for an event.',
-      'مرحباً بوث كلوب، أود الحصول على عرض سعر لفعالية.',
-    ),
-    buttonLabel: str('Chat on WhatsApp', 'تحدث معنا عبر واتساب'),
-  },
-  phonesHeading: str('Call an office', 'اتصل بأحد مكاتبنا'),
-  phoneLines: [
-    {
-      city: str('Dubai', 'دبي'),
-      number: '+971 4 572 7540',
-      hours: str('Mon–Fri, 9:00–18:00', 'الاثنين–الجمعة، 9:00–18:00'),
-      timeZone: 'Asia/Dubai',
-    },
-    {
-      city: str('Riyadh', 'الرياض'),
-      number: '+966 50 226 3793',
-      hours: str('Sun–Thu, 9:00–18:00', 'الأحد–الخميس، 9:00–18:00'),
-      timeZone: 'Asia/Riyadh',
-    },
-    {
-      city: str('London', 'لندن'),
-      number: '+44 20 8895 6383',
-      hours: str('Mon–Fri, 9:00–17:30', 'الاثنين–الجمعة، 9:00–17:30'),
-      timeZone: 'Europe/London',
-    },
-  ].map((line) => ({_type: 'phoneLine', _key: key(), ...line})),
-  departmentsHeading: str('Other enquiries', 'استفسارات أخرى'),
-  departmentLines: [
-    {
-      label: str('Press', 'الصحافة'),
-      note: str('Interviews, images and press kits', 'المقابلات والصور والملفات الصحفية'),
-      email: 'press@boothclub.com',
-    },
-    {
-      label: str('Partnerships & profit-sharing', 'الشراكات وتقاسم الأرباح'),
-      note: str('Venues, agencies and resellers', 'الأماكن والوكالات والموزعون'),
-      email: 'partners@boothclub.com',
-    },
-    {
-      label: str('Careers', 'الوظائف'),
-      note: str('Producers, attendants and designers', 'منتجون ومشرفون ومصممون'),
-      email: 'careers@boothclub.com',
-    },
-  ].map((line) => ({_type: 'departmentLine', _key: key(), ...line})),
-  showroom: {
-    title: str('Visit the Dubai showroom', 'زر صالة العرض في دبي'),
-    body: txt(
-      'Try the booths before you book. Visits to our Dubai warehouse are by appointment.',
-      'جرّب البوثات قبل الحجز. زيارة مستودعنا في دبي بموعد مسبق.',
-    ),
-    buttonLabel: str('Book a showroom visit', 'احجز زيارة لصالة العرض'),
-    link: 'mailto:hello@boothclub.com?subject=Showroom%20visit',
-  },
 
   faqHeading: str('Questions', 'الأسئلة الشائعة'),
   faq: [
@@ -294,6 +253,17 @@ async function run() {
   tx.createIfNotExists({_id: CONTACT_PAGE_ID, _type: 'contact'})
   tx.patch(CONTACT_PAGE_ID, (p) => p.setIfMissing(CONTACT_PAGE_CONTENT))
   log.push('Contact Page: sections added where empty')
+
+  if (removeLegacy) {
+    // Drafts included, or an open draft would bring the old values back on publish.
+    const docs = await client.fetch<{_id: string; _type: 'contact' | 'formConfig'}[]>(
+      `*[_type in ["contact", "formConfig"]]{_id, _type}`,
+    )
+    for (const doc of docs) {
+      tx.patch(doc._id, (p) => p.unset(LEGACY_FIELDS[doc._type]))
+    }
+    log.push(`Removed legacy fields from ${docs.length} documents (drafts included)`)
+  }
 
   if (dryRun) {
     console.log('Dry run, nothing written. Planned mutations:')

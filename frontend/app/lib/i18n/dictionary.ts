@@ -50,12 +50,7 @@ const en = {
   'form.recaptcha.after': ' apply.',
 
   'contact.processHeading': 'What happens next',
-  'contact.channelsHeading': 'Talk to us directly',
-  'contact.phonesHeading': 'Call an office',
-  'contact.departmentsHeading': 'Other enquiries',
   'contact.faqHeading': 'Questions',
-  'contact.whatsappButton': 'Chat on WhatsApp',
-  'contact.opensInNewTab': '(opens in a new tab)',
 } as const
 
 export type DictionaryKey = keyof typeof en
@@ -107,12 +102,7 @@ const ar: Dictionary = {
   'form.recaptcha.after': ' الخاصة بـ Google.',
 
   'contact.processHeading': 'ماذا يحدث بعد ذلك',
-  'contact.channelsHeading': 'تواصل معنا مباشرة',
-  'contact.phonesHeading': 'اتصل بأحد مكاتبنا',
-  'contact.departmentsHeading': 'استفسارات أخرى',
   'contact.faqHeading': 'الأسئلة الشائعة',
-  'contact.whatsappButton': 'تحدث معنا عبر واتساب',
-  'contact.opensInNewTab': '(يفتح في علامة تبويب جديدة)',
 }
 
 const dictionaries: Record<Locale, Dictionary> = {en, ar}

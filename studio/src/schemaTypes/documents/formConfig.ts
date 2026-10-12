@@ -44,12 +44,6 @@ export default defineType({
       hidden: ({document}) => document?.key !== 'quote-request',
     }),
     defineField({
-      name: 'description',
-      type: 'internationalizedArrayText',
-      description: 'Legacy intro field. Not shown on the site; use the Wording tab instead.',
-      hidden: ({value}) => value === undefined,
-    }),
-    defineField({
       name: 'recipients',
       title: 'Notification Recipients',
       type: 'array',
@@ -69,19 +63,6 @@ export default defineType({
           .unique()
           .error(`Add between 1 and ${MAX_RECIPIENTS} unique recipient emails.`),
       group: 'delivery',
-    }),
-    defineField({
-      name: 'hubspotFormId',
-      title: 'HubSpot Form ID (Deprecated)',
-      type: 'string',
-      description: 'Legacy HubSpot form GUID. Retained for existing production documents only.',
-      deprecated: {
-        reason:
-          'Form delivery now uses Resend. Configure notification recipients on this document instead.',
-      },
-      readOnly: true,
-      hidden: ({value}) => value === undefined,
-      initialValue: undefined,
     }),
     defineField({
       name: 'successMessage',
@@ -115,21 +96,6 @@ export default defineType({
       description:
         'Helper note rendered below the consent checkboxes (e.g. "We only use personal data to contact you further and to send you information about our services.").',
       group: 'messages',
-    }),
-    defineField({
-      name: 'notificationsSubscriptionTypeId',
-      type: 'number',
-      title: 'HubSpot Subscription Type ID (Deprecated)',
-      description:
-        'Legacy HubSpot subscription type ID. Retained for existing production documents only.',
-      deprecated: {
-        reason:
-          'Marketing opt-in is now synced to a Resend Segment via RESEND_SEGMENT_ID. This HubSpot field is no longer used.',
-      },
-      readOnly: true,
-      hidden: ({value}) => value === undefined,
-      initialValue: undefined,
-      validation: (r) => r.integer().positive(),
     }),
     defineField({
       name: 'privacyPage',

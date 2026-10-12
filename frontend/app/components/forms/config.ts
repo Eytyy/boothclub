@@ -20,7 +20,7 @@ export const CONTACT_FIELDS: FieldDef[] = [
  * Which form closes the home page: the multi-step quote flow or the short contact form.
  * The client is still deciding; flip this to swap them.
  */
-export const HOME_CTA_VARIANT: 'quote' | 'contact' = 'quote'
+export const HOME_CTA_VARIANT: 'quote' | 'contact' = 'contact'
 
 /** Shared behaviour settings from a form's CMS document. */
 export type FormSettings = {

@@ -1,6 +1,5 @@
 import type {Metadata} from 'next'
 
-import DirectChannels from '@/app/components/contact/DirectChannels'
 import FaqSection from '@/app/components/contact/FaqSection'
 import ProcessSteps from '@/app/components/contact/ProcessSteps'
 import QuoteFlowSection from '@/app/components/forms/QuoteFlowSection'
@@ -36,7 +35,7 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
 
 /**
  * The full quote page: the multi-step quote form, what happens after sending it,
- * direct channels and an FAQ. The short contact form that closes other pages is
+ * and an FAQ. The short contact form that closes other pages is
  * not repeated here, and office addresses stay in the footer.
  */
 export default async function ContactPage({params}: Props) {
@@ -51,13 +50,6 @@ export default async function ContactPage({params}: Props) {
 
   const processSteps = page?.processSteps ?? []
   const faq = page?.faq ?? []
-  const hasChannels = Boolean(
-    page?.whatsapp?.number ||
-    page?.showroom?.title ||
-    page?.phoneLines?.length ||
-    page?.departmentLines?.length,
-  )
-
   return (
     <div className="mt-10 lg:-mt-20 mb-20 space-y-8">
       <header>
@@ -87,29 +79,6 @@ export default async function ContactPage({params}: Props) {
               <ProcessSteps steps={processSteps} />
             </GridColumn>
           </GridContainer>
-        ) : null}
-
-        {hasChannels ? (
-          <section aria-labelledby="contact-channels">
-            <GridContainer columns="none" className="border-b-site border-black dark:border-white">
-              <GridColumn span="full">
-                <SectionHeading className="pb-5 lg:pb-10">
-                  <span id="contact-channels">
-                    {page?.channelsHeading || t['contact.channelsHeading']}
-                  </span>
-                </SectionHeading>
-              </GridColumn>
-            </GridContainer>
-            <DirectChannels
-              lang={lang}
-              whatsapp={page?.whatsapp ?? null}
-              phonesHeading={page?.phonesHeading ?? null}
-              phoneLines={page?.phoneLines ?? null}
-              departmentsHeading={page?.departmentsHeading ?? null}
-              departmentLines={page?.departmentLines ?? null}
-              showroom={page?.showroom ?? null}
-            />
-          </section>
         ) : null}
 
         {faq.length > 0 ? (
