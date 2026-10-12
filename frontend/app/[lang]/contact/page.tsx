@@ -51,52 +51,54 @@ export default async function ContactPage({params}: Props) {
   const processSteps = page?.processSteps ?? []
   const faq = page?.faq ?? []
   return (
-    <div className="mt-10 lg:-mt-20 mb-20 space-y-8">
-      <header>
-        <h1 className="sr-only">{page?.title}</h1>
-        {page?.headline ? <PageTitle as="p">{page.headline}</PageTitle> : null}
-      </header>
+    <div className="container">
+      <GridContainer columns="none">
+        <GridColumn span="full">
+          <header>
+            <h1 className="sr-only">{page?.title}</h1>
+            {page?.headline ? <PageTitle as="p">{page.headline}</PageTitle> : null}
+          </header>
+        </GridColumn>
+      </GridContainer>
 
-      <div className="container">
-        <GridContainer columns="none" className="border-y-site border-black dark:border-white">
+      <GridContainer columns="none" className="border-y-site border-black dark:border-white">
+        <GridColumn span="full">
+          <QuoteFlowSection
+            form={form}
+            lang={lang}
+            context={{title: page?.title ?? undefined, url: localizedPath(lang, '/contact')}}
+          />
+        </GridColumn>
+      </GridContainer>
+
+      {processSteps.length > 0 ? (
+        <GridContainer columns="none" className="border-b-site border-black dark:border-white">
+          <GridColumn span="full" className="border-b-site border-black dark:border-white">
+            <SectionHeading className="pb-5 lg:pb-10">
+              {page?.processHeading || t['contact.processHeading']}
+            </SectionHeading>
+          </GridColumn>
           <GridColumn span="full">
-            <QuoteFlowSection
-              form={form}
-              lang={lang}
-              context={{title: page?.title ?? undefined, url: localizedPath(lang, '/contact')}}
-            />
+            <ProcessSteps steps={processSteps} />
           </GridColumn>
         </GridContainer>
+      ) : null}
 
-        {processSteps.length > 0 ? (
-          <GridContainer columns="none" className="border-b-site border-black dark:border-white">
-            <GridColumn span="full" className="border-b-site border-black dark:border-white">
-              <SectionHeading className="pb-5 lg:pb-10">
-                {page?.processHeading || t['contact.processHeading']}
-              </SectionHeading>
-            </GridColumn>
-            <GridColumn span="full">
-              <ProcessSteps steps={processSteps} />
-            </GridColumn>
-          </GridContainer>
-        ) : null}
-
-        {faq.length > 0 ? (
-          <GridContainer columns={[4, 8]} className="border-b-site border-black dark:border-white">
-            <GridColumn
-              span={4}
-              className="max-lg:border-b-site border-black dark:border-white lg:sticky lg:top-(--header-height) self-start"
-            >
-              <SectionHeading className="pb-5 lg:pb-10">
-                {page?.faqHeading || t['contact.faqHeading']}
-              </SectionHeading>
-            </GridColumn>
-            <GridColumn span={8}>
-              <FaqSection items={faq} />
-            </GridColumn>
-          </GridContainer>
-        ) : null}
-      </div>
+      {faq.length > 0 ? (
+        <GridContainer columns={[4, 8]} className="border-b-site border-black dark:border-white">
+          <GridColumn
+            span={4}
+            className="max-lg:border-b-site border-black dark:border-white lg:sticky lg:top-(--header-height) self-start"
+          >
+            <SectionHeading className="pb-5 lg:pb-10">
+              {page?.faqHeading || t['contact.faqHeading']}
+            </SectionHeading>
+          </GridColumn>
+          <GridColumn span={8}>
+            <FaqSection items={faq} />
+          </GridColumn>
+        </GridContainer>
+      ) : null}
     </div>
   )
 }

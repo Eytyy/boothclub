@@ -82,23 +82,26 @@ export default async function AboutPage({params}: Props) {
         </GridContainer>
 
         {members.length > 0 ? (
-          <GridContainer columns="none" className="border-t-site border-black dark:border-white">
-            <section className="col-span-full">
-              {team?.headline ? (
+          <section>
+            {team?.headline ? (
+              <GridContainer
+                className="border-t-site border-black dark:border-white"
+                columns={'none'}
+              >
                 <Marquee
                   as="h2"
                   accessibleText={team.headline}
                   speed={80}
-                  className="h-auto border-b-site border-black py-4 lg:py-6 dark:border-white"
+                  className="h-auto border-b-site border-black py-4 lg:py-6 dark:border-white col-span-full"
                 >
                   <span className="text-3xl font-bold tracking-tight normal-case md:text-5xl">
                     {team.headline}
                   </span>
                 </Marquee>
-              ) : null}
-              <TeamMembers members={members} />
-            </section>
-          </GridContainer>
+              </GridContainer>
+            ) : null}
+            <TeamMembers members={members} />
+          </section>
         ) : null}
       </div>
       {/* Its empty state would read as a broken page between the sections around it. */}
@@ -107,6 +110,7 @@ export default async function AboutPage({params}: Props) {
         {/* Same quote form as the other inner pages, with the latest posts beside it. */}
         <QuoteCtaSection
           className="border-t-site border-black dark:border-white"
+          formColumnClassName="top-(--header-height)"
           form={formConfig}
           lang={lang}
           context={{title: page?.title ?? undefined, url: localizedPath(lang, '/about')}}
