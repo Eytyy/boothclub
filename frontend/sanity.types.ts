@@ -270,6 +270,92 @@ export type Link = {
   phone?: string
 }
 
+export type BoothOption = {
+  _type: 'boothOption'
+  product?: ProductReference
+  label?: InternationalizedArrayString
+  note?: InternationalizedArrayString
+}
+
+export type FormOption = {
+  _type: 'formOption'
+  label: InternationalizedArrayString
+  note?: InternationalizedArrayString
+}
+
+export type QuoteFormCopy = {
+  _type: 'quoteFormCopy'
+  eyebrow?: InternationalizedArrayString
+  heading?: InternationalizedArrayText
+  description?: InternationalizedArrayText
+  basicsStep?: InternationalizedArrayString
+  eventTypeQuestion?: InternationalizedArrayString
+  eventTypes?: Array<
+    {
+      _key: string
+    } & FormOption
+  >
+  cityQuestion?: InternationalizedArrayString
+  cities?: Array<
+    {
+      _key: string
+    } & FormOption
+  >
+  dateLabel?: InternationalizedArrayString
+  guestsLabel?: InternationalizedArrayString
+  guestsPlaceholder?: InternationalizedArrayString
+  boothsStep?: InternationalizedArrayString
+  boothsQuestion?: InternationalizedArrayString
+  boothsHint?: InternationalizedArrayString
+  booths?: Array<
+    {
+      _key: string
+    } & BoothOption
+  >
+  extrasStep?: InternationalizedArrayString
+  extrasQuestion?: InternationalizedArrayString
+  extrasHint?: InternationalizedArrayString
+  extras?: Array<
+    {
+      _key: string
+    } & FormOption
+  >
+  notesLabel?: InternationalizedArrayString
+  notesPlaceholder?: InternationalizedArrayString
+  detailsStep?: InternationalizedArrayString
+  detailsQuestion?: InternationalizedArrayString
+  detailsHint?: InternationalizedArrayString
+  fullName?: InternationalizedArrayString
+  company?: InternationalizedArrayString
+  email?: InternationalizedArrayString
+  phone?: InternationalizedArrayString
+  phonePlaceholder?: InternationalizedArrayString
+  contactMethodLabel?: InternationalizedArrayString
+  contactMethods?: Array<
+    {
+      _key: string
+    } & FormOption
+  >
+  stepCounter?: InternationalizedArrayString
+  selectedCount?: InternationalizedArrayString
+  noneSelected?: InternationalizedArrayString
+  back?: InternationalizedArrayString
+  next?: InternationalizedArrayString
+  submit?: InternationalizedArrayString
+}
+
+export type ContactFormCopy = {
+  _type: 'contactFormCopy'
+  eyebrow?: InternationalizedArrayString
+  heading?: InternationalizedArrayText
+  fullName?: InternationalizedArrayString
+  email?: InternationalizedArrayString
+  phone?: InternationalizedArrayString
+  message?: InternationalizedArrayString
+  productPrefill?: InternationalizedArrayString
+  submit?: InternationalizedArrayString
+}
+
 export type Cta = {
   _type: 'cta'
   headline: InternationalizedArrayString
@@ -331,6 +417,36 @@ export type Button = {
   link?: Link
 }
 
+export type FormConfig = {
+  _id: string
+  _type: 'formConfig'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  key: 'contact-us' | 'quote-request'
+  contactCopy?: ContactFormCopy
+  quoteCopy?: QuoteFormCopy
+  recipients: Array<string>
+  successMessage?: InternationalizedArrayText
+  errorText?: InternationalizedArrayText
+  consentText?: InternationalizedArrayText
+  notificationsLabel?: InternationalizedArrayString
+  personalDataNote?: InternationalizedArrayText
+  privacyPage?: PrivacyPolicyReference
+}
+
+export type InternationalizedArrayText = Array<
+  {
+    _key: string
+  } & InternationalizedArrayTextValue
+>
+
+export type InternationalizedArrayString = Array<
+  {
+    _key: string
+  } & InternationalizedArrayStringValue
+>
+
 export type Testimonial = {
   _id: string
   _type: 'testimonial'
@@ -341,18 +457,6 @@ export type Testimonial = {
   name: InternationalizedArrayString
   company?: InternationalizedArrayString
 }
-
-export type InternationalizedArrayString = Array<
-  {
-    _key: string
-  } & InternationalizedArrayStringValue
->
-
-export type InternationalizedArrayText = Array<
-  {
-    _key: string
-  } & InternationalizedArrayTextValue
->
 
 export type TeamMember = {
   _id: string
@@ -460,54 +564,6 @@ export type InternationalizedArrayBlockContent = Array<
   } & InternationalizedArrayBlockContentValue
 >
 
-export type FormConfigReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'formConfig'
-}
-
-export type Contact = {
-  _id: string
-  _type: 'contact'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: InternationalizedArrayString
-  headline?: InternationalizedArrayText
-  form: FormConfigReference
-  addressTitle?: InternationalizedArrayText
-  googleMapsUrl?: string
-  mapImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: InternationalizedArrayString
-    _type: 'image'
-  }
-  seo?: Seo
-}
-
-export type FormConfig = {
-  _id: string
-  _type: 'formConfig'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  key: 'contact-us'
-  description?: InternationalizedArrayText
-  recipients: Array<string>
-  hubspotFormId?: string
-  successMessage?: InternationalizedArrayText
-  errorText?: InternationalizedArrayText
-  consentText?: InternationalizedArrayText
-  notificationsLabel?: InternationalizedArrayString
-  personalDataNote?: InternationalizedArrayText
-  notificationsSubscriptionTypeId?: number
-  privacyPage?: PrivacyPolicyReference
-}
-
 export type PrivacyPolicy = {
   _id: string
   _type: 'privacyPolicy'
@@ -518,6 +574,37 @@ export type PrivacyPolicy = {
   body?: InternationalizedArrayBlockContent
   seo?: Seo
 }
+
+export type Contact = {
+  _id: string
+  _type: 'contact'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: InternationalizedArrayString
+  headline?: InternationalizedArrayText
+  processHeading?: InternationalizedArrayString
+  processSteps?: Array<{
+    title: InternationalizedArrayString
+    body?: InternationalizedArrayText
+    _type: 'processStep'
+    _key: string
+  }>
+  faqHeading?: InternationalizedArrayString
+  faq?: Array<{
+    question: InternationalizedArrayString
+    answer: InternationalizedArrayBlockContentTextOnly
+    _type: 'faqItem'
+    _key: string
+  }>
+  seo?: Seo
+}
+
+export type InternationalizedArrayBlockContentTextOnly = Array<
+  {
+    _key: string
+  } & InternationalizedArrayBlockContentTextOnlyValue
+>
 
 export type About = {
   _id: string
@@ -680,12 +767,6 @@ export type MuxVideo = {
   _type: 'mux.video'
   asset?: MuxVideoAssetReference
 }
-
-export type InternationalizedArrayBlockContentTextOnly = Array<
-  {
-    _key: string
-  } & InternationalizedArrayBlockContentTextOnlyValue
->
 
 export type ProductCategory = {
   _id: string
@@ -1054,13 +1135,18 @@ export type AllSanitySchemaTypes =
   | ProductReference
   | ProjectReference
   | Link
+  | BoothOption
+  | FormOption
+  | QuoteFormCopy
+  | ContactFormCopy
   | Cta
   | BlockContentTextOnly
   | BlockContent
   | Button
-  | Testimonial
-  | InternationalizedArrayString
+  | FormConfig
   | InternationalizedArrayText
+  | InternationalizedArrayString
+  | Testimonial
   | TeamMember
   | SanityImageCrop
   | SanityImageHotspot
@@ -1068,10 +1154,9 @@ export type AllSanitySchemaTypes =
   | Post
   | Slug
   | InternationalizedArrayBlockContent
-  | FormConfigReference
-  | Contact
-  | FormConfig
   | PrivacyPolicy
+  | Contact
+  | InternationalizedArrayBlockContentTextOnly
   | About
   | Projects
   | Blog
@@ -1081,7 +1166,6 @@ export type AllSanitySchemaTypes =
   | Product
   | MuxVideoAssetReference
   | MuxVideo
-  | InternationalizedArrayBlockContentTextOnly
   | ProductCategory
   | MenuReference
   | Settings
@@ -2840,36 +2924,95 @@ export type SettingsQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: contactPageQuery
-// Query: *[_type == "contact"][0]{    _id,    _type,    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,    "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,    "form": form->{        _id,  key,  recipients,  "description": description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "successMessage": successMessage[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "errorText": errorText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "consentText": consentText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "notificationsLabel": notificationsLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "personalDataNote": personalDataNote[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "privacyPageSlug": privacyPage->slug.current    },    "addressTitle": addressTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,    googleMapsUrl,    mapImage {   ...,  "lqip": asset->metadata.lqip,  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value },    seo {        "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  metaImage    }  }
+// Query: *[_type == "contact"][0]{    _id,    _type,    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,    "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,    "processHeading": processHeading[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,    processSteps[]{      _key,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "body": body[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value    },    "faqHeading": faqHeading[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,    faq[]{      _key,      "question": question[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "answer": answer[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value[]{  ...,  markDefs[]{    ...,      _type == "link" => {    "page": page->{ _type, "slug": slug.current },    "post": post->slug.current,    "product": product->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current,      "categorySlug": category->slug.current    },    "productCategory": productCategory->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current    },    "project": project->{      _id,      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "slug": slug.current    }  }  }}    },    seo {        "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  metaImage    }  }
 export type ContactPageQueryResult = {
   _id: string
   _type: 'contact'
   title: string | null
   headline: string | null
-  form: {
-    _id: string
-    key: 'contact-us'
-    recipients: Array<string>
-    description: string | null
-    successMessage: string | null
-    errorText: string | null
-    consentText: string | null
-    notificationsLabel: string | null
-    personalDataNote: string | null
-    privacyPageSlug: null
-  }
-  addressTitle: string | null
-  googleMapsUrl: string | null
-  mapImage: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt: string | null
-    _type: 'image'
-    lqip: string | null
-    credits: null
-  } | null
+  processHeading: string | null
+  processSteps: Array<{
+    _key: string
+    title: string | null
+    body: string | null
+  }> | null
+  faqHeading: string | null
+  faq: Array<{
+    _key: string
+    question: string | null
+    answer: Array<{
+      children?: Array<{
+        marks?: Array<string>
+        text?: string
+        _type: 'span'
+        _key: string
+      }>
+      style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+      listItem?: 'bullet' | 'number'
+      markDefs: Array<{
+        _key: string
+        _type: 'link'
+        linkType?:
+          | 'email'
+          | 'href'
+          | 'page'
+          | 'phone'
+          | 'post'
+          | 'product'
+          | 'productCategory'
+          | 'project'
+        href?: string
+        page:
+          | {
+              _type: 'about'
+              slug: null
+            }
+          | {
+              _type: 'blog'
+              slug: null
+            }
+          | {
+              _type: 'contact'
+              slug: null
+            }
+          | {
+              _type: 'home'
+              slug: null
+            }
+          | {
+              _type: 'privacyPolicy'
+              slug: null
+            }
+          | {
+              _type: 'projects'
+              slug: null
+            }
+          | null
+        post: string | null
+        productCategory: {
+          _id: string
+          title: string | null
+          slug: string
+        } | null
+        product: {
+          _id: string
+          title: string | null
+          slug: string
+          categorySlug: string
+        } | null
+        project: {
+          _id: string
+          title: string | null
+          slug: string
+        } | null
+        email?: string
+        phone?: string
+      }> | null
+      level?: number
+      _type: 'block'
+      _key: string
+    }> | null
+  }> | null
   seo: {
     metaTitle: string | null
     metaDescription: string | null
@@ -3303,18 +3446,86 @@ export type ProjectFiltersQueryResult = Array<{
 
 // Source: sanity/lib/queries.ts
 // Variable: formConfigByKeyQuery
-// Query: *[_type == "formConfig" && key == $key][0]{      _id,  key,  recipients,  "description": description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "successMessage": successMessage[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "errorText": errorText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "consentText": consentText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "notificationsLabel": notificationsLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "personalDataNote": personalDataNote[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "privacyPageSlug": privacyPage->slug.current  }
+// Query: *[_type == "formConfig" && key == $key][0]{      _id,  key,  recipients,  "successMessage": successMessage[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "errorText": errorText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "consentText": consentText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "notificationsLabel": notificationsLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "personalDataNote": personalDataNote[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,  "privacyPageSlug": privacyPage->slug.current,  "contactCopy": contactCopy{      "eyebrow": eyebrow[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "heading": heading[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "fullName": fullName[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "email": email[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "phone": phone[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "message": message[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "productPrefill": productPrefill[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "submit": submit[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value  },  "quoteCopy": quoteCopy{      "eyebrow": eyebrow[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "heading": heading[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "description": description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "basicsStep": basicsStep[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "eventTypeQuestion": eventTypeQuestion[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "cityQuestion": cityQuestion[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "dateLabel": dateLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "guestsLabel": guestsLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "guestsPlaceholder": guestsPlaceholder[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "boothsStep": boothsStep[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "boothsQuestion": boothsQuestion[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "boothsHint": boothsHint[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "extrasStep": extrasStep[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "extrasQuestion": extrasQuestion[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "extrasHint": extrasHint[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "notesLabel": notesLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "notesPlaceholder": notesPlaceholder[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "detailsStep": detailsStep[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "detailsQuestion": detailsQuestion[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "detailsHint": detailsHint[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "fullName": fullName[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "company": company[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "email": email[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "phone": phone[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "phonePlaceholder": phonePlaceholder[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "contactMethodLabel": contactMethodLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "stepCounter": stepCounter[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "selectedCount": selectedCount[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "noneSelected": noneSelected[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "back": back[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "next": next[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "submit": submit[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,      "eventTypes": eventTypes[]{        "value": coalesce(label[language == "en"][0].value, label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value),        "label": label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,        "note": note[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value      },      "cities": cities[]{        "value": coalesce(label[language == "en"][0].value, label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value),        "label": label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,        "note": note[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value      },      "booths": booths[]{        "value": coalesce(label[language == "en"][0].value, product->title[language == "en"][0].value, label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value, product->title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value),        "label": coalesce(label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value, product->title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value),        "note": note[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value      },      "extras": extras[]{        "value": coalesce(label[language == "en"][0].value, label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value),        "label": label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,        "note": note[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value      },      "contactMethods": contactMethods[]{        "value": coalesce(label[language == "en"][0].value, label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value),        "label": label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,        "note": note[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value      }  }  }
 export type FormConfigByKeyQueryResult = {
   _id: string
-  key: 'contact-us'
+  key: 'contact-us' | 'quote-request'
   recipients: Array<string>
-  description: string | null
   successMessage: string | null
   errorText: string | null
   consentText: string | null
   notificationsLabel: string | null
   personalDataNote: string | null
   privacyPageSlug: null
+  contactCopy: {
+    eyebrow: string | null
+    heading: string | null
+    fullName: string | null
+    email: string | null
+    phone: string | null
+    message: string | null
+    productPrefill: string | null
+    submit: string | null
+  } | null
+  quoteCopy: {
+    eyebrow: string | null
+    heading: string | null
+    description: string | null
+    basicsStep: string | null
+    eventTypeQuestion: string | null
+    cityQuestion: string | null
+    dateLabel: string | null
+    guestsLabel: string | null
+    guestsPlaceholder: string | null
+    boothsStep: string | null
+    boothsQuestion: string | null
+    boothsHint: string | null
+    extrasStep: string | null
+    extrasQuestion: string | null
+    extrasHint: string | null
+    notesLabel: string | null
+    notesPlaceholder: string | null
+    detailsStep: string | null
+    detailsQuestion: string | null
+    detailsHint: string | null
+    fullName: string | null
+    company: string | null
+    email: string | null
+    phone: string | null
+    phonePlaceholder: string | null
+    contactMethodLabel: string | null
+    stepCounter: string | null
+    selectedCount: string | null
+    noneSelected: string | null
+    back: string | null
+    next: string | null
+    submit: string | null
+    eventTypes: Array<{
+      value: string | null
+      label: string | null
+      note: string | null
+    }> | null
+    cities: Array<{
+      value: string | null
+      label: string | null
+      note: string | null
+    }> | null
+    booths: Array<{
+      value: string | null
+      label: string | null
+      note: string | null
+    }> | null
+    extras: Array<{
+      value: string | null
+      label: string | null
+      note: string | null
+    }> | null
+    contactMethods: Array<{
+      value: string | null
+      label: string | null
+      note: string | null
+    }> | null
+  } | null
 } | null
 
 // Query TypeMap
@@ -3339,7 +3550,7 @@ declare module '@sanity/client' {
     '\n  *[_type == "product" && defined(slug.current) && defined(category._ref)]\n  {"slug": slug.current, "categorySlug": category->slug.current}\n': ProductSlugsResult
     '\n  *[_type == "productCategory" && defined(slug.current)]\n  {"slug": slug.current}\n': ProductCategorySlugsResult
     '\n  *[_type == "settings"][0]{\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "description": description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    ogImage {\n      ...,\n      "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "metadataBase": metadataBase\n    },\n    getInTouchCTA {\n      "heading": heading[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "buttonLabel": buttonLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      link {\n        ...,\n        \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n      }\n    },\n    locations[] {\n      "name": name[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "content": content[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value[]{\n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n  }\n}\n    },\n    socialLinks[] {\n      platform,\n      "label": label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      link\n    },\n    "siteMenu": siteMenu->{\n      _id,\n      "ctaLabel": ctaLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      items[] {\n        _key,\n        _type,\n        _type == "menuItemGroup" => {\n          "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n          "items": items[] {\n            \n  _key,\n  _type,\n  "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  link {\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n  }\n\n          }\n        },\n        _type == "menuItem" => {\n          \n  _key,\n  _type,\n  "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  link {\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n  }\n\n        }\n      }\n    },\n    footerMenu[] {\n      \n  _key,\n  _type,\n  "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  link {\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n  }\n\n    }\n  }\n': SettingsQueryResult
-    '\n  *[_type == "contact"][0]{\n    _id,\n    _type,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "form": form->{\n      \n  _id,\n  key,\n  recipients,\n  "description": description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "successMessage": successMessage[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "errorText": errorText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "consentText": consentText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "notificationsLabel": notificationsLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "personalDataNote": personalDataNote[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "privacyPageSlug": privacyPage->slug.current\n\n    },\n    "addressTitle": addressTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    googleMapsUrl,\n    mapImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n },\n    seo {\n      \n  "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  metaImage\n\n    }\n  }\n': ContactPageQueryResult
+    '\n  *[_type == "contact"][0]{\n    _id,\n    _type,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "processHeading": processHeading[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    processSteps[]{\n      _key,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "body": body[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n    },\n    "faqHeading": faqHeading[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    faq[]{\n      _key,\n      "question": question[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "answer": answer[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value[]{\n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n  }\n}\n    },\n    seo {\n      \n  "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  metaImage\n\n    }\n  }\n': ContactPageQueryResult
     '\n  *[_type == "careers"][0]{\n    _id,\n    _type,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "intro": intro[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    applyEmail,\n    mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n },\n    benefits[]{\n      "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "description": description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n    },\n    "jobOpenings": jobOpenings[]->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "location": location[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      employmentType,\n      "description": description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value[]{\n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n  }\n}\n    },\n    seo {\n      \n  "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  metaImage\n\n    }\n  }\n': CareersPageQueryResult
     '\n  *[_type == "productCategory" && slug.current == $slug][0]{\n    _id,\n    _type,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "description": description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value[]{\n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n  }\n},\n    "slug": slug.current,\n    mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n },\n    heroVideo {\n      \n  ...asset-> {\n    playbackId,\n    assetId,\n    filename,\n  }\n\n    },\n    seo {\n      \n  "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  metaImage\n\n    },\n    "featuredProjects": featuredProjects[]->{\n      \n  _id,\n  "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "slug": slug.current,\n  mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n },\n  "product": product->{\n    \n  _id,\n  "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "slug": slug.current,\n  "category": category->{\n    _id,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "slug": slug.current\n  }\n\n  }\n\n    },\n    "products": *[_type == "product" && category._ref == ^._id && defined(slug.current)] | order(title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value asc) {\n      \n  _id,\n  "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "excerpt": excerpt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "slug": slug.current,\n  "categorySlug": category->slug.current,\n  mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n }\n\n    }\n  }\n': GetProductCategoryQueryResult
     '\n  *[_type == "product" && slug.current == $product && category._ref in *[_type == "productCategory" && slug.current == $slug]._id][0]{\n    _id,\n    _type,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "excerpt": excerpt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "slug": slug.current,\n    "category": category->{\n      _id,\n      "slug": slug.current,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n    },\n    "description": description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value[]{\n  ...,\n  markDefs[]{\n    ...,\n    \n  _type == "link" => {\n    "page": page->{ _type, "slug": slug.current },\n    "post": post->slug.current,\n    "product": product->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current,\n      "categorySlug": category->slug.current\n    },\n    "productCategory": productCategory->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    },\n    "project": project->{\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n\n  }\n},\n    mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n },\n    heroVideo {\n      \n  ...asset-> {\n    playbackId,\n    assetId,\n    filename,\n  }\n\n    },\n    specs {\n      items[]{\n        _key,\n        "text": text[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n      }\n    },\n    copy {\n      showHeadline,\n      showText,\n      "headline": headline[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "text": text[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n    },\n    seo {\n      \n  "metaTitle": metaTitle[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "metaDescription": metaDescription[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  metaImage\n\n    },\n    "featuredProjects": featuredProjects[]->{\n      \n  _id,\n  "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "slug": slug.current,\n  mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n },\n  "product": product->{\n    \n  _id,\n  "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "slug": slug.current,\n  "category": category->{\n    _id,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "slug": slug.current\n  }\n\n  }\n,\n      gallery[] {\n        _key,\n        \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n\n      }\n    }\n  }\n': GetProductQueryResult
@@ -3347,6 +3558,6 @@ declare module '@sanity/client' {
     '\n  *[_type == "productCategory" && _id != $currentId && defined(slug.current)] | order(title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value asc) {\n    _id,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "excerpt": excerpt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "slug": slug.current,\n    mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n },\n  }\n': OtherProductsCategoryQueryResult
     '\n  *[_type == "project" && _id != $currentId && defined(slug.current) && product._ref == $productId] | order(_createdAt desc) [0...5] {\n    \n  _id,\n  "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "slug": slug.current,\n  mainImage { \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n },\n  "product": product->{\n    \n  _id,\n  "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "slug": slug.current,\n  "category": category->{\n    _id,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "slug": slug.current\n  }\n\n  }\n,\n    gallery[] {\n      _key,\n      \n  ...,\n  "lqip": asset->metadata.lqip,\n  "alt": alt[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "credits": credits[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n\n    }\n  }\n': OtherProjectsQueryResult
     '\n  *[_type == "productCategory" && defined(slug.current)] | order(title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value asc) {\n    _id,\n    "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n    "slug": slug.current,\n    "products": *[_type == "product" && category._ref == ^._id && defined(slug.current)] | order(title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value asc) {\n      _id,\n      "title": title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "slug": slug.current\n    }\n  }\n': ProjectFiltersQueryResult
-    '\n  *[_type == "formConfig" && key == $key][0]{\n    \n  _id,\n  key,\n  recipients,\n  "description": description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "successMessage": successMessage[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "errorText": errorText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "consentText": consentText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "notificationsLabel": notificationsLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "personalDataNote": personalDataNote[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "privacyPageSlug": privacyPage->slug.current\n\n  }\n': FormConfigByKeyQueryResult
+    '\n  *[_type == "formConfig" && key == $key][0]{\n    \n  _id,\n  key,\n  recipients,\n  "successMessage": successMessage[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "errorText": errorText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "consentText": consentText[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "notificationsLabel": notificationsLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "personalDataNote": personalDataNote[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n  "privacyPageSlug": privacyPage->slug.current,\n  "contactCopy": contactCopy{\n      "eyebrow": eyebrow[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "heading": heading[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "fullName": fullName[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "email": email[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "phone": phone[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "message": message[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "productPrefill": productPrefill[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "submit": submit[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n  },\n  "quoteCopy": quoteCopy{\n      "eyebrow": eyebrow[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "heading": heading[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "description": description[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "basicsStep": basicsStep[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "eventTypeQuestion": eventTypeQuestion[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "cityQuestion": cityQuestion[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "dateLabel": dateLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "guestsLabel": guestsLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "guestsPlaceholder": guestsPlaceholder[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "boothsStep": boothsStep[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "boothsQuestion": boothsQuestion[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "boothsHint": boothsHint[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "extrasStep": extrasStep[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "extrasQuestion": extrasQuestion[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "extrasHint": extrasHint[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "notesLabel": notesLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "notesPlaceholder": notesPlaceholder[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "detailsStep": detailsStep[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "detailsQuestion": detailsQuestion[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "detailsHint": detailsHint[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "fullName": fullName[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "company": company[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "email": email[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "phone": phone[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "phonePlaceholder": phonePlaceholder[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "contactMethodLabel": contactMethodLabel[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "stepCounter": stepCounter[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "selectedCount": selectedCount[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "noneSelected": noneSelected[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "back": back[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "next": next[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "submit": submit[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n      "eventTypes": eventTypes[]{\n        "value": coalesce(label[language == "en"][0].value, label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value),\n        "label": label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n        "note": note[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n      },\n      "cities": cities[]{\n        "value": coalesce(label[language == "en"][0].value, label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value),\n        "label": label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n        "note": note[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n      },\n      "booths": booths[]{\n        "value": coalesce(label[language == "en"][0].value, product->title[language == "en"][0].value, label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value, product->title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value),\n        "label": coalesce(label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value, product->title[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value),\n        "note": note[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n      },\n      "extras": extras[]{\n        "value": coalesce(label[language == "en"][0].value, label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value),\n        "label": label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n        "note": note[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n      },\n      "contactMethods": contactMethods[]{\n        "value": coalesce(label[language == "en"][0].value, label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value),\n        "label": label[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value,\n        "note": note[(language == $lang || language == "en") && length(value) > 0] | order((language == $lang) desc)[0].value\n      }\n  }\n\n  }\n': FormConfigByKeyQueryResult
   }
 }

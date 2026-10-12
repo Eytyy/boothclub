@@ -14,7 +14,7 @@ import {
   relatedPostsQuery,
 } from '@/sanity/lib/queries'
 import {resolveMetaTitle, resolveOpenGraphImage, toPortableTextBlocks} from '@/sanity/lib/utils'
-import ContactFormSection from '@/app/components/forms/ContactFormSection'
+import QuoteCtaSection from '@/app/components/forms/QuoteCtaSection'
 import {fetchFormConfigByKey} from '@/sanity/lib/data'
 
 import {PageMainMedia} from '@/app/components/page/PageMainMedia'
@@ -186,23 +186,14 @@ export default async function ProductPage(props: Props) {
           </GridColumn>
         </GridContainer>
       ) : null}
-      <GridContainer
-        columns={[8, 4]}
-        className="max-lg:grid-cols-1 max-lg:[&_.grid-divider]:hidden"
-      >
-        <GridColumn span={8} className="min-w-0 max-lg:contents sticky top-0 self-start">
-          <SectionHeading>Get an Instant Quote</SectionHeading>
-          <ContactFormSection
-            className=" max-lg:order-4 h-full flex-col flex pt-0 lg:pt-0"
-            form={formConfig}
-            context={{title: title || undefined, url: productHref}}
-            title="Tell us the vision, we bring the setup, the tech, the vibe and the results."
-          />
-        </GridColumn>
-        <GridColumn span={4} className="max-lg:contents">
-          <SectionHeading>Other Products</SectionHeading>
-
-          {otherProducts.length > 0 && (
+      <QuoteCtaSection
+        form={formConfig}
+        lang={lang}
+        context={{title: title || undefined, url: productHref}}
+        product={title ?? undefined}
+        asideHeading="Other Products"
+        aside={
+          otherProducts.length > 0 ? (
             <div>
               {otherProducts.map((product) => (
                 <ProductCard
@@ -214,9 +205,9 @@ export default async function ProductPage(props: Props) {
                 />
               ))}
             </div>
-          )}
-        </GridColumn>
-      </GridContainer>
+          ) : null
+        }
+      />
     </div>
   )
 }

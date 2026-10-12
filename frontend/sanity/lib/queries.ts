@@ -441,13 +441,81 @@ const formConfigProjection = /* groq */ `
   _id,
   key,
   recipients,
-  "description": description${localizedValue},
   "successMessage": successMessage${localizedValue},
   "errorText": errorText${localizedValue},
   "consentText": consentText${localizedValue},
   "notificationsLabel": notificationsLabel${localizedValue},
   "personalDataNote": personalDataNote${localizedValue},
-  "privacyPageSlug": privacyPage->slug.current
+  "privacyPageSlug": privacyPage->slug.current,
+  "contactCopy": contactCopy{
+      "eyebrow": eyebrow${localizedValue},
+      "heading": heading${localizedValue},
+      "fullName": fullName${localizedValue},
+      "email": email${localizedValue},
+      "phone": phone${localizedValue},
+      "message": message${localizedValue},
+      "productPrefill": productPrefill${localizedValue},
+      "submit": submit${localizedValue}
+  },
+  "quoteCopy": quoteCopy{
+      "eyebrow": eyebrow${localizedValue},
+      "heading": heading${localizedValue},
+      "description": description${localizedValue},
+      "basicsStep": basicsStep${localizedValue},
+      "eventTypeQuestion": eventTypeQuestion${localizedValue},
+      "cityQuestion": cityQuestion${localizedValue},
+      "dateLabel": dateLabel${localizedValue},
+      "guestsLabel": guestsLabel${localizedValue},
+      "guestsPlaceholder": guestsPlaceholder${localizedValue},
+      "boothsStep": boothsStep${localizedValue},
+      "boothsQuestion": boothsQuestion${localizedValue},
+      "boothsHint": boothsHint${localizedValue},
+      "extrasStep": extrasStep${localizedValue},
+      "extrasQuestion": extrasQuestion${localizedValue},
+      "extrasHint": extrasHint${localizedValue},
+      "notesLabel": notesLabel${localizedValue},
+      "notesPlaceholder": notesPlaceholder${localizedValue},
+      "detailsStep": detailsStep${localizedValue},
+      "detailsQuestion": detailsQuestion${localizedValue},
+      "detailsHint": detailsHint${localizedValue},
+      "fullName": fullName${localizedValue},
+      "company": company${localizedValue},
+      "email": email${localizedValue},
+      "phone": phone${localizedValue},
+      "phonePlaceholder": phonePlaceholder${localizedValue},
+      "contactMethodLabel": contactMethodLabel${localizedValue},
+      "stepCounter": stepCounter${localizedValue},
+      "selectedCount": selectedCount${localizedValue},
+      "noneSelected": noneSelected${localizedValue},
+      "back": back${localizedValue},
+      "next": next${localizedValue},
+      "submit": submit${localizedValue},
+      "eventTypes": eventTypes[]{
+        "value": coalesce(label[language == "en"][0].value, label${localizedValue}),
+        "label": label${localizedValue},
+        "note": note${localizedValue}
+      },
+      "cities": cities[]{
+        "value": coalesce(label[language == "en"][0].value, label${localizedValue}),
+        "label": label${localizedValue},
+        "note": note${localizedValue}
+      },
+      "booths": booths[]{
+        "value": coalesce(label[language == "en"][0].value, product->title[language == "en"][0].value, label${localizedValue}, product->title${localizedValue}),
+        "label": coalesce(label${localizedValue}, product->title${localizedValue}),
+        "note": note${localizedValue}
+      },
+      "extras": extras[]{
+        "value": coalesce(label[language == "en"][0].value, label${localizedValue}),
+        "label": label${localizedValue},
+        "note": note${localizedValue}
+      },
+      "contactMethods": contactMethods[]{
+        "value": coalesce(label[language == "en"][0].value, label${localizedValue}),
+        "label": label${localizedValue},
+        "note": note${localizedValue}
+      }
+  }
 `
 
 export const settingsQuery = defineQuery(`
@@ -505,12 +573,18 @@ export const contactPageQuery = defineQuery(`
     _type,
     "title": title${localizedValue},
     "headline": headline${localizedValue},
-    "form": form->{
-      ${formConfigProjection}
+    "processHeading": processHeading${localizedValue},
+    processSteps[]{
+      _key,
+      "title": title${localizedValue},
+      "body": body${localizedValue}
     },
-    "addressTitle": addressTitle${localizedValue},
-    googleMapsUrl,
-    mapImage { ${imageProjection} },
+    "faqHeading": faqHeading${localizedValue},
+    faq[]{
+      _key,
+      "question": question${localizedValue},
+      "answer": answer${localizedPortableText}
+    },
     seo {
       ${seoFields}
     }

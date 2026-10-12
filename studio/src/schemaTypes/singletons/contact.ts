@@ -1,5 +1,7 @@
-import {defineField, defineType} from 'sanity'
-import {SearchIcon, ComposeSparklesIcon} from '@sanity/icons'
+import {defineArrayMember, defineField, defineType} from 'sanity'
+import {SearchIcon, ComposeSparklesIcon, ArrowRightIcon, HelpCircleIcon} from '@sanity/icons'
+
+import {localizedString} from '../../lib/i18n'
 
 export const contact = defineType({
   name: 'contact',
@@ -12,6 +14,8 @@ export const contact = defineType({
       icon: ComposeSparklesIcon,
       default: true,
     },
+    {name: 'process', title: 'What happens next', icon: ArrowRightIcon},
+    {name: 'faq', title: 'FAQ', icon: HelpCircleIcon},
     {
       name: 'seo',
       title: 'SEO',
@@ -33,39 +37,75 @@ export const contact = defineType({
       group: 'contents',
     }),
     defineField({
-      name: 'form',
-      title: 'Form',
-      type: 'reference',
-      to: [{type: 'formConfig'}],
-      validation: (Rule) => Rule.required(),
-      group: 'contents',
+      name: 'processHeading',
+      title: 'Heading',
+      type: 'internationalizedArrayString',
+      group: 'process',
     }),
     defineField({
-      name: 'addressTitle',
-      title: 'Address title',
-      type: 'internationalizedArrayText',
-      group: 'contents',
-    }),
-    defineField({
-      name: 'googleMapsUrl',
-      title: 'Google Maps link',
-      type: 'url',
-      validation: (Rule) => Rule.uri({scheme: ['http', 'https']}),
-      group: 'contents',
-    }),
-    defineField({
-      name: 'mapImage',
-      title: 'Map image',
-      type: 'image',
-      options: {hotspot: true},
-      fields: [
-        defineField({
-          name: 'alt',
-          title: 'Alternative text',
-          type: 'internationalizedArrayString',
+      name: 'processSteps',
+      title: 'Steps',
+      type: 'array',
+      group: 'process',
+      validation: (Rule) => Rule.max(4),
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'processStep',
+          fields: [
+            defineField({
+              name: 'title',
+              title: 'Title',
+              type: 'internationalizedArrayString',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({name: 'body', title: 'Body', type: 'internationalizedArrayText'}),
+          ],
+          preview: {
+            select: {title: 'title', body: 'body'},
+            prepare: ({title, body}) => ({
+              title: localizedString(title) || 'Untitled step',
+              subtitle: localizedString(body),
+            }),
+          },
         }),
       ],
-      group: 'contents',
+    }),
+    defineField({
+      name: 'faqHeading',
+      title: 'Heading',
+      type: 'internationalizedArrayString',
+      group: 'faq',
+    }),
+    defineField({
+      name: 'faq',
+      title: 'Questions',
+      type: 'array',
+      group: 'faq',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'faqItem',
+          fields: [
+            defineField({
+              name: 'question',
+              title: 'Question',
+              type: 'internationalizedArrayString',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'answer',
+              title: 'Answer',
+              type: 'internationalizedArrayBlockContentTextOnly',
+              validation: (Rule) => Rule.required(),
+            }),
+          ],
+          preview: {
+            select: {question: 'question'},
+            prepare: ({question}) => ({title: localizedString(question) || 'Untitled question'}),
+          },
+        }),
+      ],
     }),
     defineField({
       name: 'seo',

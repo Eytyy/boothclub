@@ -15,7 +15,7 @@ import JsonLd from '@/app/components/seo/JsonLd'
 import {buildHomeStructuredData} from '@/app/lib/seo/structuredData'
 import TextReveal from '@/app/components/ui/TextReveal.client'
 import {Marquee} from '@/app/components/ui/Marquee.client'
-import QuoteFlow from '@/app/components/forms/QuoteFlow.client'
+import HomeCta from '@/app/components/forms/HomeCta'
 import HomeHero from './Hero.client'
 import {HeroIntroProvider, HeroIntroText} from './HeroIntro.client'
 import {GridContainer} from '@/app/components/ui/GridSystem'
@@ -135,7 +135,7 @@ export default async function Page({params}: Props) {
               ))}
             </div>
           )}
-          <QuoteFlow />
+          <HomeCta lang={lang} />
         </div>
       </div>
     </div>

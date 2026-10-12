@@ -23,15 +23,8 @@ const en = {
   'sections.otherWork': 'Other Work',
   'sections.journal': 'Journal',
 
-  'form.label.fullName': 'Full Name',
-  'form.label.email': 'Email',
-  'form.label.company': 'Company',
-  'form.label.phone': 'Phone',
-  'form.label.message': 'Got a specific booth in mind for your event? Let us know!',
-  'form.label.notifications': 'I agree to receive notifications.',
-  'form.label.consent': 'I consent to the processing of my personal data.',
-  'form.label.submit': 'Submit',
   'form.label.submitting': 'Submitting...',
+  'form.quote.progress': 'Quote progress',
 
   'form.error.requiredName': 'Full name is required',
   'form.error.requiredMessage': 'Message is required',
@@ -40,6 +33,11 @@ const en = {
   'form.error.min20': 'Must be at least 20 characters',
   'form.error.max5000': 'Must be less than 5000 characters',
   'form.error.consent': 'Please accept to continue',
+  'form.error.requiredChoice': 'Please choose an option',
+  'form.error.requiredDate': 'Please pick the event date',
+  'form.error.pastDate': 'The event date can’t be in the past',
+  'form.error.guests': 'Please enter a number',
+  'form.error.phone': 'Please enter a valid phone number',
   'form.error.generic': 'Something went wrong. Please try again later.',
   'form.error.invalidInput': 'Invalid input.',
   'form.error.verification': 'Verification failed. Please retry.',
@@ -50,6 +48,9 @@ const en = {
   'form.recaptcha.middle': ' and ',
   'form.recaptcha.terms': 'Terms of Service',
   'form.recaptcha.after': ' apply.',
+
+  'contact.processHeading': 'What happens next',
+  'contact.faqHeading': 'Questions',
 } as const
 
 export type DictionaryKey = keyof typeof en
@@ -74,15 +75,8 @@ const ar: Dictionary = {
   'sections.otherWork': 'أعمال أخرى',
   'sections.journal': 'المدونة',
 
-  'form.label.fullName': 'الاسم الكامل',
-  'form.label.email': 'البريد الإلكتروني',
-  'form.label.company': 'الشركة',
-  'form.label.phone': 'الهاتف',
-  'form.label.message': 'أخبرنا عن مشروعك',
-  'form.label.notifications': 'أوافق على تلقي الإشعارات.',
-  'form.label.consent': 'أوافق على معالجة بياناتي الشخصية.',
-  'form.label.submit': 'إرسال',
   'form.label.submitting': 'جارٍ الإرسال...',
+  'form.quote.progress': 'تقدّم طلب عرض السعر',
 
   'form.error.requiredName': 'الاسم الكامل مطلوب',
   'form.error.requiredMessage': 'الرسالة مطلوبة',
@@ -91,6 +85,11 @@ const ar: Dictionary = {
   'form.error.min20': 'يجب أن يكون 20 حرفاً على الأقل',
   'form.error.max5000': 'يجب أن يكون أقل من 5000 حرف',
   'form.error.consent': 'يرجى الموافقة للمتابعة',
+  'form.error.requiredChoice': 'يرجى اختيار أحد الخيارات',
+  'form.error.requiredDate': 'يرجى اختيار تاريخ الفعالية',
+  'form.error.pastDate': 'لا يمكن أن يكون تاريخ الفعالية في الماضي',
+  'form.error.guests': 'يرجى إدخال رقم',
+  'form.error.phone': 'يرجى إدخال رقم هاتف صالح',
   'form.error.generic': 'حدث خطأ ما. يرجى المحاولة مرة أخرى لاحقاً.',
   'form.error.invalidInput': 'مدخلات غير صالحة.',
   'form.error.verification': 'فشل التحقق. يرجى إعادة المحاولة.',
@@ -101,6 +100,9 @@ const ar: Dictionary = {
   'form.recaptcha.middle': ' و',
   'form.recaptcha.terms': 'شروط الخدمة',
   'form.recaptcha.after': ' الخاصة بـ Google.',
+
+  'contact.processHeading': 'ماذا يحدث بعد ذلك',
+  'contact.faqHeading': 'الأسئلة الشائعة',
 }
 
 const dictionaries: Record<Locale, Dictionary> = {en, ar}

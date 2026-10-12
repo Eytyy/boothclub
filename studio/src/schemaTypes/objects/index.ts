@@ -2,6 +2,8 @@ import button from './button'
 import {blockContent} from './blockContent'
 import {blockContentTextOnly} from './blockContentTextOnly'
 import {cta} from './cta'
+import {contactFormCopy, quoteFormCopy} from './formCopy'
+import {boothOption, formOption} from './formOption'
 import {link} from './link'
 import {menuItem} from './menuItem'
 import {menuItemGroup} from './menuItemGroup'
@@ -14,6 +16,10 @@ export const objects = [
   blockContent,
   blockContentTextOnly,
   cta,
+  contactFormCopy,
+  quoteFormCopy,
+  formOption,
+  boothOption,
   link,
   menuItem,
   menuItemGroup,

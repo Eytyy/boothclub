@@ -17,7 +17,7 @@ import {
   toMetaDescription,
   toPortableTextBlocks,
 } from '@/sanity/lib/utils'
-import ContactFormSection from '@/app/components/forms/ContactFormSection'
+import QuoteCtaSection from '@/app/components/forms/QuoteCtaSection'
 import {fetchFormConfigByKey} from '@/sanity/lib/data'
 import {PageMainMedia} from '@/app/components/page/PageMainMedia'
 import PageHeroText from '@/app/components/page/PageHeroText'
@@ -26,7 +26,6 @@ import {GridContainer, GridBlock, GridColumn} from '@/app/components/ui/GridSyst
 import ProductCard from '@/app/components/product/ProductCard'
 import OtherProducts from '@/app/components/product/OtherProducts.client'
 import TextReveal from '@/app/components/ui/TextReveal.client'
-import SectionHeading from '@/app/components/ui/SectionHeading'
 
 type Props = {
   params: Promise<{lang: Locale; slug: string}>
@@ -146,26 +145,14 @@ export default async function ProductCategoryPage(props: Props) {
             ))}
         </GridColumn>
       </GridContainer>
-      <GridContainer
-        columns={[8, 4]}
-        className="max-lg:grid-cols-1 max-lg:[&_.grid-divider]:hidden border-t-site border-black dark:border-white"
-      >
-        <GridColumn
-          span={8}
-          className="min-w-0 max-lg:contents sticky top-(--header-height) self-start bg-white dark:bg-black"
-        >
-          <SectionHeading>Get an Instant Quote</SectionHeading>
-          <ContactFormSection
-            className="max-lg:order-4 h-full flex-col flex"
-            form={formConfig}
-            context={{title: title || undefined, url: categoryHref}}
-            title="Tell us the vision, we bring the setup, the tech, the vibe and the results."
-          />
-        </GridColumn>
-        <GridColumn span={4} className="max-lg:contents">
-          {otherCategoryItems.length > 0 ? <OtherProducts items={otherCategoryItems} /> : null}
-        </GridColumn>
-      </GridContainer>
+      <QuoteCtaSection
+        className="border-t-site border-black dark:border-white"
+        formColumnClassName="top-(--header-height) bg-white dark:bg-black"
+        form={formConfig}
+        lang={lang}
+        context={{title: title || undefined, url: categoryHref}}
+        aside={otherCategoryItems.length > 0 ? <OtherProducts items={otherCategoryItems} /> : null}
+      />
     </div>
   )
 }

@@ -65,7 +65,7 @@ function resolveHref(
     case 'about':
       return '/projects'
     case 'contact':
-      return '/projects'
+      return '/contact'
     case 'careers':
       return '/projects'
     case 'privacyPolicy':
