@@ -24,7 +24,7 @@ export type ContactSubmissionEmailProps = {
   sourceUrl?: string
 }
 
-function Row({label, children}: {label: string; children: React.ReactNode}) {
+export function Row({label, children}: {label: string; children: React.ReactNode}) {
   return (
     <Section style={row}>
       <Text style={labelStyle}>{label}</Text>
@@ -94,15 +94,14 @@ export function ContactSubmissionEmail({
   )
 }
 
-const body = {
+export const body = {
   backgroundColor: '#f6f6f6',
-  fontFamily:
-    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
   margin: '0',
   padding: '24px 0',
 } as const
 
-const container = {
+export const container = {
   backgroundColor: '#ffffff',
   border: '1px solid #e5e5e5',
   borderRadius: '8px',
@@ -111,7 +110,7 @@ const container = {
   padding: '32px',
 } as const
 
-const heading = {
+export const heading = {
   color: '#111111',
   fontSize: '22px',
   fontWeight: '600',
@@ -119,7 +118,7 @@ const heading = {
   margin: '0 0 24px',
 } as const
 
-const section = {
+export const section = {
   margin: '0 0 16px',
 } as const
 
@@ -127,7 +126,7 @@ const row = {
   margin: '0 0 12px',
 } as const
 
-const labelStyle = {
+export const labelStyle = {
   color: '#666666',
   fontSize: '12px',
   fontWeight: '600',
@@ -136,7 +135,7 @@ const labelStyle = {
   textTransform: 'uppercase' as const,
 } as const
 
-const valueStyle = {
+export const valueStyle = {
   color: '#111111',
   fontSize: '15px',
   lineHeight: '1.5',
@@ -145,19 +144,19 @@ const valueStyle = {
   wordBreak: 'break-word' as const,
 } as const
 
-const messageStyle = {
+export const messageStyle = {
   ...valueStyle,
   borderLeft: '3px solid #e5e5e5',
   paddingLeft: '12px',
 } as const
 
-const hr = {
+export const hr = {
   borderColor: '#e5e5e5',
   borderTop: '1px solid #e5e5e5',
   margin: '20px 0',
 } as const
 
-const link = {
+export const link = {
   color: '#111111',
   textDecoration: 'underline',
 } as const

@@ -5,6 +5,15 @@ import {motion, useInView, useReducedMotion} from 'framer-motion'
 import {cn} from '@/app/lib/utils'
 
 const ENTER_STAGGER = 0.015
+
+/** Arabic (and other joining scripts) must not be split, or the letters lose their connected forms. */
+const JOINING_SCRIPT = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/
+
+/** Letters for Latin text; whole words for joining scripts. `offset` is the unit's index in the word. */
+const revealUnits = (word: string) =>
+  JOINING_SCRIPT.test(word)
+    ? [{unit: word, offset: 0}]
+    : word.split('').map((unit, offset) => ({unit, offset}))
 const ENTER_DURATION = 0.1
 
 type TextRevealProps = {
@@ -116,9 +125,9 @@ export default function TextReveal({
                     return (
                       <Fragment key={`${key}-word-${lineIdx}-${wordIdx}`}>
                         <span className="inline-block whitespace-nowrap">
-                          {word.split('').map((letter, letterIdx) => {
-                            const charIndex = wordOffset + letterIdx
-                            const isLast = charIndex === lastCharIndex
+                          {revealUnits(word).map(({unit, offset}) => {
+                            const charIndex = wordOffset + offset
+                            const isLast = charIndex + unit.length - 1 === lastCharIndex
 
                             return (
                               <motion.span
@@ -139,7 +148,7 @@ export default function TextReveal({
                                 }
                                 onAnimationComplete={play && isLast ? finish : undefined}
                               >
-                                {letter}
+                                {unit}
                               </motion.span>
                             )
                           })}

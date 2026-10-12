@@ -5,7 +5,14 @@ import {Resend} from 'resend'
 import {z} from 'zod'
 
 import {ContactSubmissionEmail} from '@/app/components/forms/ContactSubmissionEmail'
-import {BodySchema, buildSchemas} from '@/app/components/forms/schemas'
+import {QuoteSubmissionEmail} from '@/app/components/forms/QuoteSubmissionEmail'
+import {
+  BodySchema,
+  buildSchemas,
+  type ContactValues,
+  type FormKey,
+  type QuoteValues,
+} from '@/app/components/forms/schemas'
 import {verifyRecaptcha} from './recaptcha-server'
 import {defaultLocale} from '@/app/lib/i18n/config'
 import {getDictionary} from '@/app/lib/i18n/dictionary'
@@ -33,13 +40,15 @@ function splitFullName(fullName: string): {firstname: string; lastname: string} 
 }
 
 function sanitizeSubject(value: string): string {
-  return value
-    .replace(/[\r\n\u0000-\u001f\u007f]+/g, ' ')
-    // Strip zero-width/invisible characters (e.g. stega leftovers) that
-    // trigger "hidden text" spam heuristics in strict filters like Microsoft 365.
-    .replace(/[\u200b-\u200f\u2028-\u202e\u2060-\u2064\ufeff]+/g, '')
-    .trim()
-    .slice(0, 120)
+  return (
+    value
+      .replace(/[\r\n\u0000-\u001f\u007f]+/g, ' ')
+      // Strip zero-width/invisible characters (e.g. stega leftovers) that
+      // trigger "hidden text" spam heuristics in strict filters like Microsoft 365.
+      .replace(/[\u200b-\u200f\u2028-\u202e\u2060-\u2064\ufeff]+/g, '')
+      .trim()
+      .slice(0, 120)
+  )
 }
 
 function resolveSourceUrl(path?: string): string | undefined {
@@ -51,7 +60,11 @@ function resolveSourceUrl(path?: string): string | undefined {
 function normalizeRecipients(recipients: unknown): string[] {
   if (!Array.isArray(recipients)) return []
   const cleaned = recipients
-    .map((value) => stegaClean(String(value ?? '')).trim().toLowerCase())
+    .map((value) =>
+      stegaClean(String(value ?? ''))
+        .trim()
+        .toLowerCase(),
+    )
     .filter((email) => z.email().safeParse(email).success)
   return [...new Set(cleaned)]
 }
@@ -101,6 +114,55 @@ async function syncResendAudience({
   }
 }
 
+/** Quote requests fall back to the contact form's inbox until they get their own. */
+async function resolveRecipients(formKey: FormKey, recipients: unknown): Promise<string[]> {
+  const own = normalizeRecipients(recipients)
+  if (own.length || formKey === 'contact-us') return own
+  const fallback = await fetchFormConfigByKey('contact-us', defaultLocale)
+  return normalizeRecipients(fallback?.recipients)
+}
+
+type EmailSource = {sourceTitle?: string; sourceUrl?: string}
+
+function contactEmail(clean: ContactValues, {sourceTitle, sourceUrl}: EmailSource) {
+  return {
+    subject: sourceTitle
+      ? `Contact form: ${clean.fullName} — ${sourceTitle}`
+      : `Contact form: ${clean.fullName}`,
+    react: ContactSubmissionEmail({
+      fullName: clean.fullName,
+      email: clean.email,
+      company: clean.company || undefined,
+      phone: clean.phone || undefined,
+      message: clean.message,
+      consent: clean.consent === true,
+      notifications: clean.notifications === true,
+      sourceTitle,
+      sourceUrl,
+    }),
+  }
+}
+
+function quoteEmail(
+  clean: QuoteValues,
+  {sourceTitle, sourceUrl, lang}: EmailSource & {lang: string},
+) {
+  return {
+    subject: `Quote request: ${clean.fullName} — ${clean.eventType}, ${clean.city}, ${clean.date}`,
+    react: QuoteSubmissionEmail({
+      ...clean,
+      company: clean.company || undefined,
+      guests: clean.guests || undefined,
+      notes: clean.notes || undefined,
+      consent: clean.consent === true,
+      notifications: clean.notifications === true,
+      language: lang === 'ar' ? 'Arabic' : 'English',
+      sourceTitle,
+      sourceUrl,
+    }),
+  }
+}
+
 export async function submitContactForm(data: ContactFormInputs) {
   const parsed = BodySchema.safeParse(data)
   const lang = parsed.success ? (parsed.data.lang ?? defaultLocale) : defaultLocale
@@ -139,15 +201,18 @@ export async function submitContactForm(data: ContactFormInputs) {
   try {
     const {formKey, data: formData, context} = parsed.data
 
-    const SCHEMAS = buildSchemas(lang)
-    const cleanResult = SCHEMAS[formKey].safeParse(formData)
+    const cfg = await fetchFormConfigByKey(formKey, defaultLocale)
+
+    // Consent is required only when the form shows the checkbox (its CMS label is set).
+    const SCHEMAS = buildSchemas(lang, {requireConsent: Boolean(cfg?.consentText?.trim())})
+    // Option labels and page titles can carry visual-editing markers; strip them first.
+    const cleanResult = SCHEMAS[formKey].safeParse(stegaClean(formData))
     if (!cleanResult.success) {
       return {success: false, error: t['form.error.invalidInput']}
     }
     const clean = cleanResult.data
 
-    const cfg = await fetchFormConfigByKey(formKey, defaultLocale)
-    const recipients = normalizeRecipients(cfg?.recipients)
+    const recipients = await resolveRecipients(formKey, cfg?.recipients)
     if (!recipients.length) {
       console.error(`[resend] missing formConfig.recipients for key "${formKey}"`)
       return {
@@ -159,33 +224,20 @@ export async function submitContactForm(data: ContactFormInputs) {
     // Page context is rendered from Sanity content, which may carry invisible
     // stega-encoding characters when visual editing is active. Clean them so
     // they never leak into the email subject or body.
-    const sourceUrl = resolveSourceUrl(
-      context?.url ? stegaClean(context.url) : undefined,
-    )
+    const sourceUrl = resolveSourceUrl(context?.url ? stegaClean(context.url) : undefined)
     const sourceTitle = stegaClean(context?.title ?? '').trim() || undefined
-    const subject = sanitizeSubject(
-      sourceTitle
-        ? `Contact form: ${clean.fullName} — ${sourceTitle}`
-        : `Contact form: ${clean.fullName}`,
-    )
 
     const resend = new Resend(RESEND_API_KEY)
+    const email =
+      formKey === 'quote-request'
+        ? quoteEmail(clean as QuoteValues, {sourceTitle, sourceUrl, lang})
+        : contactEmail(clean as ContactValues, {sourceTitle, sourceUrl})
     const {error} = await resend.emails.send({
       from: MAIL_FROM,
       to: recipients,
       replyTo: clean.email,
-      subject,
-      react: ContactSubmissionEmail({
-        fullName: clean.fullName,
-        email: clean.email,
-        company: clean.company || undefined,
-        phone: clean.phone || undefined,
-        message: clean.message,
-        consent: clean.consent === true,
-        notifications: clean.notifications === true,
-        sourceTitle,
-        sourceUrl,
-      }),
+      subject: sanitizeSubject(email.subject),
+      react: email.react,
     })
 
     if (error) {

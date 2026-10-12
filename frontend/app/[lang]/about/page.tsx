@@ -1,7 +1,7 @@
 import type {Metadata} from 'next'
 import {stegaClean} from '@sanity/client/stega'
 
-import ContactFormSection from '@/app/components/forms/ContactFormSection'
+import QuoteCtaSection from '@/app/components/forms/QuoteCtaSection'
 import PageBuilder from '@/app/components/page-builder/PageBuilder.client'
 import OtherProducts from '@/app/components/product/OtherProducts.client'
 import {PageMainMedia} from '@/app/components/page/PageMainMedia'
@@ -9,7 +9,6 @@ import {GridBlock, GridColumn, GridContainer} from '@/app/components/ui/GridSyst
 import {Marquee} from '@/app/components/ui/Marquee.client'
 import PageTitle from '@/app/components/ui/PageTitle'
 import PortableText from '@/app/components/ui/PortableText'
-import SectionHeading from '@/app/components/ui/SectionHeading'
 import {localizedPath, type Locale} from '@/app/lib/i18n/config'
 import {localeAlternates} from '@/app/lib/seo/alternates'
 import {fetchFormConfigByKey} from '@/sanity/lib/data'
@@ -106,24 +105,14 @@ export default async function AboutPage({params}: Props) {
       {page?.pageBuilder?.length ? <PageBuilder page={page} /> : null}
       <div className="container">
         {/* Same quote form as the other inner pages, with the latest posts beside it. */}
-        <GridContainer
-          columns={[8, 4]}
-          className="max-lg:grid-cols-1 max-lg:[&_.grid-divider]:hidden border-t-site border-black dark:border-white"
-        >
-          <GridColumn span={8} className="min-w-0 max-lg:contents sticky top-0 self-start">
-            <SectionHeading>Get an Instant Quote</SectionHeading>
-            <ContactFormSection
-              className="max-lg:order-4 h-full flex-col flex"
-              form={formConfig}
-              context={{title: page?.title ?? undefined, url: localizedPath(lang, '/about')}}
-              title="Tell us the vision, we bring the setup, the tech, the vibe and the results."
-            />
-          </GridColumn>
-          <GridColumn span={4} className="max-lg:contents">
-            <SectionHeading>Recent Posts</SectionHeading>
-            {posts.length > 0 ? <OtherProducts items={posts} /> : null}
-          </GridColumn>
-        </GridContainer>
+        <QuoteCtaSection
+          className="border-t-site border-black dark:border-white"
+          form={formConfig}
+          lang={lang}
+          context={{title: page?.title ?? undefined, url: localizedPath(lang, '/about')}}
+          asideHeading="Recent Posts"
+          aside={posts.length > 0 ? <OtherProducts items={posts} /> : null}
+        />
       </div>
     </>
   )

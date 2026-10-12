@@ -27,7 +27,7 @@ import PageHeroText from '@/app/components/page/PageHeroText'
 import ProjectGallery from './ProjectGallery.client'
 import CopyBlock from '@/app/components/product/CopyBlock'
 import MediaItem from '@/app/components/page-builder/blocks/MediaItem.client'
-import ContactFormSection from '@/app/components/forms/ContactFormSection'
+import QuoteCtaSection from '@/app/components/forms/QuoteCtaSection'
 import OtherProducts from '@/app/components/product/OtherProducts.client'
 import RelatedPosts from '@/app/components/blog/RelatedPosts'
 import {mapRelatedPosts} from '@/app/components/blog/mapRelatedPosts'
@@ -240,22 +240,14 @@ export default async function ProjectDetailPage(props: Props) {
             </GridColumn>
           </GridContainer>
         ) : null}
-        <GridContainer
-          columns={[8, 4]}
-          className="max-lg:grid-cols-1 max-lg:[&_.grid-divider]:hidden border-t-site border-black dark:border-white"
-        >
-          <GridColumn span={8} className="min-w-0 max-lg:contents sticky top-0 self-start ">
-            <SectionHeading>Get an Instant Quote</SectionHeading>
-            <ContactFormSection
-              className=" max-lg:order-4 h-full flex-col flex"
-              form={formConfig}
-              context={{title: title || undefined, url: projectHref}}
-              title="Tell us the vision, we bring the setup, the tech, the vibe and the results."
-            />
-          </GridColumn>
-          <GridColumn span={4} className="max-lg:contents">
-            <SectionHeading>Other Projects</SectionHeading>
-            {otherProjects.length > 0 ? (
+        <QuoteCtaSection
+          className="border-t-site border-black dark:border-white"
+          form={formConfig}
+          lang={lang}
+          context={{title: title || undefined, url: projectHref}}
+          asideHeading="Other Projects"
+          aside={
+            otherProjects.length > 0 ? (
               <OtherProducts
                 items={otherProjects.map((p) => ({
                   _id: p._id,
@@ -264,9 +256,9 @@ export default async function ProjectDetailPage(props: Props) {
                   image: p.mainImage,
                 }))}
               />
-            ) : null}
-          </GridColumn>
-        </GridContainer>
+            ) : null
+          }
+        />
       </div>
     </div>
   )
