@@ -84,11 +84,15 @@ const CAROUSEL_BREAKPOINTS = {
   '(min-width: 64rem)': 3,
 }
 
-/** Hides the arrows from the breakpoint where every category already fits. */
-function arrowsHiddenClass(count: number) {
-  if (count <= 2) return 'md:hidden'
-  if (count <= 3) return 'lg:hidden'
-  return ''
+/**
+ * From the breakpoint where every category already fits, hides the arrows and drops the room
+ * labels keep for them. Written out in full so Tailwind finds the classes.
+ */
+function whenAllFit(count: number) {
+  if (count <= 1) return {arrows: '', labelRoom: '[--hero-room-start:0px] [--hero-room-end:0px]'}
+  if (count <= 2) return {arrows: 'md:hidden', labelRoom: 'md:[--hero-room-start:0px]'}
+  if (count <= 3) return {arrows: 'lg:hidden', labelRoom: 'lg:[--hero-room-start:0px]'}
+  return {arrows: '', labelRoom: ''}
 }
 
 /**
@@ -133,6 +137,7 @@ export default function HomeHero({
   usePauseWhenOffscreen(rootRef)
 
   if (!count) return null
+  const allFit = whenAllFit(count)
 
   return (
     <div
@@ -144,6 +149,11 @@ export default function HomeHero({
         '[--hero-label-px:calc(var(--spacing)*5)] lg:[--hero-label-px:calc(var(--spacing)*10)]',
         // How much further in a label's text sits beside an arrow: past the arrow, plus a gap.
         '[--hero-label-inset:calc(var(--hero-arrow)+var(--spacing)*5-var(--hero-label-px))]',
+        // Room every label's text keeps for the arrows, so it wraps the same with or without
+        // one beside it. One column on screen can have an arrow on each side; from `md` the
+        // column beside an arrow is the first or last, so one side is enough.
+        '[--hero-room-start:var(--hero-label-inset)] [--hero-room-end:var(--hero-label-inset)] md:[--hero-room-end:0px]',
+        allFit.labelRoom,
         'grid min-h-0 grid-rows-[auto_minmax(0,1fr)]',
         className,
       )}
@@ -176,10 +186,7 @@ export default function HomeHero({
         // Shares the label row's cell, so the arrows match its height. Only the arrows take
         // the pointer; the labels between them stay clickable.
         <div
-          className={cn(
-            'pointer-events-none relative z-10 col-start-1 row-start-1',
-            arrowsHiddenClass(count),
-          )}
+          className={cn('pointer-events-none relative z-10 col-start-1 row-start-1', allFit.arrows)}
         >
           {/* Each carries the label row's bottom rule across the end it covers. */}
           <AnimatePresence initial={false}>
@@ -225,10 +232,11 @@ export default function HomeHero({
 const ARROW_CLASS = 'pointer-events-auto flex w-(--hero-arrow) px-0 border-b-site'
 
 /**
- * Tracks which arrows to show, and marks the column each one sits over (the first or last on
- * screen) with `data-hero-inset-start` / `-end`, so that column's label moves its text clear.
- * The marks follow the column being scrolled to, so the text moves along with the scroll.
- * They are set on the nodes directly, so scrolling never re-renders the columns.
+ * Tracks which arrows to show, and marks the first column on screen with
+ * `data-hero-inset-start` while the prev arrow covers it, so its label moves its text clear.
+ * (Labels always keep room at the end, so the next arrow needs no mark.) The mark follows the
+ * column being scrolled to, so the text moves along with the scroll. It is set on the nodes
+ * directly, so scrolling never re-renders the columns.
  */
 function useArrowInsets(emblaApi: ReturnType<typeof useEmblaCarousel>[1]) {
   const [canScroll, setCanScroll] = useState({prev: false, next: false})
@@ -248,14 +256,9 @@ function useArrowInsets(emblaApi: ReturnType<typeof useEmblaCarousel>[1]) {
 
       // Snaps align columns to the start, one per column, so the target snap is the first
       // column on screen once the scroll settles.
-      const perView = slides.length
-        ? Math.round(emblaApi.rootNode().clientWidth / slides[0].offsetWidth)
-        : 0
       const first = emblaApi.selectedScrollSnap()
-      const last = first + perView - 1
       slides.forEach((slide, index) => {
         slide.toggleAttribute('data-hero-inset-start', prev && index === first)
-        slide.toggleAttribute('data-hero-inset-end', next && index === last)
       })
     }
 
@@ -361,8 +364,6 @@ function SquareTile({children}: {children: ReactNode}) {
  */
 function CategoryLabel({category}: {category: HeroCategory}) {
   // The wrapper is the size container for `cqi`, as a container can't be a subgrid (the column).
-  // Beside an arrow the text moves in by a margin, so the font size and the label's padding
-  // stay put.
   return (
     <div className="@container min-w-0 border-b-site border-black dark:border-white">
       {/* Keeps the label row's cell (and its rule) when there's nothing to link to. */}
@@ -370,28 +371,21 @@ function CategoryLabel({category}: {category: HeroCategory}) {
         <LocalizedLink
           href={productCategoryPath(category.slug)}
           className={cn(
-            'grid h-full grid-cols-[minmax(0,1fr)] items-center px-(--hero-label-px) py-4 lg:py-5',
+            'flex h-full items-center px-(--hero-label-px) py-4 lg:py-5',
             'text-[clamp(1rem,5cqi,1.5rem)] leading-tight font-semibold text-balance',
             'transition-colors',
             'hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black',
           )}
         >
+          {/* Always as wide as it would be beside an arrow, so moving clear of one is just a
+              shift: the text never rewraps as the arrows come and go. */}
           <span
             className={cn(
-              'col-start-1 row-start-1 block min-w-0 overflow-hidden transition-[margin] duration-300',
-              'in-data-hero-inset-start:ms-(--hero-label-inset) in-data-hero-inset-end:me-(--hero-label-inset)',
+              'block w-[calc(100%-var(--hero-room-start)-var(--hero-room-end))] overflow-hidden',
+              'transition-[margin] duration-300 in-data-hero-inset-start:ms-(--hero-label-inset)',
             )}
           >
             <span className="hero-label-reveal block">{category.title}</span>
-          </span>
-          {/* An invisible copy, laid out as if beside an arrow (on both sides when one column
-              fills the screen), sizes the cell. The row is then as tall as the label needs at
-              its tightest, and never jumps when the arrows come and go while scrolling. */}
-          <span
-            aria-hidden
-            className="invisible col-start-1 row-start-1 ms-(--hero-label-inset) max-md:me-(--hero-label-inset)"
-          >
-            {category.title}
           </span>
         </LocalizedLink>
       )}
