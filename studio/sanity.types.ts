@@ -270,6 +270,92 @@ export type Link = {
   phone?: string
 }
 
+export type BoothOption = {
+  _type: 'boothOption'
+  product?: ProductReference
+  label?: InternationalizedArrayString
+  note?: InternationalizedArrayString
+}
+
+export type FormOption = {
+  _type: 'formOption'
+  label: InternationalizedArrayString
+  note?: InternationalizedArrayString
+}
+
+export type QuoteFormCopy = {
+  _type: 'quoteFormCopy'
+  eyebrow?: InternationalizedArrayString
+  heading?: InternationalizedArrayText
+  description?: InternationalizedArrayText
+  basicsStep?: InternationalizedArrayString
+  eventTypeQuestion?: InternationalizedArrayString
+  eventTypes?: Array<
+    {
+      _key: string
+    } & FormOption
+  >
+  cityQuestion?: InternationalizedArrayString
+  cities?: Array<
+    {
+      _key: string
+    } & FormOption
+  >
+  dateLabel?: InternationalizedArrayString
+  guestsLabel?: InternationalizedArrayString
+  guestsPlaceholder?: InternationalizedArrayString
+  boothsStep?: InternationalizedArrayString
+  boothsQuestion?: InternationalizedArrayString
+  boothsHint?: InternationalizedArrayString
+  booths?: Array<
+    {
+      _key: string
+    } & BoothOption
+  >
+  extrasStep?: InternationalizedArrayString
+  extrasQuestion?: InternationalizedArrayString
+  extrasHint?: InternationalizedArrayString
+  extras?: Array<
+    {
+      _key: string
+    } & FormOption
+  >
+  notesLabel?: InternationalizedArrayString
+  notesPlaceholder?: InternationalizedArrayString
+  detailsStep?: InternationalizedArrayString
+  detailsQuestion?: InternationalizedArrayString
+  detailsHint?: InternationalizedArrayString
+  fullName?: InternationalizedArrayString
+  company?: InternationalizedArrayString
+  email?: InternationalizedArrayString
+  phone?: InternationalizedArrayString
+  phonePlaceholder?: InternationalizedArrayString
+  contactMethodLabel?: InternationalizedArrayString
+  contactMethods?: Array<
+    {
+      _key: string
+    } & FormOption
+  >
+  stepCounter?: InternationalizedArrayString
+  selectedCount?: InternationalizedArrayString
+  noneSelected?: InternationalizedArrayString
+  back?: InternationalizedArrayString
+  next?: InternationalizedArrayString
+  submit?: InternationalizedArrayString
+}
+
+export type ContactFormCopy = {
+  _type: 'contactFormCopy'
+  eyebrow?: InternationalizedArrayString
+  heading?: InternationalizedArrayText
+  fullName?: InternationalizedArrayString
+  email?: InternationalizedArrayString
+  phone?: InternationalizedArrayString
+  message?: InternationalizedArrayString
+  productPrefill?: InternationalizedArrayString
+  submit?: InternationalizedArrayString
+}
+
 export type Cta = {
   _type: 'cta'
   headline: InternationalizedArrayString
@@ -331,6 +417,36 @@ export type Button = {
   link?: Link
 }
 
+export type FormConfig = {
+  _id: string
+  _type: 'formConfig'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  key: 'contact-us' | 'quote-request'
+  contactCopy?: ContactFormCopy
+  quoteCopy?: QuoteFormCopy
+  recipients: Array<string>
+  successMessage?: InternationalizedArrayText
+  errorText?: InternationalizedArrayText
+  consentText?: InternationalizedArrayText
+  notificationsLabel?: InternationalizedArrayString
+  personalDataNote?: InternationalizedArrayText
+  privacyPage?: PrivacyPolicyReference
+}
+
+export type InternationalizedArrayText = Array<
+  {
+    _key: string
+  } & InternationalizedArrayTextValue
+>
+
+export type InternationalizedArrayString = Array<
+  {
+    _key: string
+  } & InternationalizedArrayStringValue
+>
+
 export type Testimonial = {
   _id: string
   _type: 'testimonial'
@@ -341,18 +457,6 @@ export type Testimonial = {
   name: InternationalizedArrayString
   company?: InternationalizedArrayString
 }
-
-export type InternationalizedArrayString = Array<
-  {
-    _key: string
-  } & InternationalizedArrayStringValue
->
-
-export type InternationalizedArrayText = Array<
-  {
-    _key: string
-  } & InternationalizedArrayTextValue
->
 
 export type TeamMember = {
   _id: string
@@ -460,54 +564,6 @@ export type InternationalizedArrayBlockContent = Array<
   } & InternationalizedArrayBlockContentValue
 >
 
-export type FormConfigReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'formConfig'
-}
-
-export type Contact = {
-  _id: string
-  _type: 'contact'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: InternationalizedArrayString
-  headline?: InternationalizedArrayText
-  form: FormConfigReference
-  addressTitle?: InternationalizedArrayText
-  googleMapsUrl?: string
-  mapImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: InternationalizedArrayString
-    _type: 'image'
-  }
-  seo?: Seo
-}
-
-export type FormConfig = {
-  _id: string
-  _type: 'formConfig'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  key: 'contact-us'
-  description?: InternationalizedArrayText
-  recipients: Array<string>
-  hubspotFormId?: string
-  successMessage?: InternationalizedArrayText
-  errorText?: InternationalizedArrayText
-  consentText?: InternationalizedArrayText
-  notificationsLabel?: InternationalizedArrayString
-  personalDataNote?: InternationalizedArrayText
-  notificationsSubscriptionTypeId?: number
-  privacyPage?: PrivacyPolicyReference
-}
-
 export type PrivacyPolicy = {
   _id: string
   _type: 'privacyPolicy'
@@ -518,6 +574,37 @@ export type PrivacyPolicy = {
   body?: InternationalizedArrayBlockContent
   seo?: Seo
 }
+
+export type Contact = {
+  _id: string
+  _type: 'contact'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: InternationalizedArrayString
+  headline?: InternationalizedArrayText
+  processHeading?: InternationalizedArrayString
+  processSteps?: Array<{
+    title: InternationalizedArrayString
+    body?: InternationalizedArrayText
+    _type: 'processStep'
+    _key: string
+  }>
+  faqHeading?: InternationalizedArrayString
+  faq?: Array<{
+    question: InternationalizedArrayString
+    answer: InternationalizedArrayBlockContentTextOnly
+    _type: 'faqItem'
+    _key: string
+  }>
+  seo?: Seo
+}
+
+export type InternationalizedArrayBlockContentTextOnly = Array<
+  {
+    _key: string
+  } & InternationalizedArrayBlockContentTextOnlyValue
+>
 
 export type About = {
   _id: string
@@ -680,12 +767,6 @@ export type MuxVideo = {
   _type: 'mux.video'
   asset?: MuxVideoAssetReference
 }
-
-export type InternationalizedArrayBlockContentTextOnly = Array<
-  {
-    _key: string
-  } & InternationalizedArrayBlockContentTextOnlyValue
->
 
 export type ProductCategory = {
   _id: string
@@ -1054,13 +1135,18 @@ export type AllSanitySchemaTypes =
   | ProductReference
   | ProjectReference
   | Link
+  | BoothOption
+  | FormOption
+  | QuoteFormCopy
+  | ContactFormCopy
   | Cta
   | BlockContentTextOnly
   | BlockContent
   | Button
-  | Testimonial
-  | InternationalizedArrayString
+  | FormConfig
   | InternationalizedArrayText
+  | InternationalizedArrayString
+  | Testimonial
   | TeamMember
   | SanityImageCrop
   | SanityImageHotspot
@@ -1068,10 +1154,9 @@ export type AllSanitySchemaTypes =
   | Post
   | Slug
   | InternationalizedArrayBlockContent
-  | FormConfigReference
-  | Contact
-  | FormConfig
   | PrivacyPolicy
+  | Contact
+  | InternationalizedArrayBlockContentTextOnly
   | About
   | Projects
   | Blog
@@ -1081,7 +1166,6 @@ export type AllSanitySchemaTypes =
   | Product
   | MuxVideoAssetReference
   | MuxVideo
-  | InternationalizedArrayBlockContentTextOnly
   | ProductCategory
   | MenuReference
   | Settings

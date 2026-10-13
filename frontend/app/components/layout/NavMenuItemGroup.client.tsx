@@ -26,7 +26,7 @@ export default function NavMenuItemGroup({group, isOpen, onToggle}: NavMenuItemG
       aria-controls={groupPanelId(group)}
       className={cn(
         'flex w-full items-center gap-3 px-5 py-3 lg:px-10 lg:py-5 lg:justify-center',
-        'text-2xl lg:text-4xl font-bold leading-normal whitespace-nowrap cursor-pointer transition-colors',
+        'text-xl lg:text-2xl 3xl:text-3xl font-bold leading-normal whitespace-nowrap cursor-pointer transition-colors',
         isOpen
           ? 'bg-black text-white dark:bg-white dark:text-black'
           : 'hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black',

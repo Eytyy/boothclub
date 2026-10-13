@@ -138,7 +138,7 @@ const ProjectCard = ({
             {item.product.title}
           </span>
         ) : null}
-        <h3 className="text-3xl font-semibold leading-tight">{item.title}</h3>
+        <h3 className="text-3xl font-bold leading-tight tracking-[0.001em]">{item.title}</h3>
       </div>
     </GridBlock>
   )

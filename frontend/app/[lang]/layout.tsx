@@ -2,7 +2,7 @@ import '../globals.css'
 
 import {SpeedInsights} from '@vercel/speed-insights/next'
 import type {Metadata} from 'next'
-import {Poppins, Tajawal} from 'next/font/google'
+import {Barlow, Barlow_Condensed, Tajawal} from 'next/font/google'
 import {draftMode} from 'next/headers'
 import {notFound} from 'next/navigation'
 import {VisualEditing} from 'next-sanity/visual-editing'
@@ -77,13 +77,21 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
   }
 }
 
-const poppins = Poppins({
-  variable: '--font-poppins',
-  weight: ['400', '500', '600', '700', '800', '900'],
+const barlow_condensed = Barlow_Condensed({
+  variable: '--font-barlow_condensed',
+  weight: ['400', '500', '600', '700'],
   subsets: ['latin'],
   display: 'swap',
   // The metric fallback is a full-range Arial face. It would take Arabic
   // characters before Tajawal if it stayed in the stack.
+  adjustFontFallback: false,
+})
+
+const barlow = Barlow({
+  variable: '--font-barlow',
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin'],
+  display: 'swap',
   adjustFontFallback: false,
 })
 
@@ -107,7 +115,7 @@ export default async function RootLayout({children, params}: Props) {
     <html
       lang={lang}
       dir={lang === 'ar' ? 'rtl' : 'ltr'}
-      className={`${poppins.variable} ${tajawal.variable} bg-white text-black dark:bg-black dark:text-white`}
+      className={`${barlow_condensed.variable} ${barlow.variable} ${tajawal.variable} bg-white text-black dark:bg-black dark:text-white`}
       suppressHydrationWarning
     >
       <head>

@@ -102,7 +102,7 @@ export default function HomeHero({categories}: {categories: HeroCategory[]}) {
     <div
       ref={rootRef}
       data-hero-ready={introReady || undefined}
-      className="[--hero-gap:calc(var(--spacing)*5)] md:flex md:min-h-0 md:flex-1 md:flex-col"
+      className="[--hero-gap:calc(var(--spacing)*10)] md:flex md:min-h-0 md:flex-1 md:flex-col"
     >
       {/* TODO(mobile): this layout still needs a design pass. The stacked rows don't fit the
           first fold like the md+ columns do, so with several categories the later labels end
@@ -171,13 +171,13 @@ function ColumnsCarousel({
               className="flex h-full min-w-0 shrink-0 grow-0 flex-col border-s-site border-black dark:border-white"
               style={{flexBasis: columnWidth}}
             >
+              <CategoryLabel category={category} />
               <ScrollingColumn
                 trackIndex={index}
                 items={category.media ?? []}
                 playVideo={playVideo}
                 {...MOTION[index % MOTION.length]}
               />
-              <CategoryLabel category={category} />
             </div>
           ))}
         </div>
@@ -424,7 +424,7 @@ function CategoryLabel({category}: {category: HeroCategory}) {
   return (
     <LocalizedLink
       href={productCategoryPath(category.slug)}
-      className="block border-t-site border-black dark:border-white px-5 py-4 lg:px-10 lg:py-5 text-lg lg:text-xl font-semibold transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+      className="block border-b-site border-black dark:border-white px-5 py-4 lg:px-10 lg:py-5 text-lg lg:text-2xl font-semibold transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
     >
       <span className="block overflow-hidden">
         <span className="hero-label-reveal block">{category.title}</span>

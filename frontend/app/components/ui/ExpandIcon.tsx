@@ -5,7 +5,7 @@ export default function ExpandIcon({isOpen}: {isOpen: boolean}) {
   return (
     <span
       aria-hidden="true"
-      className="inline-flex items-center justify-center shrink-0 w-8 h-8 lg:w-10 lg:h-10 rounded-full border-2 lg:border-[3px]"
+      className="inline-flex items-center justify-center shrink-0 w-8 h-8 rounded-full border-2 lg:border-[3px]"
     >
       <svg
         viewBox="0 0 24 24"

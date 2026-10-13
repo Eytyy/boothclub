@@ -61,7 +61,7 @@ export default async function ContactPage({params}: Props) {
         </GridColumn>
       </GridContainer>
 
-      <GridContainer columns="none" className="border-y-site border-black dark:border-white">
+      <GridContainer columns="none" className="border-b-site border-black dark:border-white">
         <GridColumn span="full">
           <QuoteFlowSection
             form={form}

@@ -79,13 +79,13 @@ export default async function Page({params}: Props) {
                 <div className="grid shrink-0 gap-5 border-b-site border-black p-5 md:grid-cols-[7fr_5fr] md:gap-10 lg:p-10 dark:border-white">
                   {hero.headline && (
                     <HeroIntroText
-                      className="pointer-events-none text-reveal-default text-[clamp(2rem,3.5vw,4.5rem)]"
+                      className="pointer-events-none text-reveal-default uppercase"
                       text={stegaClean(hero.headline)}
                     />
                   )}
                   {hero.description && (
                     <HeroIntroText
-                      className="3xl:text-xl text-lg leading-relaxed font-normal md:max-w-140"
+                      className="3xl:text-2xl normal-case 2xl:text-xl text-lg leading-tight font-medium md:max-w-140 pt-3"
                       text={stegaClean(hero.description)}
                     />
                   )}
@@ -105,7 +105,7 @@ export default async function Page({params}: Props) {
                   .filter(Boolean)
                   .join(', ')}
               >
-                <div className="flex items-center text-2xl font-semibold tracking-tight md:text-4xl">
+                <div className="flex items-center text-2xl font-medium font-sans-condensed tracking-[0.002em] md:text-4xl">
                   {clients.map((client) => (
                     <div key={client._id} className="px-8">
                       <ClientLogo {...client} />
@@ -149,7 +149,7 @@ const FeaturedProject = ({project}: {project: FeaturedProjectItem}) => {
   return (
     <GridContainer
       columns={[6, 6]}
-      className="grid grid-cols-2 gap-10 border-x-0 mx-0 p-0 lg:p-0 lg:mx-0 border-b-site border-black dark:border-white"
+      className="grid grid-cols-2  border-x-0 mx-0 p-0 lg:p-0 lg:mx-0 border-b-site border-black dark:border-white"
     >
       <div className="p-10">
         <LocalizedLink href={`/projects/${slug}`} className="block">
