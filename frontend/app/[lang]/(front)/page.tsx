@@ -76,7 +76,7 @@ export default async function Page({params}: Props) {
           <HeroIntroProvider hasIntroText={Boolean(hero?.headline || hero?.description)}>
             <div className="md:flex md:h-[calc(100svh-var(--header-height))] md:flex-col">
               {(hero?.headline || hero?.description) && (
-                <div className="grid shrink-0 gap-5 border-b-site border-black p-5 md:grid-cols-[7fr_5fr] md:gap-10 lg:p-10 dark:border-white">
+                <div className="grid shrink-0 gap-5 border-b-site border-black p-5 md:grid-cols-[7fr_5fr] md:gap-10 lg:px-10 dark:border-white">
                   {hero.headline && (
                     <HeroIntroText
                       className="pointer-events-none text-reveal-default uppercase"
