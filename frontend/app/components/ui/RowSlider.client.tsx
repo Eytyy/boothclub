@@ -110,12 +110,15 @@ export default function RowSlider({
   )
 }
 
-function SliderArrow({
+/** Fills its positioned parent's height at one end. Visible from `lg` up unless `className` says otherwise. */
+export function SliderArrow({
   direction,
   onClick,
+  className,
 }: {
   direction: Direction
   onClick: (arrowWidth: number) => void
+  className?: string
 }) {
   const isPrev = direction === 'prev'
 
@@ -135,6 +138,7 @@ function SliderArrow({
         'bg-white text-black dark:bg-black dark:text-white border-black dark:border-white',
         'hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors',
         isPrev ? 'start-0 border-e-site' : 'end-0 border-s-site',
+        className,
       )}
     >
       <span

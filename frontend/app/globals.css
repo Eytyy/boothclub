@@ -158,17 +158,7 @@
   }
 }
 
-@keyframes scroll-x-half {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-
-.hero-column-track,
-.hero-row-track {
+.hero-column-track {
   animation-duration: var(--hero-track-duration, 40s);
   animation-timing-function: linear;
   animation-iteration-count: infinite;
@@ -178,15 +168,6 @@
 
 .hero-column-track {
   animation-name: scroll-y-half;
-}
-
-/* Mobile: columns become rows that scroll sideways. */
-.hero-row-track {
-  animation-name: scroll-x-half;
-}
-
-.hero-row-track--reverse {
-  animation-direction: reverse;
 }
 
 /*
@@ -218,29 +199,6 @@
   }
 }
 
-@keyframes hero-reel-spin-x {
-  from {
-    transform: translate3d(-50%, 0, 0);
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes hero-reel-land-x {
-  0% {
-    transform: translate3d(-50%, 0, 0);
-    animation-timing-function: cubic-bezier(0.2, 0.6, 0.35, 1);
-  }
-  82% {
-    transform: translate3d(12px, 0, 0);
-    animation-timing-function: ease-in-out;
-  }
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-}
-
 @keyframes hero-reel-blur {
   from {
     filter: blur(6px);
@@ -257,10 +215,6 @@
   animation-iteration-count: 1, var(--hero-reel-spins), 1;
   animation-delay: var(--hero-reel-spin-total), 0s, 0s;
   animation-fill-mode: both, none, none;
-}
-
-.hero-reel--x {
-  animation-name: hero-reel-land-x, hero-reel-spin-x, hero-reel-blur;
 }
 
 @keyframes hero-label-in {
@@ -285,28 +239,24 @@
  */
 .hero-reel,
 .hero-column-track,
-.hero-row-track,
 .hero-label-reveal {
   animation-play-state: paused;
 }
 
 [data-hero-ready] .hero-reel,
 [data-hero-ready] .hero-column-track,
-[data-hero-ready] .hero-row-track,
 [data-hero-ready] .hero-label-reveal {
   animation-play-state: running;
 }
 
 /* Kept after the ready rule so it still wins. */
 .hero-column-track:hover,
-[data-hero-offscreen] .hero-column-track,
-[data-hero-offscreen] .hero-row-track {
+[data-hero-offscreen] .hero-column-track {
   animation-play-state: paused;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-column-track,
-  .hero-row-track,
   .hero-reel,
   .hero-label-reveal {
     animation: none;
