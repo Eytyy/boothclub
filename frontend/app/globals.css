@@ -79,7 +79,7 @@
 }
 
 @utility page-title {
-  @apply text-[clamp(2rem,3vw,5rem)] font-bold leading-[1.1] font-sans-condensed uppercase tracking-[0.002em];
+  @apply text-[clamp(2rem,3.5vw,5rem)] font-bold leading-[1.1] font-sans-condensed uppercase tracking-[0.002em];
   @media screen and (min-width: 1920px) {
     @apply text-[clamp(2.5rem,4.5vw,6rem)];
   }
