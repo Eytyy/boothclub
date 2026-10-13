@@ -684,6 +684,7 @@ export type Home = {
       } & ProductCategoryReference
     >
   }
+  clientsHeadline?: InternationalizedArrayString
   clients?: Array<
     {
       _key: string

@@ -3871,6 +3871,14 @@
         },
         "optional": true
       },
+      "clientsHeadline": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "internationalizedArrayString"
+        },
+        "optional": true
+      },
       "clients": {
         "type": "objectAttribute",
         "value": {

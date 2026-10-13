@@ -28,6 +28,7 @@ import Image from '@/app/components/ui/SanityImage.client'
 
 type HomePage = NonNullable<HomePageQueryResult>
 type FeaturedProjectItem = NonNullable<HomePage['featuredProject']>
+type HomeClient = NonNullable<HomePage['clients']>[number]
 
 /** Short date shown before each post title, e.g. "12 Mar". */
 const POST_LABEL_FORMAT = 'd MMM'
@@ -62,7 +63,7 @@ export default async function Page({params}: Props) {
 
   const hero = page?.hero
   const heroCategories = hero?.categories ?? []
-  const clients = (page?.clients ?? []).filter(Boolean)
+  const clients = (page?.clients ?? []).filter((client): client is HomeClient => client != null)
   const featuredProject = page?.featuredProject
   const posts = (page?.featuredPosts ?? []).filter((post) => Boolean(post.title && post.slug))
 
@@ -85,7 +86,7 @@ export default async function Page({params}: Props) {
                   )}
                   {hero.description && (
                     <HeroIntroText
-                      className="3xl:text-2xl normal-case 2xl:text-xl text-lg leading-tight font-medium md:max-w-140 pt-3"
+                      className="body-text normal-case font-medium pt-3"
                       text={stegaClean(hero.description)}
                     />
                   )}
@@ -95,25 +96,40 @@ export default async function Page({params}: Props) {
             </div>
           </HeroIntroProvider>
           {clients.length > 0 && (
-            <div className="border-y-site">
-              <Marquee
-                speed={70}
-                runClassName="mx-0"
-                className="h-auto py-8"
-                accessibleText={clients
-                  .map((client) => client.name)
-                  .filter(Boolean)
-                  .join(', ')}
-              >
-                <div className="flex items-center text-2xl font-medium font-sans-condensed tracking-[0.002em] md:text-4xl">
-                  {clients.map((client) => (
-                    <div key={client._id} className="px-8">
-                      <ClientLogo {...client} />
-                    </div>
-                  ))}
-                </div>
-              </Marquee>
-            </div>
+            <>
+              <div className="border-t-site">
+                <Marquee
+                  speed={50}
+                  runClassName="mx-0"
+                  className="h-auto py-5"
+                  accessibleText={clients
+                    .flatMap((client) => (client.name ? [client.name] : []))
+                    .join(', ')}
+                >
+                  <div className="flex items-center page-title">
+                    {page?.clientsHeadline && <div className="px-8">{page.clientsHeadline}</div>}
+                  </div>
+                </Marquee>
+              </div>
+              <div className="border-y-site">
+                <Marquee
+                  speed={100}
+                  runClassName="mx-0"
+                  className="h-auto py-8"
+                  accessibleText={clients
+                    .flatMap((client) => (client.name ? [client.name] : []))
+                    .join(', ')}
+                >
+                  <div className="flex items-center text-2xl font-medium font-sans-condensed tracking-[0.002em] md:text-4xl">
+                    {clients.map((client) => (
+                      <div key={client._id} className="px-8">
+                        <ClientLogo {...client} />
+                      </div>
+                    ))}
+                  </div>
+                </Marquee>
+              </div>
+            </>
           )}
           {featuredProject && <FeaturedProject project={featuredProject} />}
           {posts.length > 0 && (

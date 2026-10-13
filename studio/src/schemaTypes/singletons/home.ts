@@ -53,6 +53,12 @@ export const home = defineType({
       ],
     }),
     defineField({
+      name: 'clientsHeadline',
+      title: 'Clients Headline',
+      type: 'internationalizedArrayString',
+      group: 'clients',
+    }),
+    defineField({
       name: 'clients',
       title: 'Clients',
       type: 'array',

@@ -221,6 +221,7 @@ export const homePageQuery = defineQuery(`
         }
       }
     },
+    "clientsHeadline": clientsHeadline${localizedValue},
     "clients": (clients[]->)[defined(_id)]{
       _id,
       "name": name${localizedValue},
