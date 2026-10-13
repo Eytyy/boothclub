@@ -3,12 +3,14 @@ import {
   useCallback,
   useEffect,
   useRef,
+  useState,
   type CSSProperties,
   type ReactNode,
   type RefObject,
 } from 'react'
 import MuxPlayer, {type MuxCSSProperties} from '@mux/mux-player-react'
 import {stegaClean} from '@sanity/client/stega'
+import {AnimatePresence} from 'framer-motion'
 import useEmblaCarousel from 'embla-carousel-react'
 
 import Image from '@/app/components/ui/SanityImage.client'
@@ -75,7 +77,7 @@ const VIDEO_QUERY = '(min-width: 48rem)'
 
 /**
  * Columns on screen at once: 1 on phones, 2 from `md`, 3 from `lg` (keep in step with the
- * `--hero-cols` classes below). With more categories than fit, the columns loop as a carousel.
+ * `--hero-cols` classes below). With more categories than fit, the columns become a carousel.
  */
 const CAROUSEL_BREAKPOINTS = {
   '(min-width: 48rem)': 2,
@@ -94,9 +96,10 @@ function arrowsHiddenClass(count: number) {
  * home page media, under a label linking through to the category. The hero fills whatever
  * height its parent gives it. It is a two-row grid: the labels share the first row (as a
  * subgrid, so they line up even if one wraps) and the reels fill the second. When there are
- * more categories than fit, the columns become a looping carousel, with arrows over the ends
- * of the label row, as in the menu's `RowSlider`. `--hero-gap` drives the padding and the
- * loop maths.
+ * more categories than fit, the columns become a carousel, with arrows over the ends of the
+ * label row, as in the menu's `RowSlider`: each shows only while there are columns hidden on
+ * its side, and the label beside it moves its text clear. `--hero-gap` drives the padding and
+ * the reel loop maths.
  */
 export default function HomeHero({
   categories,
@@ -121,11 +124,11 @@ export default function HomeHero({
       ]),
     ),
     align: 'start',
-    loop: true,
     direction: locale === 'ar' ? 'rtl' : 'ltr',
   })
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi])
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi])
+  const canScroll = useArrowInsets(emblaApi)
 
   usePauseWhenOffscreen(rootRef)
 
@@ -136,14 +139,16 @@ export default function HomeHero({
       ref={rootRef}
       data-hero-ready={introReady || undefined}
       className={cn(
-        '[--hero-gap:calc(var(--spacing)*10)] [--hero-cols:1] md:[--hero-cols:2] lg:[--hero-cols:3]',
+        '[--hero-gap:calc(var(--spacing)*10)] [--hero-arrow:calc(var(--spacing)*16)]',
+        '[--hero-cols:1] md:[--hero-cols:2] lg:[--hero-cols:3]',
+        '[--hero-label-px:calc(var(--spacing)*5)] lg:[--hero-label-px:calc(var(--spacing)*10)]',
         'grid min-h-0 grid-rows-[auto_minmax(0,1fr)]',
         className,
       )}
       style={{['--hero-count' as string]: count}}
     >
-      {/* Every column draws its own start rule, so looping never leaves a gap. The viewport
-          is pulled back by one rule so the leftmost one lands on the page border. */}
+      {/* Every column draws its own start rule, so each looks the same wherever it sits. The
+          viewport is pulled back by one rule so the leftmost one lands on the page border. */}
       <div
         ref={emblaRef}
         className="col-start-1 row-span-2 row-start-1 -ms-(--border-width-site) grid grid-rows-subgrid overflow-hidden"
@@ -175,16 +180,24 @@ export default function HomeHero({
           )}
         >
           {/* Each carries the label row's bottom rule across the end it covers. */}
-          <SliderArrow
-            direction="prev"
-            onClick={scrollPrev}
-            className="pointer-events-auto flex border-b-site"
-          />
-          <SliderArrow
-            direction="next"
-            onClick={scrollNext}
-            className="pointer-events-auto flex border-b-site"
-          />
+          <AnimatePresence initial={false}>
+            {canScroll.prev && (
+              <SliderArrow
+                key="prev"
+                direction="prev"
+                onClick={scrollPrev}
+                className={ARROW_CLASS}
+              />
+            )}
+            {canScroll.next && (
+              <SliderArrow
+                key="next"
+                direction="next"
+                onClick={scrollNext}
+                className={ARROW_CLASS}
+              />
+            )}
+          </AnimatePresence>
           {/* The arrows are pointer-only, like the menu's; keyboards get these. */}
           <button
             type="button"
@@ -204,6 +217,54 @@ export default function HomeHero({
       )}
     </div>
   )
+}
+
+/** Compact, `--hero-arrow` wide, and shown at every size (the menu's only show from `lg`). */
+const ARROW_CLASS = 'pointer-events-auto flex w-(--hero-arrow) px-0 border-b-site'
+
+/**
+ * Tracks which arrows to show, and marks the column each one sits over (the first or last on
+ * screen) with `data-hero-inset-start` / `-end`, so that column's label moves its text clear.
+ * The marks follow the column being scrolled to, so the text moves along with the scroll.
+ * They are set on the nodes directly, so scrolling never re-renders the columns.
+ */
+function useArrowInsets(emblaApi: ReturnType<typeof useEmblaCarousel>[1]) {
+  const [canScroll, setCanScroll] = useState({prev: false, next: false})
+
+  useEffect(() => {
+    if (!emblaApi) return
+
+    const sync = () => {
+      const slides = emblaApi.slideNodes()
+      // Embla keeps answering while inactive (everything fits), so check for overflow too.
+      const overflows = emblaApi.scrollSnapList().length > 1
+      const prev = overflows && emblaApi.canScrollPrev()
+      const next = overflows && emblaApi.canScrollNext()
+      setCanScroll((current) =>
+        current.prev === prev && current.next === next ? current : {prev, next},
+      )
+
+      // Snaps align columns to the start, one per column, so the target snap is the first
+      // column on screen once the scroll settles.
+      const perView = slides.length
+        ? Math.round(emblaApi.rootNode().clientWidth / slides[0].offsetWidth)
+        : 0
+      const first = emblaApi.selectedScrollSnap()
+      const last = first + perView - 1
+      slides.forEach((slide, index) => {
+        slide.toggleAttribute('data-hero-inset-start', prev && index === first)
+        slide.toggleAttribute('data-hero-inset-end', next && index === last)
+      })
+    }
+
+    sync()
+    emblaApi.on('select', sync).on('reInit', sync).on('resize', sync)
+    return () => {
+      emblaApi.off('select', sync).off('reInit', sync).off('resize', sync)
+    }
+  }, [emblaApi])
+
+  return canScroll
 }
 
 /** Stops the scroll animations while the hero is out of view, to save battery. */
@@ -292,22 +353,43 @@ function SquareTile({children}: {children: ReactNode}) {
 }
 
 /**
- * The bar stays put; its text slides up into it as the hero intro starts. Centred, so the
- * carousel arrows over the row's ends don't cover it.
+ * The bar stays put; its text slides up into it as the hero intro starts. The text scales
+ * with the column (`cqi`) so long names stay on one line at most widths; where they can't,
+ * they wrap evenly and sit centred in the row. Beside a carousel arrow, the text moves clear.
  */
 function CategoryLabel({category}: {category: HeroCategory}) {
-  // Keeps the label row's cell (and its rule) when there's nothing to link to.
-  if (!category.slug) return <div className="border-b-site border-black dark:border-white" />
-
+  // The wrapper is the size container for `cqi`: a container can't be a subgrid (the column)
+  // and doesn't measure its own padding (the label's, which grows beside an arrow).
   return (
-    <LocalizedLink
-      href={productCategoryPath(category.slug)}
-      className="block border-b-site border-black dark:border-white px-5 py-4 lg:px-10 lg:py-5 text-center text-lg lg:text-2xl font-semibold transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
-    >
-      <span className="block overflow-hidden">
-        <span className="hero-label-reveal block">{category.title}</span>
-      </span>
-    </LocalizedLink>
+    <div className="@container min-w-0 border-b-site border-black dark:border-white">
+      {/* Keeps the label row's cell (and its rule) when there's nothing to link to. */}
+      {category.slug && (
+        <LocalizedLink
+          href={productCategoryPath(category.slug)}
+          className={cn(
+            'grid h-full grid-cols-[minmax(0,1fr)] items-center px-(--hero-label-px) py-4 lg:py-5',
+            'text-[clamp(1rem,5cqi,1.5rem)] leading-tight font-semibold text-balance',
+            'in-data-hero-inset-start:ps-[calc(var(--hero-arrow)+var(--spacing)*5)]',
+            'in-data-hero-inset-end:pe-[calc(var(--hero-arrow)+var(--spacing)*5)]',
+            'transition-[padding,color,background-color] duration-300',
+            'hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black',
+          )}
+        >
+          <span className="col-start-1 row-start-1 block min-w-0 overflow-hidden">
+            <span className="hero-label-reveal block">{category.title}</span>
+          </span>
+          {/* An invisible copy, laid out as if beside an arrow (on both sides when one column
+              fills the screen), sizes the cell. The row is then as tall as the label needs at
+              its tightest, and never jumps when the arrows come and go while scrolling. */}
+          <span
+            aria-hidden
+            className="invisible col-start-1 row-start-1 ms-[calc(var(--hero-arrow)+var(--spacing)*5-var(--hero-label-px))] max-md:me-[calc(var(--hero-arrow)+var(--spacing)*5-var(--hero-label-px))]"
+          >
+            {category.title}
+          </span>
+        </LocalizedLink>
+      )}
+    </div>
   )
 }
 
