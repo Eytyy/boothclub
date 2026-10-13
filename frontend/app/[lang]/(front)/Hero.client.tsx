@@ -142,6 +142,8 @@ export default function HomeHero({
         '[--hero-gap:calc(var(--spacing)*10)] [--hero-arrow:calc(var(--spacing)*16)]',
         '[--hero-cols:1] md:[--hero-cols:2] lg:[--hero-cols:3]',
         '[--hero-label-px:calc(var(--spacing)*5)] lg:[--hero-label-px:calc(var(--spacing)*10)]',
+        // How much further in a label's text sits beside an arrow: past the arrow, plus a gap.
+        '[--hero-label-inset:calc(var(--hero-arrow)+var(--spacing)*5-var(--hero-label-px))]',
         'grid min-h-0 grid-rows-[auto_minmax(0,1fr)]',
         className,
       )}
@@ -358,8 +360,9 @@ function SquareTile({children}: {children: ReactNode}) {
  * they wrap evenly and sit centred in the row. Beside a carousel arrow, the text moves clear.
  */
 function CategoryLabel({category}: {category: HeroCategory}) {
-  // The wrapper is the size container for `cqi`: a container can't be a subgrid (the column)
-  // and doesn't measure its own padding (the label's, which grows beside an arrow).
+  // The wrapper is the size container for `cqi`, as a container can't be a subgrid (the column).
+  // Beside an arrow the text moves in by a margin, so the font size and the label's padding
+  // stay put.
   return (
     <div className="@container min-w-0 border-b-site border-black dark:border-white">
       {/* Keeps the label row's cell (and its rule) when there's nothing to link to. */}
@@ -369,13 +372,16 @@ function CategoryLabel({category}: {category: HeroCategory}) {
           className={cn(
             'grid h-full grid-cols-[minmax(0,1fr)] items-center px-(--hero-label-px) py-4 lg:py-5',
             'text-[clamp(1rem,5cqi,1.5rem)] leading-tight font-semibold text-balance',
-            'in-data-hero-inset-start:ps-[calc(var(--hero-arrow)+var(--spacing)*5)]',
-            'in-data-hero-inset-end:pe-[calc(var(--hero-arrow)+var(--spacing)*5)]',
-            'transition-[padding,color,background-color] duration-300',
+            'transition-colors',
             'hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black',
           )}
         >
-          <span className="col-start-1 row-start-1 block min-w-0 overflow-hidden">
+          <span
+            className={cn(
+              'col-start-1 row-start-1 block min-w-0 overflow-hidden transition-[margin] duration-300',
+              'in-data-hero-inset-start:ms-(--hero-label-inset) in-data-hero-inset-end:me-(--hero-label-inset)',
+            )}
+          >
             <span className="hero-label-reveal block">{category.title}</span>
           </span>
           {/* An invisible copy, laid out as if beside an arrow (on both sides when one column
@@ -383,7 +389,7 @@ function CategoryLabel({category}: {category: HeroCategory}) {
               its tightest, and never jumps when the arrows come and go while scrolling. */}
           <span
             aria-hidden
-            className="invisible col-start-1 row-start-1 ms-[calc(var(--hero-arrow)+var(--spacing)*5-var(--hero-label-px))] max-md:me-[calc(var(--hero-arrow)+var(--spacing)*5-var(--hero-label-px))]"
+            className="invisible col-start-1 row-start-1 ms-(--hero-label-inset) max-md:me-(--hero-label-inset)"
           >
             {category.title}
           </span>
