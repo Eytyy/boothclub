@@ -72,31 +72,21 @@ export default async function Page({params}: Props) {
       <JsonLd data={buildHomeStructuredData(process.env.NEXT_PUBLIC_SITE_URL, lang)} />
       <div className="container">
         <div data-page-grid className="md:mx-10 border-x-site ">
-          {/* The intro and category columns share one screen below the sticky header, so the
-              category labels land inside the first fold. The columns take what the intro leaves,
-              but never less than their minimum: past that the hero grows below the fold instead.
-              `contain-size` keeps the reels' tall tracks from sizing that row themselves. */}
+          {/* From md up the intro and category columns share one screen below the sticky
+              header, so the category labels always land inside the first fold. */}
           <HeroIntroProvider hasIntroText={Boolean(hero?.headline || hero?.description)}>
-            <div className="grid min-h-[calc(100svh-var(--header-height))] grid-rows-[auto_minmax(24rem,1fr)]">
+            <div className="md:flex md:h-[calc(100svh-var(--header-height))] md:flex-col">
               {(hero?.headline || hero?.description) && (
-                <div className="grid shrink-0 gap-5 border-b-site border-black p-5 md:grid-cols-[7fr_5fr] md:gap-10 lg:px-10 dark:border-white">
+                <div className="shrink-0 border-b-site border-black p-5 lg:px-10 dark:border-white">
                   {hero.headline && (
                     <HeroIntroText
                       className="pointer-events-none text-reveal-default uppercase"
                       text={stegaClean(hero.headline)}
                     />
                   )}
-                  {hero.description && (
-                    <HeroIntroText
-                      className="body-text normal-case font-medium pt-3"
-                      text={stegaClean(hero.description)}
-                    />
-                  )}
                 </div>
               )}
-              {heroCategories.length > 0 && (
-                <HomeHero categories={heroCategories} className="row-start-2 contain-size" />
-              )}
+              {heroCategories.length > 0 && <HomeHero categories={heroCategories} />}
             </div>
           </HeroIntroProvider>
           {clients.length > 0 && (
